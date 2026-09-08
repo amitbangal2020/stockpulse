@@ -149,9 +149,8 @@ export function AppSidebar() {
       </div>
 
       {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Bottom Items */}
+      <div className="flex-1" />      {/* Bottom Items - hidden, will be implemented later */}
+      {/*
       <div className="px-4">
         <nav className="flex flex-col gap-0.5 border-t border-border pt-3">
           {BOTTOM_ITEMS.map((item) => (
@@ -169,7 +168,7 @@ export function AppSidebar() {
         </nav>
       </div>
 
-      {/* Credits */}
+      Credits - hidden, will be implemented later
       <div className="mx-4 mt-3 rounded-xl border border-border bg-surface p-3">
         <div className="flex items-center justify-between">
           <div>
@@ -183,6 +182,7 @@ export function AppSidebar() {
           </span>
         </div>
       </div>
+      */}
 
       {/* Dark Mode Toggle */}
       <div className="mx-4 mt-3">
@@ -203,7 +203,8 @@ export function AppSidebar() {
         </button>
       </div>
 
-      {/* User */}
+      {/* User - hidden, will be implemented later */}
+      {/*
       <div className="flex items-center gap-3 px-5 py-4">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/20 text-sm font-bold text-accent">
           A
@@ -214,6 +215,7 @@ export function AppSidebar() {
         </div>
         <LogIn className="h-3.5 w-3.5 text-text-muted" />
       </div>
+      */}
 
     </aside>
 
