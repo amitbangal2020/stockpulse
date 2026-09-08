@@ -185,7 +185,7 @@ export function AppSidebar() {
       */}
 
       {/* Dark Mode Toggle */}
-      <div className="mx-4 mt-3">
+      <div className="mx-4 mt-3 mb-4">
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="flex w-full items-center gap-2.5 rounded-xl border border-border bg-surface px-3 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
