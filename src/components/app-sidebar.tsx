@@ -149,40 +149,24 @@ export function AppSidebar() {
       </div>
 
       {/* Spacer */}
-      <div className="flex-1" />      {/* Bottom Items - hidden, will be implemented later */}
-      {/*
+      <div className="flex-1" />
+
+      {/* How it Works */}
       <div className="px-4">
         <nav className="flex flex-col gap-0.5 border-t border-border pt-3">
-          {BOTTOM_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-accent-subtle hover:text-accent"
-            >
-              <span className="flex items-center gap-2.5">
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </span>
-            </Link>
-          ))}
+          <Link
+            href="/how-it-works"
+            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              isActive("/how-it-works")
+                ? "bg-accent text-white shadow-md shadow-accent/20"
+                : "text-text-secondary hover:bg-accent-subtle hover:text-accent"
+            }`}
+          >
+            <HelpCircle className="h-4 w-4" />
+            How it Works
+          </Link>
         </nav>
       </div>
-
-      Credits - hidden, will be implemented later
-      <div className="mx-4 mt-3 rounded-xl border border-border bg-surface p-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-text-muted">
-              Credits
-            </p>
-            <p className="text-xl font-bold text-text-primary">150</p>
-          </div>
-          <span className="rounded-full bg-green-500/15 px-2.5 py-1 text-[11px] font-bold text-green-600 dark:text-green-400">
-            100% remaining
-          </span>
-        </div>
-      </div>
-      */}
 
       {/* Dark Mode Toggle */}
       <div className="mx-4 mt-3 mb-4">
