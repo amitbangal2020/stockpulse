@@ -476,14 +476,8 @@ export function MetadataGenerator() {
       const mediaKind = fileItem.type.startsWith("video/") ? "video" : "image" as "image" | "video";
       const hasImage = !!base64Data;
 
-      // Find which provider this key belongs to
-      let keyProvider: ProviderId = activeProvider;
-      for (const prov of Object.keys(allKeys) as ProviderId[]) {
-        if (allKeys[prov].some(k => k.key === activeKey.apiKey)) {
-          keyProvider = prov;
-          break;
-        }
-      }
+      // Use activeProvider directly — getActiveKey() already selects from this provider
+      const keyProvider: ProviderId = activeProvider;
 
       // Vision Analysis (pre-generation)
       let visionAnalysis: VisionAnalysis | null = null;
