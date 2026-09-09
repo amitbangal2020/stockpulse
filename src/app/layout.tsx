@@ -29,6 +29,10 @@ export const metadata: Metadata = {
     default: "StockPulse — AI Metadata & Analytics for Microstock",
     template: "%s | StockPulse",
   },
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   description:
     "Generate optimized titles, descriptions, keywords, and creative prompts for Adobe Stock, Shutterstock, Freepik, Vecteezy, Pond5, and iStock. Track downloads, analyze trends, and manage your portfolio — all in one place.",
   keywords: [
