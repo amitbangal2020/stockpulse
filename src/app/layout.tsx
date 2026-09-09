@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
+import { ProtectionProvider } from "@/components/protection-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -98,7 +99,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="h-screen overflow-hidden flex flex-col antialiased">
-        <ThemeProvider><AuthProvider>{children}</AuthProvider></ThemeProvider>
+        <ThemeProvider><AuthProvider><ProtectionProvider>{children}</ProtectionProvider></AuthProvider></ThemeProvider>
       </body>
     </html>
   );

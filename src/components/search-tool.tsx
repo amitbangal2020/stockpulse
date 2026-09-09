@@ -200,15 +200,15 @@ export function SearchTool() {
   return (
     <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
       {/* Hero Section */}
-      <div className="flex w-full flex-col items-center px-6 pt-12 pb-10 text-center border-b border-border">
+      <div className="flex w-full flex-col items-center px-6 pt-6 pb-5 text-center border-b border-border">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-subtle px-4 py-1.5 text-xs font-semibold text-accent">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
           Live Adobe Stock Data
         </div>
-        <h1 className="font-heading text-3xl font-bold tracking-tight text-text-primary sm:text-4xl lg:text-5xl">
+        <h1 className="font-heading text-xl font-bold tracking-tight text-text-primary sm:text-2xl lg:text-3xl">
           Analyze Stock <span className="text-accent">Performance</span>
         </h1>
-        <p className="mt-3 max-w-lg text-sm leading-relaxed text-text-secondary sm:text-base">
+        <p className="mt-2 max-w-lg text-xs leading-relaxed text-text-secondary sm:text-sm">
           Real-time download analytics for contributors. Track, compare, and optimize your portfolio.
         </p>
 
