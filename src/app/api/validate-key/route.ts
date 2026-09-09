@@ -20,16 +20,30 @@ export async function POST(request: NextRequest) {
     let valid = false;
 
     if (provider === 'gemini') {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: 'Reply with exactly one word: valid' }] }],
-        }),
-        signal: AbortSignal.timeout(15000),
-      });
-      valid = resp.ok;
+      // Retry up to 2 times for transient failures
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: 'Reply with exactly one word: valid' }] }],
+            }),
+            signal: AbortSignal.timeout(15000),
+          });
+          if (resp.ok) { valid = true; break; }
+          // Rate limited or server error — retry after delay
+          if (resp.status === 429 || resp.status >= 500) {
+            await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+            continue;
+          }
+          // Other errors (401, 403) — don't retry
+          break;
+        } catch {
+          if (attempt < 2) await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+        }
+      }
     } else {
       const endpoint = PROVIDER_ENDPOINTS[provider];
       if (!endpoint) {

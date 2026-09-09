@@ -304,13 +304,12 @@ export function MetadataGenerator() {
     setValidatingAll(true);
     const keys = allKeys[activeProvider];
 
-    // Validate all keys IN PARALLEL (fast!)
-    const results = await Promise.all(
-      keys.map(async (entry) => {
-        const isValid = await validateApiKey(activeProvider, entry.key, entry.model);
-        return { id: entry.id, isValid };
-      })
-    );
+    // Validate keys with concurrency limit (3 at a time) to avoid rate limits
+    const tasks = keys.map((entry) => async () => {
+      const isValid = await validateApiKey(activeProvider, entry.key, entry.model);
+      return { id: entry.id, isValid };
+    });
+    const results = await runWithConcurrency(tasks, 3);
 
     // Update all keys at once
     const resultMap = new Map(results.map(r => [r.id, r.isValid]));
