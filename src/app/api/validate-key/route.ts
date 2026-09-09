@@ -11,14 +11,8 @@ export async function POST(request: NextRequest) {
     let valid = false;
 
     if (provider === 'gemini') {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: 'Reply with exactly one word: valid' }] }],
-        }),
-      });
+      const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+      const resp = await fetch(url);
       valid = resp.ok;
     } else {
       const PROVIDER_ENDPOINTS: Record<string, string> = {
