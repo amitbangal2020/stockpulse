@@ -304,12 +304,13 @@ export function MetadataGenerator() {
     setValidatingAll(true);
     const keys = allKeys[activeProvider];
 
-    // Validate keys with concurrency limit (3 at a time) to avoid rate limits
-    const tasks = keys.map((entry) => async () => {
-      const isValid = await validateApiKey(activeProvider, entry.key, entry.model);
-      return { id: entry.id, isValid };
-    });
-    const results = await runWithConcurrency(tasks, 3);
+    // Validate all keys IN PARALLEL (fast!)
+    const results = await Promise.all(
+      keys.map(async (entry) => {
+        const isValid = await validateApiKey(activeProvider, entry.key, entry.model);
+        return { id: entry.id, isValid };
+      })
+    );
 
     // Update all keys at once
     const resultMap = new Map(results.map(r => [r.id, r.isValid]));
@@ -443,45 +444,6 @@ export function MetadataGenerator() {
 
   // ─── Generation ───
 
-  // Call API with automatic retry on quota/rate-limit errors using next key
-  const callWithRetry = async (
-    apiKey: string,
-    model: string,
-    mediaKind: "image" | "video" | "text",
-    base64Data: string | null,
-    mimeType: string,
-    prompt: string,
-    signal?: AbortSignal,
-    maxRetries = 3,
-  ): Promise<string> => {
-    let lastError: string = "";
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        const result = await generateMetadataWithKey(
-          attempt === 0 ? apiKey : getActiveKey()?.apiKey || apiKey,
-          activeProvider,
-          attempt === 0 ? model : getActiveKey()?.model || model,
-          mediaKind,
-          base64Data,
-          mimeType,
-          prompt,
-          signal,
-        );
-        return result;
-      } catch (err: any) {
-        lastError = err.message || "Generation failed";
-        const isQuotaError = lastError.includes("quota") || lastError.includes("429") || lastError.includes("rate") || lastError.includes("RESOURCE_EXHAUSTED");
-        if (isQuotaError && attempt < maxRetries) {
-          // Wait before retrying with next key
-          await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
-          continue;
-        }
-        throw err;
-      }
-    }
-    throw new Error(lastError);
-  };
-
   const generateSingle = async (fileItem: FileItem, signal?: AbortSignal): Promise<void> => {
     if (abortRef.current) return;
     const activeKey = getActiveKey();
@@ -515,15 +477,23 @@ export function MetadataGenerator() {
       const mediaKind = fileItem.type.startsWith("video/") ? "video" : "image" as "image" | "video";
       const hasImage = !!base64Data;
 
-      // activeProvider used directly in callWithRetry
+      // Find which provider this key belongs to
+      let keyProvider: ProviderId = activeProvider;
+      for (const prov of Object.keys(allKeys) as ProviderId[]) {
+        if (allKeys[prov].some(k => k.key === activeKey.apiKey)) {
+          keyProvider = prov;
+          break;
+        }
+      }
 
       // Vision Analysis (pre-generation)
       let visionAnalysis: VisionAnalysis | null = null;
       if (hasImage && base64Data) {
         try {
           const visionPrompt = buildVisionAnalysisPrompt(mediaKind);
-          const visionResponse = await callWithRetry(
+          const visionResponse = await generateMetadataWithKey(
             activeKey.apiKey,
+            keyProvider,
             activeKey.model,
             mediaKind,
             base64Data,
@@ -564,8 +534,9 @@ export function MetadataGenerator() {
       }
 
       // PASS 1: Generate main metadata
-      const response1 = await callWithRetry(
+      const response1 = await generateMetadataWithKey(
         activeKey.apiKey,
+        keyProvider,
         activeKey.model,
         mediaKind,
         base64Data,
@@ -606,8 +577,9 @@ export function MetadataGenerator() {
           }
         });
 
-        const response2 = await callWithRetry(
+        const response2 = await generateMetadataWithKey(
           activeKey.apiKey,
+          keyProvider,
           activeKey.model,
           mediaKind,
           base64Data,

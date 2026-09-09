@@ -175,15 +175,53 @@ export async function validateApiKey(
   model: string
 ): Promise<boolean> {
   try {
-    // Use server-side API route to avoid CORS issues on production
-    const resp = await fetch("/api/validate-key", {
+    if (provider === "gemini") {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: "Reply with exactly one word: valid" }] }],
+        }),
+      });
+      return resp.ok;
+    }
+
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+
+    if (provider === "openai" || provider === "grok" || provider === "mistral" || provider === "openrouter") {
+      headers["Authorization"] = `Bearer ${apiKey}`;
+    }
+    if (provider === "anthropic") {
+      headers["x-api-key"] = apiKey;
+      headers["anthropic-version"] = "2023-06-01";
+    }
+    if (provider === "openrouter") {
+      headers["HTTP-Referer"] = typeof window !== "undefined" ? window.location.origin : "";
+    }
+
+    const endpoint = getProviderEndpoint(provider);
+    const body =
+      provider === "anthropic"
+        ? {
+            model,
+            max_tokens: 10,
+            messages: [{ role: "user", content: "Reply with exactly one word: valid" }],
+          }
+        : {
+            model,
+            messages: [
+              { role: "user", content: "Reply with exactly one word: valid" },
+            ],
+            max_tokens: 10,
+          };
+
+    const resp = await fetch(endpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ provider, apiKey, model }),
-      signal: AbortSignal.timeout(20000),
+      headers,
+      body: JSON.stringify(body),
     });
-    const data = await resp.json();
-    return data.valid === true;
+    return resp.ok;
   } catch {
     return false;
   }
