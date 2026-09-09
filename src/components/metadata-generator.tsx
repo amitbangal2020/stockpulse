@@ -443,6 +443,45 @@ export function MetadataGenerator() {
 
   // ─── Generation ───
 
+  // Call API with automatic retry on quota/rate-limit errors using next key
+  const callWithRetry = async (
+    apiKey: string,
+    model: string,
+    mediaKind: "image" | "video" | "text",
+    base64Data: string | null,
+    mimeType: string,
+    prompt: string,
+    signal?: AbortSignal,
+    maxRetries = 3,
+  ): Promise<string> => {
+    let lastError: string = "";
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const result = await generateMetadataWithKey(
+          attempt === 0 ? apiKey : getActiveKey()?.apiKey || apiKey,
+          activeProvider,
+          attempt === 0 ? model : getActiveKey()?.model || model,
+          mediaKind,
+          base64Data,
+          mimeType,
+          prompt,
+          signal,
+        );
+        return result;
+      } catch (err: any) {
+        lastError = err.message || "Generation failed";
+        const isQuotaError = lastError.includes("quota") || lastError.includes("429") || lastError.includes("rate") || lastError.includes("RESOURCE_EXHAUSTED");
+        if (isQuotaError && attempt < maxRetries) {
+          // Wait before retrying with next key
+          await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw new Error(lastError);
+  };
+
   const generateSingle = async (fileItem: FileItem, signal?: AbortSignal): Promise<void> => {
     if (abortRef.current) return;
     const activeKey = getActiveKey();
@@ -476,17 +515,15 @@ export function MetadataGenerator() {
       const mediaKind = fileItem.type.startsWith("video/") ? "video" : "image" as "image" | "video";
       const hasImage = !!base64Data;
 
-      // Use activeProvider directly — getActiveKey() already selects from this provider
-      const keyProvider: ProviderId = activeProvider;
+      // activeProvider used directly in callWithRetry
 
       // Vision Analysis (pre-generation)
       let visionAnalysis: VisionAnalysis | null = null;
       if (hasImage && base64Data) {
         try {
           const visionPrompt = buildVisionAnalysisPrompt(mediaKind);
-          const visionResponse = await generateMetadataWithKey(
+          const visionResponse = await callWithRetry(
             activeKey.apiKey,
-            keyProvider,
             activeKey.model,
             mediaKind,
             base64Data,
@@ -527,9 +564,8 @@ export function MetadataGenerator() {
       }
 
       // PASS 1: Generate main metadata
-      const response1 = await generateMetadataWithKey(
+      const response1 = await callWithRetry(
         activeKey.apiKey,
-        keyProvider,
         activeKey.model,
         mediaKind,
         base64Data,
@@ -570,9 +606,8 @@ export function MetadataGenerator() {
           }
         });
 
-        const response2 = await generateMetadataWithKey(
+        const response2 = await callWithRetry(
           activeKey.apiKey,
-          keyProvider,
           activeKey.model,
           mediaKind,
           base64Data,
