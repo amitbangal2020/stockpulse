@@ -20,6 +20,7 @@ interface StockAsset {
   title: string;
   thumbnailUrl: string;
   downloads: number;
+  views: number;
   performance: number;
   tags: string[];
   uploadDate: string;
@@ -91,6 +92,7 @@ export function SearchTool() {
             id: data.assetId, title: data.title,
             thumbnailUrl: data.thumbnail || `https://stock.adobe.com/${data.assetId}`,
             downloads: data.downloads ?? 0,
+            views: data.views ?? 0,
             performance: data.downloads != null ? Math.min(100, Math.floor((data.downloads / 5) + 20)) : 0,
             tags: data.keywords || [], uploadDate: data.creationDate || "",
             contributor: data.creator || "Unknown", contributorId: data.creatorId || "",
@@ -108,7 +110,7 @@ export function SearchTool() {
           setIsCreatorResults(true);
           const assets2: StockAsset[] = data2.files.map((f: any) => ({
             id: f.id, title: f.title, thumbnailUrl: f.thumbnail || `https://stock.adobe.com/${f.id}`,
-            downloads: f.downloads ?? 0, performance: f.downloads != null ? Math.min(100, Math.floor((f.downloads / 5) + 20)) : 0,
+            downloads: f.downloads ?? 0, views: f.views ?? 0, performance: f.downloads != null ? Math.min(100, Math.floor((f.downloads / 5) + 20)) : 0,
             tags: [], uploadDate: f.creationDate || "", contributor: f.creator || data2.creatorName || "Unknown",
             contributorId: data2.creatorId || searchQ, keywordsCount: 0, similarImagesCount: 0,
             category: f.category || "General", mediaType: (f.mediaType?.toLowerCase() || "image") as StockAsset["mediaType"],
@@ -129,6 +131,7 @@ export function SearchTool() {
         if (isExplicitCreator) setIsCreatorResults(true);
         const assets: StockAsset[] = data.files.map((f: any) => ({
           id: f.id, title: f.title, thumbnailUrl: f.thumbnail || `https://stock.adobe.com/${f.id}`,          downloads: f.downloads ?? 0,
+          views: f.views ?? 0,
           performance: f.downloads != null ? Math.min(100, Math.floor((f.downloads / 5) + 20)) : 0,
           tags: (f.keywords || []).slice(0, 10), uploadDate: f.creationDate || "",
           contributor: f.creator || data.creatorName || "Unknown", contributorId: data.creatorId || "",
@@ -396,6 +399,13 @@ export function SearchTool() {
                       </div>
                       <p className="text-[9px] text-text-muted">downloads</p>
                     </div>
+                    <div className="text-center min-w-[50px]">
+                      <div className="flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3 text-info" />
+                        <span className="text-sm font-bold text-text-secondary">{asset.views.toLocaleString()}</span>
+                      </div>
+                      <p className="text-[9px] text-text-muted">views</p>
+                    </div>
                     <div className="w-20">
                       <div className="h-1.5 w-full rounded-full bg-border">
                         <div className="h-full rounded-full bg-gradient-to-r from-accent/60 to-accent" style={{ width: `${perfPct}%` }} />
@@ -449,11 +459,20 @@ export function SearchTool() {
                       <span className="text-xs text-text-muted truncate">{asset.category}</span>
                     </div>
                     <div className="mt-3 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <Download className="h-3.5 w-3.5 text-accent" />
-                        <span className={`text-base font-bold ${asset.downloads >= 2 ? "text-accent" : "text-text-muted"}`}>{asset.downloads.toLocaleString()}</span>
-                        <span className="text-[10px] font-medium text-text-muted">dl</span>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1">
+                          <Download className="h-3.5 w-3.5 text-accent" />
+                          <span className={`text-sm font-bold ${asset.downloads >= 2 ? "text-accent" : "text-text-muted"}`}>{asset.downloads.toLocaleString()}</span>
+                          <span className="text-[10px] font-medium text-text-muted">dl</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <TrendingUp className="h-3.5 w-3.5 text-info" />
+                          <span className="text-sm font-bold text-text-secondary">{asset.views.toLocaleString()}</span>
+                          <span className="text-[10px] font-medium text-text-muted">views</span>
+                        </div>
                       </div>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between">
                       <span className="text-[11px] text-text-muted">{dateStr}</span>
                     </div>
                     <div className="mt-2">
