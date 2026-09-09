@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
   },
   description:
-    "Generate AI-optimized titles, keywords & descriptions for Adobe Stock, Shutterstock, Freepik and more. Track downloads and analyze trends — all in one place.",
+    "Generate AI-optimized titles, keywords & descriptions for Adobe Stock, Shutterstock, Freepik and more. Track downloads and analyze trends.",
   keywords: [
     "AI metadata generator",
     "Adobe Stock keywords",
