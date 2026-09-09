@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
   },
   description:
-    "Generate optimized titles, descriptions, keywords, and creative prompts for Adobe Stock, Shutterstock, Freepik, Vecteezy, Pond5, and iStock. Track downloads, analyze trends, and manage your portfolio — all in one place.",
+    "Generate AI-optimized titles, keywords & descriptions for Adobe Stock, Shutterstock, Freepik and more. Track downloads and analyze trends — all in one place.",
   keywords: [
     "AI metadata generator",
     "Adobe Stock keywords",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "StockPulse — AI Metadata & Analytics for Microstock",
     description:
-      "Generate optimized metadata for all major microstock platforms with AI-powered tools. Track downloads, analyze trends, and manage your portfolio.",
+      "AI-powered metadata for Adobe Stock, Shutterstock, Freepik & more. Track downloads and analyze trends.",
     url: "https://abanti.in",
     siteName: "StockPulse",
     images: [
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "StockPulse — AI Metadata & Analytics for Microstock",
     description:
-      "Generate optimized metadata for all major microstock platforms with AI-powered tools.",
+      "AI-powered metadata for Adobe Stock, Shutterstock, Freepik & more. Track downloads and analyze trends.",
     images: ["/og-image.png"],
   },
   robots: {
