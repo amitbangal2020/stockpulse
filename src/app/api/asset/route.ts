@@ -134,12 +134,12 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Single asset lookup by exact ID (uses ids[] parameter, not words)
+    // Single asset lookup by exact ID (search the ID as words — ids[] param is ignored by the API)
     if (assetId) {
       const cleanId = assetId.replace(/[^0-9]/g, '');
       const params: Record<string, string | string[]> = {
-        'search_parameters[ids][]': cleanId,
-        'search_parameters[limit]': '1',
+        'search_parameters[words]': cleanId,
+        'search_parameters[limit]': '5',
         'result_columns[]': SEARCH_COLUMNS,
       };
       if (gentech === 'true' || gentech === 'false') {
@@ -155,12 +155,12 @@ export async function GET(request: NextRequest) {
       }
       const data = await resp.json();
 
-      // Verify the returned asset actually has the requested ID
-      if (!data || !data.files || data.files.length === 0 || String(data.files[0].id) !== cleanId) {
+      // Find the asset whose ID exactly matches the requested one
+      const file = (data?.files || []).find((f: any) => String(f.id) === cleanId);
+      if (!file) {
         return NextResponse.json({ found: false, assetId: cleanId, error: 'Asset not found' });
       }
 
-      const file = data.files[0];
       return NextResponse.json({
         found: true,
         assetId: String(file.id),
