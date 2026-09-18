@@ -28,6 +28,7 @@ import {
   Video,
   Calendar,
   Monitor,
+  BookOpen,
 } from "lucide-react";
 
 const MAIN_ITEMS = [
@@ -151,9 +152,20 @@ export function AppSidebar() {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* How it Works */}
+      {/* How it Works + Blog */}
       <div className="px-4">
         <nav className="flex flex-col gap-0.5 border-t border-border pt-3">
+          <Link
+            href="/blog"
+            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              isActive("/blog")
+                ? "bg-accent text-white shadow-md shadow-accent/20"
+                : "text-text-secondary hover:bg-accent-subtle hover:text-accent"
+            }`}
+          >
+            <BookOpen className="h-4 w-4" />
+            Blog
+          </Link>
           <Link
             href="/how-it-works"
             className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
