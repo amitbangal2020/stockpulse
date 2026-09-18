@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -67,12 +67,22 @@ export function AppSidebar() {
   const [mounted, setMounted] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const pathname = usePathname();
+  const mobileNavRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => setMounted(true), []);
 
   // Close popup on route change
   useEffect(() => {
     setShowTools(false);
+  }, [pathname]);
+
+  // Keep the active item centred in the scrollable mobile nav bar
+  useEffect(() => {
+    const container = mobileNavRef.current;
+    const active = container?.querySelector<HTMLElement>('[data-active="true"]');
+    if (!container || !active) return;
+    const target = active.offsetLeft - (container.clientWidth - active.clientWidth) / 2;
+    container.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
   }, [pathname]);
 
   const isActive = (href: string) => {
@@ -94,12 +104,12 @@ export function AppSidebar() {
           Stock<span className="text-accent">Pulse</span>
         </span>
       </Link>
-      <div className="flex flex-1 items-center gap-1 overflow-x-auto no-scrollbar">
-        <Link href="/metagen" className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/metagen") ? "bg-accent text-white" : "text-text-secondary"}`}>Generate</Link>
-        <Link href="/search" className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/search") ? "bg-accent text-white" : "text-text-secondary"}`}>Tracker</Link>
-        <button onClick={() => setShowTools(!showTools)} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isAnyToolActive ? "bg-accent text-white" : "text-text-secondary"}`}>Tools</button>
-        <Link href="/blog" className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/blog") ? "bg-accent text-white" : "text-text-secondary"}`}>Blog</Link>
-        <Link href="/how-it-works" className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/how-it-works") ? "bg-accent text-white" : "text-text-secondary"}`}>Guides</Link>
+      <div ref={mobileNavRef} className="flex flex-1 items-center gap-1 overflow-x-auto no-scrollbar">
+        <Link href="/metagen" data-active={isActive("/metagen") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/metagen") ? "bg-accent text-white" : "text-text-secondary"}`}>Generate</Link>
+        <Link href="/search" data-active={isActive("/search") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/search") ? "bg-accent text-white" : "text-text-secondary"}`}>Tracker</Link>
+        <button onClick={() => setShowTools(!showTools)} data-active={isAnyToolActive || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isAnyToolActive ? "bg-accent text-white" : "text-text-secondary"}`}>Tools</button>
+        <Link href="/blog" data-active={isActive("/blog") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/blog") ? "bg-accent text-white" : "text-text-secondary"}`}>Blog</Link>
+        <Link href="/how-it-works" data-active={isActive("/how-it-works") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/how-it-works") ? "bg-accent text-white" : "text-text-secondary"}`}>Guides</Link>
       </div>
     </div>
 
