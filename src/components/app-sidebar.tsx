@@ -84,8 +84,8 @@ export function AppSidebar() {
 
   return (
     <>
-    {/* Mobile top bar (only visible below lg) */}
-    <div className="lg:hidden flex items-center gap-2 border-b border-border bg-bg px-4 py-2">
+    {/* Mobile top bar (only visible below lg) — rendered first so it sits at the top of the page column */}
+    <div className="order-first lg:order-none lg:hidden flex items-center gap-2 border-b border-border bg-bg px-4 py-2 sticky top-0 z-30">
       <Link href="/" className="flex items-center gap-2 shrink-0">
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-white">
           <Sparkles className="h-3.5 w-3.5" strokeWidth={2.5} />
