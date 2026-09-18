@@ -23,6 +23,53 @@ const jsonLd = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What is StockPulse?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "StockPulse is a free AI toolkit for microstock sellers: generate optimized titles, keywords and descriptions for Adobe Stock, Shutterstock and Freepik, track downloads in real time, and research trending keywords — 22 tools in one place.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How do I generate keywords for Adobe Stock?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Open the MetaGen tool, upload your images or videos, and the AI writes platform-optimized titles, keywords and descriptions for each file. Export the results as an Adobe Stock-ready CSV and upload it directly.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I see how many downloads an Adobe Stock asset has?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Use the Adobe Tracker tool and enter any asset ID to see its exact live download count, or enter a contributor ID to analyze an entire portfolio of up to 300 assets.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Which AI providers does StockPulse support?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "StockPulse works with OpenAI, Google Gemini, Anthropic Claude, Grok, Mistral and OpenRouter. You bring your own API keys, and multiple keys per provider rotate automatically.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is StockPulse free?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes — every tool is free to use. The AI metadata generator runs on your own API keys, so there are no subscription fees or per-image charges.",
+      },
+    },
+  ],
+};
+
 const TOOLS = [
   {
     title: "MetaGen",
@@ -80,6 +127,10 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className="flex flex-1 flex-col overflow-y-auto">
         {/* Hero */}
