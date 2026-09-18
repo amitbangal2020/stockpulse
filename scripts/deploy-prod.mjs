@@ -406,8 +406,16 @@ if (newestProd && depId(newestProd) === targetId) {
 if (promoted.url) {
   try {
     const origin = await probe(`https://${promoted.url}/`);
-    if (origin.finalUrl && !origin.finalUrl.includes(promoted.url)) {
-      log("  · the deployment URL sits behind Vercel SSO protection — live domains are the real check");
+    const endsOnOrigin = (() => {
+      try {
+        return new URL(origin.finalUrl).host === promoted.url;
+      } catch {
+        return false;
+      }
+    })();
+
+    if (!endsOnOrigin) {
+      log("  · deployment URLs are behind Vercel SSO — the live domains are the real check");
     } else {
       ok(`origin serves build ${origin.marker || "(no marker)"} · ${origin.status} · ${origin.kb.toFixed(1)} KB`);
     }
