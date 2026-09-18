@@ -7,6 +7,7 @@
     "encoder": "node encoder-server.cjs",
     "build": "next build",
     "start": "next start",
+    "deploy:prod": "node scripts/deploy-prod.mjs",
     "lint": "eslint"
   },
   "dependencies": {
