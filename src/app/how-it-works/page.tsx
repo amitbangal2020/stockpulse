@@ -796,11 +796,11 @@ export default function HowItWorksPage() {
         </div>
       </div>
 
-      {/* Category Tabs */}
-      <div className="flex gap-2 border-b border-border bg-bg px-5 py-3">
+      {/* Category Tabs — scrollable on mobile */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar border-b border-border bg-bg px-5 py-3">
         {CATEGORIES.map(cat => (
           <button key={cat} onClick={() => { setActiveCategory(cat); setExpandedTool(null); }}
-            className={`rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
+            className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
               activeCategory === cat
                 ? "bg-accent text-white"
                 : "border border-border bg-surface text-text-secondary hover:border-accent/30"
