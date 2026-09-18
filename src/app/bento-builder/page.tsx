@@ -31,8 +31,24 @@ function SliderRow({ label, value, set, min, max, step = 1 }: { label: string; v
 
 // ─── Grid Layout Generators ───
 interface Cell { x: number; y: number; w: number; h: number; shade: number; }
+type Rng = () => number;
 
-function generateBentoGrid(cols: number, rows: number): Cell[] {
+/**
+ * Deterministic PRNG. The first grid has to render identically on the server
+ * and in the browser, so the initial layout is seeded — Math.random() there
+ * produces a hydration mismatch. User actions still use Math.random().
+ */
+function mulberry32(seed: number): Rng {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function generateBentoGrid(cols: number, rows: number, rng: Rng = Math.random): Cell[] {
   const cells: Cell[] = [];
   const used = Array.from({ length: rows }, () => Array(cols).fill(false));
 
@@ -41,42 +57,42 @@ function generateBentoGrid(cols: number, rows: number): Cell[] {
       if (used[r][c]) continue;
       const maxW = Math.min(cols - c, 3);
       const maxH = Math.min(rows - r, 2);
-      const w = Math.floor(Math.random() * maxW) + 1;
-      const h = Math.floor(Math.random() * maxH) + 1;
+      const w = Math.floor(rng() * maxW) + 1;
+      const h = Math.floor(rng() * maxH) + 1;
       let canPlace = true;
       for (let dr = 0; dr < h && canPlace; dr++)
         for (let dc = 0; dc < w && canPlace; dc++)
           if (r + dr >= rows || c + dc >= cols || used[r + dr][c + dc]) canPlace = false;
       if (canPlace) {
         for (let dr = 0; dr < h; dr++) for (let dc = 0; dc < w; dc++) used[r + dr][c + dc] = true;
-        cells.push({ x: c, y: r, w, h, shade: Math.floor(Math.random() * 40) + 55 });
+        cells.push({ x: c, y: r, w, h, shade: Math.floor(rng() * 40) + 55 });
       } else {
         used[r][c] = true;
-        cells.push({ x: c, y: r, w: 1, h: 1, shade: Math.floor(Math.random() * 40) + 55 });
+        cells.push({ x: c, y: r, w: 1, h: 1, shade: Math.floor(rng() * 40) + 55 });
       }
     }
   }
   return cells;
 }
 
-function generateUniformGrid(cols: number, rows: number): Cell[] {
+function generateUniformGrid(cols: number, rows: number, rng: Rng = Math.random): Cell[] {
   const cells: Cell[] = [];
   for (let r = 0; r < rows; r++)
     for (let c = 0; c < cols; c++)
-      cells.push({ x: c, y: r, w: 1, h: 1, shade: Math.floor(Math.random() * 40) + 55 });
+      cells.push({ x: c, y: r, w: 1, h: 1, shade: Math.floor(rng() * 40) + 55 });
   return cells;
 }
 
-function generateMondrian(cols: number, rows: number): Cell[] {
+function generateMondrian(cols: number, rows: number, rng: Rng = Math.random): Cell[] {
   const cells: Cell[] = [];
   function split(x: number, y: number, w: number, h: number) {
-    if (w <= 1 && h <= 1) { cells.push({ x, y, w: 1, h: 1, shade: Math.floor(Math.random() * 70) + 50 }); return; }
-    if (Math.random() < 0.3 || w <= 1) { cells.push({ x, y, w, h, shade: Math.floor(Math.random() * 70) + 50 }); return; }
-    if (w > h || (w === h && Math.random() > 0.5)) {
-      const sp = Math.floor(Math.random() * (w - 1)) + 1;
+    if (w <= 1 && h <= 1) { cells.push({ x, y, w: 1, h: 1, shade: Math.floor(rng() * 70) + 50 }); return; }
+    if (rng() < 0.3 || w <= 1) { cells.push({ x, y, w, h, shade: Math.floor(rng() * 70) + 50 }); return; }
+    if (w > h || (w === h && rng() > 0.5)) {
+      const sp = Math.floor(rng() * (w - 1)) + 1;
       split(x, y, sp, h); split(x + sp, y, w - sp, h);
     } else {
-      const sp = Math.floor(Math.random() * (h - 1)) + 1;
+      const sp = Math.floor(rng() * (h - 1)) + 1;
       split(x, y, w, sp); split(x, y + sp, w, h - sp);
     }
   }
@@ -84,26 +100,26 @@ function generateMondrian(cols: number, rows: number): Cell[] {
   return cells;
 }
 
-function generateMasonry(cols: number, rows: number): Cell[] {
+function generateMasonry(cols: number, rows: number, rng: Rng = Math.random): Cell[] {
   const heights = Array(cols).fill(0);
   const cells: Cell[] = [];
   for (let i = 0; i < cols * rows; i++) {
     const col = heights.indexOf(Math.min(...heights));
-    const h = Math.floor(Math.random() * 2) + 1;
-    cells.push({ x: col, y: heights[col], w: 1, h, shade: Math.floor(Math.random() * 40) + 55 });
+    const h = Math.floor(rng() * 2) + 1;
+    cells.push({ x: col, y: heights[col], w: 1, h, shade: Math.floor(rng() * 40) + 55 });
     heights[col] += h;
   }
   return cells;
 }
 
-function generateFibonacci(cols: number, rows: number): Cell[] {
+function generateFibonacci(cols: number, rows: number, rng: Rng = Math.random): Cell[] {
   const fibs = [1, 1, 2, 3, 5, 8];
   const cells: Cell[] = [];
   let x = 0, y = 0;
   for (let i = Math.min(fibs.length - 1, cols); i >= 0; i--) {
     const sz = Math.min(fibs[i], cols - x, rows - y);
     if (sz > 0) {
-      cells.push({ x, y, w: sz, h: sz, shade: Math.floor(Math.random() * 40) + 55 });
+      cells.push({ x, y, w: sz, h: sz, shade: Math.floor(rng() * 40) + 55 });
       x += sz; if (x >= cols) { x = 0; y += sz; }
     }
   }
@@ -119,13 +135,13 @@ const GRID_STYLES: { id: GridStyle; label: string }[] = [
   { id: "partition", label: "Partition" }, { id: "rectangles", label: "Rectangles" },
 ];
 
-function generateGrid(style: GridStyle, cols: number, rows: number): Cell[] {
+function generateGrid(style: GridStyle, cols: number, rows: number, rng: Rng = Math.random): Cell[] {
   switch (style) {
-    case "uniform": return generateUniformGrid(cols, rows);
-    case "mondrian": return generateMondrian(cols, rows);
-    case "masonry": return generateMasonry(cols, rows);
-    case "fibonacci": return generateFibonacci(cols, rows);
-    default: return generateBentoGrid(cols, rows);
+    case "uniform": return generateUniformGrid(cols, rows, rng);
+    case "mondrian": return generateMondrian(cols, rows, rng);
+    case "masonry": return generateMasonry(cols, rows, rng);
+    case "fibonacci": return generateFibonacci(cols, rows, rng);
+    default: return generateBentoGrid(cols, rows, rng);
   }
 }
 
@@ -143,8 +159,10 @@ export default function BentoBuilderPage() {
   const [horizontalBias, setHorizontalBias] = useState(60);
   const [maxColSpan, setMaxColSpan] = useState(4);
   const [maxRowSpan, setMaxRowSpan] = useState(4);
-  const [cells, setCells] = useState<Cell[]>(() => generateBentoGrid(4, 3));
+  // Seeded so the server and client agree; shuffled right after mount below.
+  const [cells, setCells] = useState<Cell[]>(() => generateGrid("bento", 4, 3, mulberry32(1)));
   const [seed, setSeed] = useState(0);
+  const [randomized, setRandomized] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState(1);
@@ -173,6 +191,13 @@ export default function BentoBuilderPage() {
     setSeed(s => s + 1);
     setCells(generateGrid(gridStyle, columns, rows));
   }, [gridStyle, columns, rows]);
+
+  // Give every visit a fresh layout without breaking hydration.
+  useEffect(() => {
+    if (randomized) return;
+    setRandomized(true);
+    randomize();
+  }, [randomized, randomize]);
 
   const exportPNG = useCallback(() => {
     const canvas = document.createElement("canvas");

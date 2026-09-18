@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { ProtectionProvider } from "@/components/protection-provider";
 import { ConditionalAnalytics } from "@/components/conditional-analytics";
+import { themeInitScript } from "@/lib/theme-script";
 import "./globals.css";
 
 const inter = Inter({
@@ -107,6 +108,10 @@ export default function RootLayout({
       className={`${inter.variable} ${jakarta.variable} ${mono.variable} h-full`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Applies the saved theme before first paint — see lib/theme-script.ts */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-screen flex flex-col antialiased lg:h-screen lg:overflow-hidden">
         <ThemeProvider><AuthProvider><ProtectionProvider>{children}</ProtectionProvider></AuthProvider></ThemeProvider>
         <ConditionalAnalytics />
