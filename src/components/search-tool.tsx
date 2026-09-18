@@ -48,6 +48,10 @@ export function SearchTool() {
   const [searched, setSearched] = useState(false);
   const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
   const [isCreatorResults, setIsCreatorResults] = useState(false);
+  const [searchMode, setSearchMode] = useState<"keyword" | "contributor" | "asset">("keyword");
+  const [searchError, setSearchError] = useState("");
+  const modeRef = useRef<"keyword" | "contributor" | "asset">("keyword");
+  modeRef.current = searchMode;
   const queryRef = useRef("");
   queryRef.current = query;
   const aiFilterRef = useRef("include");
@@ -69,21 +73,61 @@ export function SearchTool() {
     setIsLoading(true);
     setSearched(true);
     setIsCreatorResults(false);
+    setSearchError("");
 
     // Build gentech param for AI filtering
     const aiFilterVal = aiFilterRef.current;
     const gentechParam = aiFilterVal === 'only' ? '&gentech=true' : aiFilterVal === 'exclude' ? '&gentech=false' : '';
 
+    const mode = modeRef.current;
     const isNumericId = /^\d{6,}$/.test(searchQ.replace(/\s/g, ""));
-    const isExplicitCreator = /^creator[_:]?\d+$/i.test(searchQ.replace(/\s/g, ""));
 
     try {
-      let url: string;
-      if (isExplicitCreator) {
-        const cid = searchQ.replace(/\D/g, "");
-        url = `/api/asset?creator_id=${cid}&limit=100&offset=0${gentechParam}`;
-      } else if (isNumericId) {
-        // Try as asset ID first — API now uses exact ID lookup
+      // ── Contributor mode: numeric portfolio lookup only ──
+      if (mode === "contributor") {
+        if (!isNumericId) {
+          setSearchError(`"${searchQ}" is not a Contributor ID. Enter the numeric ID from the Adobe Stock contributor URL (stock.adobe.com/contributor/<ID>), or switch to the Keyword tab.`);
+          setResults([]); setTotal(0); setIsLoading(false); return;
+        }
+        // Fetch up to 300 assets (3 paginated calls; Adobe caps one call at 100)
+        const allFiles: any[] = [];
+        let creatorName = "Unknown";
+        let nbTotal = 0;
+        for (const offset of [0, 100, 200]) {
+          const resp2 = await fetch(`/api/asset?creator_id=${encodeURIComponent(searchQ)}&limit=100&offset=${offset}${gentechParam}`);
+          const data2 = await resp2.json();
+          if (offset === 0) creatorName = data2.creatorName || "Unknown";
+          nbTotal = data2.total || nbTotal;
+          if (data2.found && Array.isArray(data2.files)) {
+            allFiles.push(...data2.files);
+            if (data2.files.length < 100) break; // portfolio smaller than this page
+          } else if (offset === 0) {
+            break;
+          }
+        }
+        if (allFiles.length > 0) {
+          setIsCreatorResults(true);
+          const assets2: StockAsset[] = allFiles.map((f: any) => ({
+            id: f.id, title: f.title, thumbnailUrl: f.thumbnail || `https://stock.adobe.com/${f.id}`,
+            downloads: f.downloads ?? 0, performance: f.downloads != null ? Math.min(100, Math.floor((f.downloads / 5) + 20)) : 0,
+            tags: [], uploadDate: f.creationDate || "", contributor: f.creator || creatorName || "Unknown",
+            contributorId: searchQ, keywordsCount: 0, similarImagesCount: 0,
+            category: f.category || "General", mediaType: (f.mediaType?.toLowerCase() || "image") as StockAsset["mediaType"],
+            isAI: f.isAI ?? false,
+          }));
+          assets2.sort((a, b) => b.downloads - a.downloads);
+          setResults(assets2); setTotal(nbTotal || assets2.length); setIsLoading(false); return;
+        }
+        setSearchError(`No contributor found with ID ${searchQ}. Check the ID in the Adobe Stock contributor URL (stock.adobe.com/contributor/<ID>).`);
+        setResults([]); setTotal(0); setIsLoading(false); return;
+      }
+
+      // ── Asset mode: single exact-ID lookup only ──
+      if (mode === "asset") {
+        if (!isNumericId) {
+          setSearchError(`"${searchQ}" is not an Asset ID. Enter the numeric ID of a single asset, or switch to the Keyword tab.`);
+          setResults([]); setTotal(0); setIsLoading(false); return;
+        }
         const resp = await fetch(`/api/asset?id=${encodeURIComponent(searchQ)}${gentechParam}`);
         const data = await resp.json();
         if (data.found && data.assetId && String(data.assetId) === searchQ.replace(/\s/g, "")) {
@@ -101,32 +145,14 @@ export function SearchTool() {
           };
           setResults([asset]); setTotal(1); setIsLoading(false); return;
         }
-        // Try as creator
-        const resp2 = await fetch(`/api/asset?creator_id=${encodeURIComponent(searchQ)}&limit=100&offset=0${gentechParam}`);
-        const data2 = await resp2.json();
-        if (data2.found && data2.files && data2.files.length > 0) {
-          setIsCreatorResults(true);
-          const assets2: StockAsset[] = data2.files.map((f: any) => ({
-            id: f.id, title: f.title, thumbnailUrl: f.thumbnail || `https://stock.adobe.com/${f.id}`,
-            downloads: f.downloads ?? 0, performance: f.downloads != null ? Math.min(100, Math.floor((f.downloads / 5) + 20)) : 0,
-            tags: [], uploadDate: f.creationDate || "", contributor: f.creator || data2.creatorName || "Unknown",
-            contributorId: data2.creatorId || searchQ, keywordsCount: 0, similarImagesCount: 0,
-            category: f.category || "General", mediaType: (f.mediaType?.toLowerCase() || "image") as StockAsset["mediaType"],
-            isAI: f.isAI ?? false,
-          }));
-          assets2.sort((a, b) => b.downloads - a.downloads);
-          setResults(assets2); setTotal(data2.total || assets2.length); setIsLoading(false); return;
-        }
-        // Not found as asset or creator — show clear error, don't silently keyword-search
+        setSearchError(`No asset found with ID ${searchQ}. Check the ID in the Adobe Stock asset URL.`);
         setResults([]); setTotal(0); setIsLoading(false); return;
-      } else {
-        url = `/api/asset?q=${encodeURIComponent(searchQ)}&limit=20&offset=0${gentechParam}`;
       }
 
-      const resp = await fetch(url);
+      // ── Keyword mode ──
+      const resp = await fetch(`/api/asset?q=${encodeURIComponent(searchQ)}&limit=20&offset=0${gentechParam}`);
       const data = await resp.json();
       if (data.found && data.files) {
-        if (isExplicitCreator) setIsCreatorResults(true);
         const assets: StockAsset[] = data.files.map((f: any) => ({
           id: f.id, title: f.title, thumbnailUrl: f.thumbnail || `https://stock.adobe.com/${f.id}`,          downloads: f.downloads ?? 0,
           performance: f.downloads != null ? Math.min(100, Math.floor((f.downloads / 5) + 20)) : 0,
@@ -136,7 +162,6 @@ export function SearchTool() {
           category: f.category || "General", mediaType: (f.mediaType?.toLowerCase() || "image") as StockAsset["mediaType"],
           isAI: f.isAI ?? false,
         }));
-        if (isExplicitCreator) assets.sort((a, b) => b.downloads - a.downloads);
         setResults(assets); setTotal(data.total || assets.length);
       } else {
         setResults([]); setTotal(0);
@@ -212,8 +237,21 @@ export function SearchTool() {
           Real-time download analytics for contributors. Track, compare, and optimize your portfolio.
         </p>
 
+        {/* Search Mode Tabs */}
+        <div className="mt-6 flex w-full max-w-md items-center gap-1 rounded-xl border border-border bg-surface p-1">
+          {([["keyword", "Keyword"], ["contributor", "Contributor ID"], ["asset", "Asset ID"]] as const).map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => { setSearchMode(id); modeRef.current = id; }}
+              className={`flex-1 rounded-lg px-3 py-2 text-xs font-semibold transition-all ${searchMode === id ? "bg-accent text-white shadow-sm" : "text-text-muted hover:text-text-primary"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         {/* Search Bar */}
-        <div className="mt-6 flex w-full max-w-xl items-center gap-3">
+        <div className="mt-3 flex w-full max-w-xl items-center gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             <input
@@ -221,7 +259,7 @@ export function SearchTool() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && doSearch()}
-              placeholder="Search keyword, asset ID, or creator ID..."
+              placeholder={searchMode === "keyword" ? "Search keywords (e.g. summer travel icons)..." : searchMode === "contributor" ? "Enter contributor ID (e.g. 209878515)..." : "Enter asset ID (e.g. 1935082937)..."}
               className="w-full rounded-xl border border-border bg-surface py-3 pl-11 pr-4 text-sm text-text-primary outline-none placeholder:text-text-muted transition-colors focus:border-accent focus:ring-2 focus:ring-accent/10"
             />
           </div>
@@ -240,7 +278,7 @@ export function SearchTool() {
           {QUICK_TAGS.map((tag) => (
             <button
               key={tag}
-              onClick={() => { setQuery(tag); doSearch(tag); }}
+              onClick={() => { setSearchMode("keyword"); modeRef.current = "keyword"; setQuery(tag); doSearch(tag); }}
               className="rounded-lg border border-border bg-surface px-3 py-1 text-xs font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
             >
               {tag}
@@ -345,8 +383,8 @@ export function SearchTool() {
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-background">
               <Search className="h-6 w-6 text-text-muted" />
             </div>
-            <p className="mt-4 text-sm font-semibold text-text-primary">No results found</p>
-            <p className="mt-1 text-xs text-text-muted">Try a different keyword or creator ID</p>
+            <p className="mt-4 text-sm font-semibold text-text-primary">{searchError ? "Search failed" : "No results found"}</p>
+            <p className="mt-1 max-w-sm text-center text-xs leading-relaxed text-text-muted">{searchError || "Try a different keyword or creator ID"}</p>
           </div>
         )}
 

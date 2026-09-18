@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://abanti.in";
+const BASE_URL = "https://www.abanti.in";
 
 const tools = [
   { path: "/metagen", changeFrequency: "weekly" as const, priority: 0.9 },

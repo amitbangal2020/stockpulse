@@ -507,10 +507,13 @@ export function MetadataGenerator() {
       // Build the enhanced prompt
       let prompt = buildMetadataPrompt(mediaKind, base64Data, fileItem.name, {
         titleLength: titleRange[1],
+        minTitleLength: titleRange[0],
         descLength: descRange[1],
+        minDescLength: descRange[0],
         keywordsCount: kwRange[1],
+        minKeywordsCount: kwRange[0],
         language: LANGUAGES.find(l => l.id === language)?.label || "English",
-        transparentBg: transparentBg || !!fileItem.isTransparent, whiteBg: promptWhiteBg, singleWords, filterIP,
+        transparentBg: transparentBg || !!fileItem.isTransparent, whiteBg: whiteBg || promptWhiteBg, singleWords, filterIP,
         customKeywords, bannedWords,
         promptLength: promptRange[1],
         useCameraParams: cameraParams,
@@ -555,10 +558,13 @@ export function MetadataGenerator() {
         const altPrompt = buildMetadataPrompt(mediaKind, base64Data, fileItem.name, {
           ...{
             titleLength: titleRange[1],
+            minTitleLength: titleRange[0],
             descLength: descRange[1],
+            minDescLength: descRange[0],
             keywordsCount: kwRange[1],
+            minKeywordsCount: kwRange[0],
             language: LANGUAGES.find(l => l.id === language)?.label || "English",
-            transparentBg: transparentBg || !!fileItem.isTransparent, whiteBg: promptWhiteBg, singleWords, filterIP,
+            transparentBg: transparentBg || !!fileItem.isTransparent, whiteBg: whiteBg || promptWhiteBg, singleWords, filterIP,
             customKeywords, bannedWords,
             promptLength: promptRange[1],
             useCameraParams: cameraParams,

@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/admin/"],
       },
     ],
-    sitemap: "https://abanti.in/sitemap.xml",
+    sitemap: "https://www.abanti.in/sitemap.xml",
   };
 }

@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { ProtectionProvider } from "@/components/protection-provider";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -52,12 +53,12 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "StockPulse" }],
   creator: "StockPulse",
-  metadataBase: new URL("https://abanti.in"),
+  metadataBase: new URL("https://www.abanti.in"),
   openGraph: {
     title: "StockPulse — AI Metadata & Analytics for Microstock",
     description:
       "AI-powered metadata for Adobe Stock, Shutterstock, Freepik & more. Track downloads and analyze trends.",
-    url: "https://abanti.in",
+    url: "https://www.abanti.in",
     siteName: "StockPulse",
     images: [
       {
@@ -89,7 +90,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://abanti.in",
+    canonical: "https://www.abanti.in",
   },
 };
 
@@ -104,6 +105,7 @@ export default function RootLayout({
     >
       <body className="h-screen overflow-hidden flex flex-col antialiased">
         <ThemeProvider><AuthProvider><ProtectionProvider>{children}</ProtectionProvider></AuthProvider></ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

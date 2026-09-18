@@ -1,6 +1,27 @@
 import { ToolLayout } from "@/components/tool-layout";
 import Link from "next/link";
 import { Sparkles, BarChart3, TrendingUp, FolderOpen, Tag, Search } from "lucide-react";
+import type { Metadata } from "next";
+import { seoMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = seoMetadata({
+  title: "StockPulse — AI Metadata & Analytics Toolkit for Microstock Sellers",
+  description:
+    "Free AI toolkit for microstock sellers: generate stock photo titles, keywords and descriptions, track Adobe Stock downloads, and research trending keywords — all in one place.",
+  path: "/",
+});
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "StockPulse",
+  url: "https://www.abanti.in",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  description:
+    "AI-powered metadata generator and analytics toolkit for Adobe Stock, Shutterstock, Freepik and other microstock platforms.",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+};
 
 const TOOLS = [
   {
@@ -56,6 +77,10 @@ const TOOLS = [
 export default function Home() {
   return (
     <ToolLayout>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="flex flex-1 flex-col overflow-y-auto">
         {/* Hero */}
         <div className="flex flex-col items-center px-6 pt-16 pb-10 text-center">

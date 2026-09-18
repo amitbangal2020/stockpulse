@@ -9,8 +9,11 @@ import {
 } from "lucide-react";
 import { preprocessSvg, createRenderHost, sampleFrameStats, isFrameBlank, describeFrameStats } from "@/lib/renderHost";
 
-// Local native encoder (server.cjs) that runs FFmpeg on this machine.
-const ENCODER_URL = "http://127.0.0.1:3030";
+// FFmpeg encoder reached through this app's own origin (next.config.ts
+// rewrites /api/encoder/* to the local encoder on 127.0.0.1:3030, started by
+// src/instrumentation.ts). Same-origin means it works on localhost and on the
+// live site - and avoids CORS/mixed-content issues entirely.
+const ENCODER_URL = "/api/encoder";
 
 const DEFAULT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
   <defs>
@@ -104,7 +107,10 @@ export default function SvgToVideoPage() {
   const [activeTab, setActiveTab] = useState<"single" | "batch">("single");
 
   // Render & Format options (EXACT from original)
-  const [format, setFormat] = useState("mp4"); // webm, mp4, gif
+  // Start with WebM (works everywhere, incl. serverless deploys with no FFmpeg
+  // encoder) and upgrade to MP4 automatically once the encoder health check
+  // succeeds — so live users never land on a disabled MP4 export.
+  const [format, setFormat] = useState("webm"); // webm, mp4, gif
   const [resolution, setResolution] = useState("4k"); // 720, 1080, 4k, square, vertical
   const [fps, setFps] = useState(60);
   const [duration, setDuration] = useState(5);
@@ -169,7 +175,18 @@ export default function SvgToVideoPage() {
     else setCustomBitrate(12);
   }, [resolution]);
 
-  // Poll encoder (EXACT from original)
+  // Poll encoder health through the same-origin proxy (next.config.ts).
+  // Deployments without an attached encoder (e.g. serverless hosts) never
+  // turn ready; after a few failures we surface a clear message and fall
+  // back from MP4 to WebM so the tool keeps working in the browser.
+  const autoSwitchedRef = useRef(false);
+  const userChoseFormatRef = useRef(false);
+  const formatRef = useRef(format);
+
+  useEffect(() => {
+    formatRef.current = format;
+  }, [format]);
+
   useEffect(() => {
     let cancelled = false;
     let failedAttempts = 0;
@@ -182,8 +199,14 @@ export default function SvgToVideoPage() {
         });
         if (res.ok) {
           failedAttempts = 0;
+          autoSwitchedRef.current = false;
           setEncoderStatus("ready");
           setEncoderError("");
+          // Encoder is available here, so prefer MP4 — but never override a
+          // format the user picked explicitly.
+          if (formatRef.current === "webm" && !userChoseFormatRef.current) {
+            setFormat("mp4");
+          }
         } else {
           const body = await res.json().catch(() => ({}));
           failedAttempts = 0;
@@ -194,11 +217,21 @@ export default function SvgToVideoPage() {
         failedAttempts += 1;
         if (failedAttempts <= 2) {
           setEncoderStatus("starting");
-        } else if (failedAttempts > 20) {
+        } else {
           setEncoderError(
-            'The local FFmpeg encoder is not responding. Start the project with "npm run dev" (it starts the encoder automatically), then reload this page.'
+            "No FFmpeg encoder is attached to this deployment, so MP4 export is unavailable. WebM and GIF export still work in the browser - or host the app on a Node server (VPS/Docker) to enable MP4."
           );
           setEncoderStatus("error");
+          if (!autoSwitchedRef.current) {
+            autoSwitchedRef.current = true;
+            if (formatRef.current === "mp4") {
+              setFormat("webm");
+              setExportWarnings((prev) => [
+                ...prev,
+                "MP4 export needs the FFmpeg encoder server, which this deployment doesn't include. Switched format to WebM - for MP4, deploy the app to a VPS or Docker host.",
+              ]);
+            }
+          }
         }
       }
     };
@@ -575,11 +608,11 @@ export default function SvgToVideoPage() {
 
       const needsNativeEncoder = format === "mp4";
 
-      // MP4 requires the local FFmpeg encoder (EXACT from original)
+      // MP4 requires the FFmpeg encoder attached to this deployment
       if (needsNativeEncoder && encoderStatus !== "ready") {
         throw new Error(
           encoderError ||
-          'The FFmpeg encoder is still starting. Wait for the green "Encoder: Ready" indicator, then try again.'
+          'MP4 export needs the FFmpeg encoder server on this host. Use WebM/GIF here, or deploy the app to a Node server (VPS/Docker) for MP4.'
         );
       }
 
@@ -590,7 +623,7 @@ export default function SvgToVideoPage() {
           if (direct.ok) return await direct.blob();
         } catch {}
         if (!needsNativeEncoder) {
-          throw new Error("CORS blocked the request and no local encoder server is running.");
+          throw new Error("CORS blocked this resource and the encoder proxy is unavailable on this deployment.");
         }
         const proxied = await fetch(`${ENCODER_URL}/api/fetch?url=${encodeURIComponent(url)}`);
         if (!proxied.ok) {
@@ -1085,9 +1118,9 @@ export default function SvgToVideoPage() {
               className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-[10px] font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent">
               <RefreshCw className="h-3 w-3" /> Reset Default
             </button>
-            <div className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-medium ${encoderStatus === "ready" ? "bg-green-500/10 text-green-600" : encoderStatus === "error" ? "bg-red-500/10 text-red-500" : "bg-yellow-500/10 text-yellow-600"}`}>
-              <div className={`h-2 w-2 rounded-full ${encoderStatus === "ready" ? "bg-green-500" : encoderStatus === "error" ? "bg-red-500" : "bg-yellow-500 animate-pulse"}`} />
-              Encoder: {encoderStatus === "ready" ? "Ready" : encoderStatus === "error" ? "Offline" : "Starting..."}
+            <div className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-medium ${encoderStatus === "ready" ? "bg-green-500/10 text-green-600" : encoderStatus === "error" ? (format === "mp4" ? "bg-red-500/10 text-red-500" : "bg-yellow-500/10 text-yellow-600") : "bg-yellow-500/10 text-yellow-600"}`}>
+              <div className={`h-2 w-2 rounded-full ${encoderStatus === "ready" ? "bg-green-500" : encoderStatus === "error" ? (format === "mp4" ? "bg-red-500" : "bg-yellow-500") : "bg-yellow-500 animate-pulse"}`} />
+              Encoder: {encoderStatus === "ready" ? "Ready" : encoderStatus === "error" ? (format === "mp4" ? "Offline" : "MP4 Offline • WebM OK") : "Starting..."}
             </div>
           </div>
         </div>
@@ -1246,7 +1279,7 @@ export default function SvgToVideoPage() {
               <button
                 onClick={() => startConversion()}
                 disabled={isConverting || !!svgError || (format === "mp4" && encoderStatus !== "ready")}
-                title={format === "mp4" && encoderStatus !== "ready" ? "Waiting for the local FFmpeg encoder to become ready" : ""}
+                title={format === "mp4" && encoderStatus !== "ready" ? "MP4 export needs the FFmpeg encoder on this host - switch to WebM or GIF, or deploy to a Node server" : ""}
                 className="flex items-center gap-2 rounded-xl bg-accent px-6 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-50"
               >
                 {isConverting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
@@ -1274,7 +1307,7 @@ export default function SvgToVideoPage() {
           {/* Format (EXACT from original) */}
           <Section title="Export Format" icon={<Video className="h-3 w-3" />}>
             <select className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text-primary focus:border-accent focus:outline-none"
-              value={format} onChange={(e) => setFormat(e.target.value)}>
+              value={format} onChange={(e) => { userChoseFormatRef.current = true; setFormat(e.target.value); }}>
               <option value="mp4">MP4 (Standard Video)</option>
               <option value="webm">WebM (Fastest, High Quality)</option>
               <option value="gif">GIF (Animated Loop)</option>

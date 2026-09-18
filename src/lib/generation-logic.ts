@@ -219,8 +219,11 @@ export function calculateQualityScore(
 // ─── Prompt Options ───
 export interface PromptOptions {
   titleLength: number;
+  minTitleLength?: number; // lower bound from the user's title-length slider
   descLength: number;
+  minDescLength?: number; // lower bound from the user's description-length slider
   keywordsCount: number;
+  minKeywordsCount?: number; // lower bound from the user's keywords-count slider
   language: string;
   transparentBg: boolean;
   whiteBg: boolean;
@@ -249,6 +252,10 @@ export interface PromptOptions {
 }
 
 // ─── Main Prompt Builder ───
+// Advances once per built prompt so consecutive files in a batch rotate
+// through the mandatory icon-set title patterns (see buildMetadataPrompt).
+let titlePatternCursor = 0;
+
 export function buildMetadataPrompt(
   mediaKind: 'image' | 'video',
   base64Data: string | null,
@@ -277,8 +284,14 @@ export function buildMetadataPrompt(
     ? `\nCRITICAL TRANSPARENCY OVERRIDE:\n- This image HAS a TRANSPARENT background. This is a FACT set by the user.\n- You MUST describe this image as having a TRANSPARENT background.\n- In the title and description, you MUST use phrases like: "isolated on transparent background", "transparent PNG", "no background".\n- You MUST NOT use the words "white background", "black background", "solid background", or any background color.\n- You MUST NOT describe any background color, backdrop, or environment — the background is TRANSPARENT.\n- This instruction OVERRIDES any visual analysis. Even if the preview appears white/black, the ACTUAL file is transparent.`
     : '';
 
-  // Auto-detect transparency (always check, regardless of toggle)
-  const autoDetectTransparency = hasImage && !opts.transparentBg
+  // White background strong override — when the user explicitly turns the
+  // White background toggle ON it beats the auto-detect rules below.
+  const whiteBgOverride = hasImage && opts.whiteBg && !opts.transparentBg
+    ? `\nCRITICAL WHITE BACKGROUND OVERRIDE:\n- This image HAS a WHITE background. This is a FACT set by the user.\n- You MUST describe this image as having a WHITE background.\n- In the title and description, you MUST use phrases like: "isolated on white background", "on a white background", "white background illustration".\n- You MUST NOT use the words "transparent background", "transparent PNG", "no background", or any other background color.\n- The background detection rules below DO NOT APPLY to this image.\n- This instruction OVERRIDES any visual analysis or file-format assumption. Even if the background looks like white space around the subject, describe it as an actual WHITE background.`
+    : '';
+
+  // Auto-detect transparency (skipped when transparent or white background is explicitly set)
+  const autoDetectTransparency = hasImage && !opts.transparentBg && !opts.whiteBg
     ? `\nCRITICAL TRANSPARENCY RULES — YOU MUST FOLLOW THESE:\n\nFILE FORMAT RULES:\n- EPS files: EPS is a VECTOR format. EPS files almost ALWAYS have transparent backgrounds. You MUST describe EPS content as "isolated on transparent background" or "vector illustration with transparent background". NEVER say "white background" for EPS files.\n- PNG files: PNG supports transparency. If the PNG shows a single icon/subject with no background scene → it is transparent. Describe as "isolated on transparent background".\n- JPG/JPEG files: JPG does NOT support transparency. If JPG has a plain background, describe the actual background color.\n\nVISUAL RULES:\n- When an image is sent via API, transparent areas APPEAR white to you. This is a rendering artifact — the actual file IS transparent.\n- A single subject with no background scene (no sky, no floor, no wall, no gradient, no texture) = TRANSPARENT background.\n- NEVER guess "white background" unless you clearly see a solid white background element (not just white space around the subject).\n\nYOU MUST USE these phrases for transparent content:\n- Title: end with "isolated on transparent background" or "transparent PNG" or "vector with transparent background"\n- Description: "isolated on transparent background"\n- Keywords: include "transparent background"\n\nWRONG: "security camera icon isolated on white background"\nCORRECT: "security camera icon isolated on transparent background"\nWRONG: "map icon on white background"\nCORRECT: "map icon isolated on transparent background"`
     : '';
 
@@ -357,8 +370,66 @@ export function buildMetadataPrompt(
   // Platform-specific instructions
   const platformInstruction = `\nPLATFORM: ${platform.toUpperCase()}\n${platformConfig.focus}\nTitle formula: ${platformConfig.titleFormula}\nKeyword strategy: ${platformConfig.keywordStrategy}`;
 
-  // Icon set instruction
-  const iconSetInstruction = `\nICON SET TITLE RULES (if the image contains multiple icons, symbols, or an icon set):\n- The title MUST include 6-8 specific icon/sub-topic names visible in the artwork.\n- Pattern: "[Subject] icon set featuring [icon1], [icon2], [icon3], [icon4], [icon5], and [icon6] in [style] [color] design."\n- Example: "Review icon set featuring rating, customer feedback, star ratings, user testimonials, and business evaluation symbols in a modern blue flat design."\n- List actual visible icons/symbols from the image, not generic categories.\n- Use natural commas and "and" before the last item.`;
+  // Icon set instruction — each file gets ONE mandatory title pattern,
+  // rotated from the file name hash plus a random draw, so a batch never
+  // collapses onto a single repeated opener (the model otherwise always
+  // picks its favorite structure for every file).
+  const titlePatterns: Record<'professional' | 'creative' | 'technical', string[]> = {
+    creative: [
+      'A playful [subject] collection of [icon1], [icon2], [icon3], [icon4], [icon5], [icon6], and more.',
+      'From [icon1] to [icon6], a delightful [subject] icon set of [icon2], [icon3], [icon4], and [icon5], drawn in [style].',
+      '[Subject] icons celebrating [icon1], [icon2], [icon3], [icon4], [icon5], and [icon6], rendered in [style].',
+      '[Subject] icons bursting with [icon1], [icon2], [icon3], [icon4], [icon5], [icon6], and [icon7] — a cheerful [style] set.',
+      'Celebrate [subject] with [icon1], [icon2], [icon3], [icon4], [icon5], and [icon6] in a lively [style] set.',
+    ],
+    technical: [
+      '[Subject] line icon set containing [icon1], [icon2], [icon3], [icon4], [icon5], and [icon6]. Vector illustration',
+      'Icons of [icon1], [icon2], [icon3], [icon4], [icon5], and [icon6] — a [subject] set in thin line style.',
+      '[Subject] icon set — [icon1], [icon2], [icon3], [icon4], [icon5], [icon6] — uniform stroke weight, grid-aligned vector illustration.',
+      'Vector set: [icon1], [icon2], [icon3], [icon4], [icon5], [icon6], and [icon7]. [Subject] line icons.',
+      '[Subject] icon collection: [icon1], [icon2], [icon3], [icon4], [icon5], [icon6], and [icon7]. Consistent stroke, vector.',
+    ],
+    professional: [
+      '[Subject] icon set. Containing [icon1], [icon2], [icon3], [icon4], [icon5], [icon6], and more. Vector illustration',
+      'A [style] [subject] icon set with [icon1], [icon2], [icon3], [icon4], [icon5], and [icon6].',
+      '[Subject] icon set, [style], vector illustration for [use case], [use case], and [use case].',
+      'Vector [subject] icon set featuring [icon1], [icon2], [icon3], [icon4], [icon5], and [icon6].',
+      'Set of [icon1], [icon2], [icon3], [icon4], [icon5], and [icon6] — a [subject] icon collection in [style].',
+    ],
+  };
+  const toneKey: 'professional' | 'creative' | 'technical' =
+    opts.tone === 'creative' ? 'creative' : opts.tone === 'technical' ? 'technical' : 'professional';
+  const patterns = titlePatterns[toneKey];
+  let patternHash = 0;
+  for (let i = 0; i < fileName.length; i++) patternHash = (patternHash * 31 + fileName.charCodeAt(i)) % 100000;
+  // Sequential cursor: consecutive buildMetadataPrompt calls (i.e. the files
+  // of one batch, even when generated in parallel) always get different
+  // patterns. The filename hash only offsets the starting point.
+  let patternIndex = (patternHash + titlePatternCursor) % patterns.length;
+  titlePatternCursor = (titlePatternCursor + 1) % patterns.length;
+
+  const iconSetInstruction = `\nICON SET TITLE RULES (if the image contains multiple icons, symbols, or an icon set):\n- The title MUST include 6-8 specific icon/sub-topic names visible in the artwork. List actual visible icons/symbols from the image, not generic categories. Use natural commas and "and" before the last item.\n- MANDATORY TITLE PATTERN for THIS image — build the title by filling exactly this ONE sentence pattern (replace each [bracket] with this artwork's real subject/icons/style; include as many icons as the pattern lists). Do NOT use any other opening phrase:\n  "${patterns[patternIndex]}"`;
+
+  // Conditional "editable" rule — only claim it when visibly written in the artwork
+  const editableRule = hasImage
+    ? `\nCONDITIONAL "EDITABLE" RULE:\n- Use the word "editable" (e.g. "editable icon set", "editable stroke", "editable line icons") in the title or description ONLY IF such text is visibly written inside the artwork itself (e.g. a "100% EDITABLE" or "EDITABLE STROKE" label in the image).\n- NEVER write "100%" or any other percentage in the title or description — even when the artwork label says "100% EDITABLE", express it only as "editable" or "editable stroke".\n- If no such text is visible in the artwork, do NOT use the word "editable" anywhere in the title or description — an unverifiable claim can cause rejection.`
+    : `\n"EDITABLE" RULE:\n- No visual preview is available, so do NOT use the word "editable" in the title or description unless the filename itself explicitly contains it.`;
+
+  // Length bounds — both come from the user's sliders (no hardcoded numbers)
+  const minTitle = Math.min(opts.minTitleLength ?? 0, opts.titleLength);
+  const minTitleInstruction = minTitle > 0
+    ? `The title MUST be AT LEAST ${minTitle} characters long (counting spaces and punctuation) and at most ${opts.titleLength} characters. Fill the mandatory pattern with enough real, visible icon names to reach the minimum length naturally — never pad with filler words (beautiful, amazing, stunning, etc.).`
+    : `The title must not exceed ${opts.titleLength} characters.`;
+
+  const minDesc = Math.min(opts.minDescLength ?? 0, Math.max(opts.descLength, 0));
+  const descLenText = minDesc > 0
+    ? `MUST be AT LEAST ${minDesc} characters and at most ${opts.descLength} characters — reach the minimum with real, visually supported details (style, colors, elements, mood, use context), never filler`
+    : `maximum of ${opts.descLength} characters`;
+
+  const minKw = Math.min(opts.minKeywordsCount ?? 0, Math.max(opts.keywordsCount, 0));
+  const kwCountText = minKw > 0
+    ? `A list of ${minKw} to ${opts.keywordsCount} keywords`
+    : `A list of exactly ${opts.keywordsCount} keywords`;
 
   // Build the prompt
   const promptText = `
@@ -373,14 +444,16 @@ ${toneInstruction}
 ${visualIntro}
 ${videoRules}
 ${transparencyNote}
+${whiteBgOverride}
 ${autoDetectTransparency}
 ${groundingRules}
 ${iconSetInstruction}
+${editableRule}
 
 Generate:
-1. A highly searchable, SEO-optimized title (maximum of ${opts.titleLength} characters). Focus on high-volume commercial search terms, placing the main subject and key action at the beginning. Do NOT use generic terms or filler words (beautiful, amazing, stunning, 4k, hd, high quality). Keep it highly descriptive, natural, and clickable.
-2. A detailed, search-friendly description (maximum of ${opts.descLength} characters). Incorporate relevant context, mood, style, color schemes, and key elements that buyers search for.
-3. A list of exactly ${opts.keywordsCount} keywords. Keywords must be highly searchable microstock tags, sorted by relevance from highest search volume to lowest. Include visually grounded synonyms, textures, settings, colors, and specific object names — never conceptual filler or speculative use-case terms. All tags must be lowercase, free of special characters. Mix broad terms (e.g. "vector", "illustration") with specific terms (e.g. "teal geometric pattern") and niche terms (e.g. "corporate hierarchy chart").
+1. A highly searchable, SEO-optimized title (${minTitleInstruction}) Focus on high-volume commercial search terms, placing the main subject and key action at the beginning. Do NOT use generic terms or filler words (beautiful, amazing, stunning, 4k, hd, high quality). Keep it highly descriptive, natural, and clickable.
+2. A detailed, search-friendly description (${descLenText}). Incorporate relevant context, mood, style, color schemes, and key elements that buyers search for.
+3. ${kwCountText}. Keywords must be highly searchable microstock tags, sorted by relevance from highest search volume to lowest. Include visually grounded synonyms, textures, settings, colors, and specific object names — never conceptual filler or speculative use-case terms. All tags must be lowercase, free of special characters. Mix broad terms (e.g. "vector", "illustration") with specific terms (e.g. "teal geometric pattern") and niche terms (e.g. "corporate hierarchy chart").
 4. An extremely detailed, descriptive, and rich text-to-image prompt (maximum of ${promptLength} characters) describing the scene, subjects, composition, atmospheric effects, colors, textures, lighting, and artistic style so it can be recreated beautifully in Midjourney/Stable Diffusion.
    - Style instruction: Describe the art/photography style observed or implied in rich detail.
    - Background instruction: ${bgInstruction}
