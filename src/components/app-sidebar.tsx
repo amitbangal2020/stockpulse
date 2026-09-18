@@ -81,8 +81,10 @@ export function AppSidebar() {
     const container = mobileNavRef.current;
     const active = container?.querySelector<HTMLElement>('[data-active="true"]');
     if (!container || !active) return;
-    const target = active.offsetLeft - (container.clientWidth - active.clientWidth) / 2;
-    container.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+    const containerRect = container.getBoundingClientRect();
+    const activeRect = active.getBoundingClientRect();
+    const delta = activeRect.left - containerRect.left - (container.clientWidth - activeRect.width) / 2;
+    container.scrollTo({ left: container.scrollLeft + delta, behavior: "smooth" });
   }, [pathname]);
 
   const isActive = (href: string) => {
