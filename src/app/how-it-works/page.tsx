@@ -785,32 +785,34 @@ export default function HowItWorksPage() {
   return (
     <ToolLayout>
     <div className="flex flex-1 flex-col lg:overflow-y-auto">
-      {/* Page Heading — sticky, same fixed behaviour as other pages */}
-      <div className="sticky top-[45px] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
-          <Lightbulb className="h-4 w-4 text-accent" />
+      {/* Header + category menu — one sticky block so the menu always stays visible */}
+      <div className="sticky top-[45px] z-20 lg:top-0">
+        <div className="flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
+            <Lightbulb className="h-4 w-4 text-accent" />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-text-primary">How It Works</h2>
+            <p className="text-[11px] text-text-muted">Every tool & feature, step by step — {TOOLS.length} tools documented</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-sm font-semibold text-text-primary">How It Works</h2>
-          <p className="text-[11px] text-text-muted">Every tool & feature, step by step — {TOOLS.length} tools documented</p>
-        </div>
-      </div>
 
-      {/* Category Tabs — scrollable on mobile */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar border-b border-border bg-bg px-5 py-3">
-        {CATEGORIES.map(cat => (
-          <button key={cat} onClick={() => { setActiveCategory(cat); setExpandedTool(null); }}
-            className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
-              activeCategory === cat
-                ? "bg-accent text-white"
-                : "border border-border bg-surface text-text-secondary hover:border-accent/30"
-            }`}>
-            {cat}
-            {cat !== "All" && (
-              <span className="ml-1 text-[9px] opacity-70">({TOOLS.filter(t => t.category === cat).length})</span>
-            )}
-          </button>
-        ))}
+        {/* Category Tabs — scrollable on mobile */}
+        <div className="flex gap-2 overflow-x-auto no-scrollbar border-b border-border bg-bg px-5 py-3">
+          {CATEGORIES.map(cat => (
+            <button key={cat} onClick={() => { setActiveCategory(cat); setExpandedTool(null); }}
+              className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
+                activeCategory === cat
+                  ? "bg-accent text-white"
+                  : "border border-border bg-surface text-text-secondary hover:border-accent/30"
+              }`}>
+              {cat}
+              {cat !== "All" && (
+                <span className="ml-1 text-[9px] opacity-70">({TOOLS.filter(t => t.category === cat).length})</span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tool Cards */}
