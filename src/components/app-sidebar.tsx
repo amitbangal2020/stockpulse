@@ -237,8 +237,8 @@ export function AppSidebar() {
       {/* All Tools Popup - rendered outside aside to avoid backdrop-filter trapping fixed children */}
       {showTools && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setShowTools(false)} />
-          <div className="fixed inset-x-0 top-[45px] bottom-0 z-50 w-full border-r border-border bg-bg shadow-2xl overflow-y-auto lg:inset-x-auto lg:left-[220px] lg:top-16 lg:w-[340px]">
+          <div className="fixed inset-0 z-40 animate-fade-in" onClick={() => setShowTools(false)} />
+          <div className="fixed inset-x-0 top-[45px] bottom-0 z-50 w-full border-r border-border bg-bg shadow-2xl overflow-y-auto animate-pop-in lg:inset-x-auto lg:left-[220px] lg:top-16 lg:w-[340px]">
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <div>
                 <h2 className="text-sm font-semibold text-text-primary">All Tools Collection</h2>
