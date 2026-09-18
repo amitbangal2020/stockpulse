@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { ToolLayout } from "@/components/tool-layout";
 import { Download, RefreshCw, Grid3X3, Shuffle, ChevronUp, ChevronDown, LayoutGrid, SlidersHorizontal, Move, Settings } from "lucide-react";
 
@@ -146,6 +146,28 @@ export default function BentoBuilderPage() {
   const [cells, setCells] = useState<Cell[]>(() => generateBentoGrid(4, 3));
   const [seed, setSeed] = useState(0);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState(1);
+
+  // The canvas has real pixel dimensions (so exports match), which would clip on
+  // phones — scale it down to whatever room the stage actually has.
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const cs = getComputedStyle(el);
+      const padding = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const available = Math.max(120, el.clientWidth - padding);
+      const next = Math.min(1, available / width);
+      setFit((prev) => (Math.abs(next - prev) < 0.01 ? prev : next));
+    };
+
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    update();
+    return () => observer.disconnect();
+  }, [width]);
 
   const randomize = useCallback(() => {
     setSeed(s => s + 1);
@@ -180,9 +202,6 @@ export default function BentoBuilderPage() {
     link.click();
   }, [cells, width, height, columns, rows, gap, margins, radius, gridStyle]);
 
-  const cellW = `calc((100% - ${(columns - 1) * gap}px - ${margins * 2}px) / ${columns})`;
-  const cellH = `calc((100% - ${(rows - 1) * gap}px - ${margins * 2}px) / ${rows})`;
-
   return (
     <ToolLayout>
       <main className="flex flex-1 flex-col overflow-hidden min-h-0">
@@ -199,8 +218,10 @@ export default function BentoBuilderPage() {
         </div>
 
         {/* Canvas */}
-        <div className="flex flex-1 items-center justify-center overflow-auto p-8" style={{ backgroundColor: "#f1f5f9" }}>
-          <div ref={canvasRef} className="relative bg-white shadow-xl rounded-xl" style={{ width, height, padding: margins }}>
+        <div ref={stageRef} className="flex flex-1 items-center justify-center overflow-auto p-4 sm:p-8" style={{ backgroundColor: "#f1f5f9" }}>
+          {/* Sized box holds the scaled footprint so the stage never overflows. */}
+          <div className="relative shrink-0" style={{ width: width * fit, height: height * fit }}>
+          <div ref={canvasRef} className="absolute left-0 top-0 bg-white shadow-xl rounded-xl transition-transform duration-200" style={{ width, height, padding: margins, transform: `scale(${fit})`, transformOrigin: "top left" }}>
             {cells.map((cell, i) => {
               const innerW = width - margins * 2;
               const innerH = height - margins * 2;
@@ -217,6 +238,7 @@ export default function BentoBuilderPage() {
                 }} />
               );
             })}
+          </div>
           </div>
         </div>
       </main>
