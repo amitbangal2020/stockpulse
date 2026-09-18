@@ -12,15 +12,16 @@
  * assigned, so the live site keeps serving the previous build.
  *
  * This script makes a deploy deterministic:
- *   1. triggers a production deployment for the current commit
+ *   1. reuses an in-flight deployment for the current commit, or triggers one
  *   2. cancels stuck / duplicate builds that hold the single build slot
  *   3. promotes the production domains to the new deployment if needed
- *   4. verifies the live site answers and that production points at it
+ *   4. verifies the live site answers and actually serves this build
  *
  * Usage
  * -----
- *   npm run deploy:prod                 # deploys the pushed HEAD of this branch
+ *   npm run deploy:prod                  # deploy the pushed HEAD of this branch
  *   npm run deploy:prod -- --allow-unpushed
+ *   npm run deploy:prod -- --force-new   # never reuse an existing deployment
  *
  * Credentials
  * -----------
@@ -31,7 +32,7 @@
  */
 
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -120,15 +121,16 @@ async function api(path, { method = "GET", body } = {}) {
 }
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const depId = (d) => d?.uid || d?.id || "";
+const depState = (d) => d?.readyState || d?.state || "UNKNOWN";
 const shortSha = (d) => (d?.meta?.githubCommitSha || "").slice(0, 7) || "unknown";
 const clock = () => new Date().toISOString().slice(11, 19);
+const isFinal = (state) => ["READY", "ERROR", "CANCELED"].includes(state);
 
 async function listDeployments(limit = 12) {
   const { deployments = [] } = await api(`/v6/deployments?projectId=${projectId}&limit=${limit}`);
   return deployments;
 }
-
-const isFinal = (state) => ["READY", "ERROR", "CANCELED"].includes(state);
 
 async function cancel(uid, reason) {
   try {
@@ -142,6 +144,7 @@ async function cancel(uid, reason) {
 // ─── 1. sanity checks ───
 
 const allowUnpushed = process.argv.includes("--allow-unpushed");
+const forceNew = process.argv.includes("--force-new");
 const branch = sh("git rev-parse --abbrev-ref HEAD");
 const fullSha = sh("git rev-parse HEAD");
 const sha = fullSha.slice(0, 7);
@@ -149,8 +152,7 @@ const sha = fullSha.slice(0, 7);
 log(`\n▶ StockPulse production deploy`);
 log(`  commit ${sha} on ${branch}  @ ${clock()}`);
 
-const dirty = sh("git status --porcelain");
-if (dirty) {
+if (sh("git status --porcelain")) {
   warn("working tree has uncommitted changes — only pushed commits are deployed");
 }
 
@@ -168,81 +170,127 @@ if (remoteSha && remoteSha !== fullSha && !allowUnpushed) {
   );
 }
 
+// Deploy the pushed commit when the working copy is ahead of the remote.
+const targetSha = remoteSha && remoteSha !== fullSha ? remoteSha : fullSha;
+const targetShaShort = targetSha.slice(0, 7);
+if (targetSha !== fullSha) {
+  warn(`deploying the pushed commit origin/${branch} (${targetShaShort})`);
+}
+
 const project = await api(`/v9/projects/${projectId}`);
 const link = project.link || {};
 const productionBranch = link.productionBranch || "main";
-
-if (remoteSha && remoteSha !== fullSha) {
-  warn(`deploying the pushed commit origin/${branch} (${remoteSha.slice(0, 7)})`);
-}
 
 if (branch !== productionBranch) {
   warn(`branch "${branch}" is not the production branch "${productionBranch}"`);
 }
 
-// Custom domains only — Vercel always assigns its own *.vercel.app aliases.
-const allDomains = (process.env.PROD_DOMAINS
-  ? process.env.PROD_DOMAINS.split(",")
-  : project?.targets?.production?.alias || []
-).map((d) => d.trim()).filter(Boolean);
-const domains = allDomains.filter((d) => !d.endsWith(".vercel.app"));
-
-log(`  project ${project.name} · production branch ${productionBranch}`);
-log(`  live domains: ${domains.length ? domains.join(", ") : "none configured"}\n`);
-
-// ─── 2. trigger the deployment ───
-
-log("1/4 triggering deployment");
 if (!link.repoId) {
   fail("Project is not linked to a Git repo, so it cannot be deployed from a commit.");
 }
 
-const created = await api(`/v13/deployments`, {
-  method: "POST",
-  body: {
-    name: project.name,
-    project: projectId,
-    target: "production",
-    gitSource: {
-      type: link.type || "github",
-      repoId: link.repoId,
-      ref: branch,
-      sha: remoteSha || fullSha,
-    },
-  },
-});
+// Domain discovery: the project's own domain list is authoritative. Vercel
+// omits `targets.production.alias` from the project payload on occasion, so it
+// is only a fallback here.
+async function discoverDomains() {
+  if (process.env.PROD_DOMAINS) {
+    return process.env.PROD_DOMAINS.split(",").map((d) => d.trim()).filter(Boolean);
+  }
 
-const targetId = created.id || created.uid;
-ok(`deployment ${targetId} created (${created.readyState || created.status || "queued"})\n`);
+  const custom = [];
+  try {
+    const { domains = [] } = await api(`/v9/projects/${projectId}/domains`);
+    for (const d of domains) {
+      if (!d?.name || d.gitBranch) continue; // branch aliases are not production
+      if (d.name.endsWith(".vercel.app")) continue; // Vercel assigns these itself
+      if (d.verified === false) continue;
+      custom.push({ name: d.name, redirectsAway: Boolean(d.redirect) });
+    }
+  } catch (err) {
+    warn(`could not list project domains: ${err.message}`);
+  }
+
+  if (custom.length) {
+    // The domain that serves content first, the redirecting apex after it.
+    return custom.sort((a, b) => Number(a.redirectsAway) - Number(b.redirectsAway)).map((d) => d.name);
+  }
+
+  const fromProject = project?.targets?.production?.alias || [];
+  return fromProject.filter((d) => !d.endsWith(".vercel.app"));
+}
+
+const domains = await discoverDomains();
+
+log(`  project ${project.name} · production branch ${productionBranch}`);
+log(`  live domains: ${domains.length ? domains.join(", ") : "none configured"}\n`);
+
+// ─── 2. reuse an in-flight deployment or trigger one ───
+
+log("1/4 resolving deployment");
+
+let target = null;
+if (!forceNew) {
+  const existing = (await listDeployments(12)).filter(
+    (d) => d.meta?.githubCommitSha === targetSha && d.target === "production",
+  );
+  const inFlight = existing.find((d) => !isFinal(depState(d)));
+  const ready = existing.find((d) => depState(d) === "READY");
+  const candidate = inFlight || ready;
+  if (candidate) {
+    target = candidate;
+    log(
+      `  ↻ reusing existing ${inFlight ? "in-flight" : "ready"} deployment ` +
+        `${depId(candidate)} (${depState(candidate)}) — no duplicate created`,
+    );
+  }
+}
+
+if (!target) {
+  const created = await api(`/v13/deployments`, {
+    method: "POST",
+    body: {
+      name: project.name,
+      project: projectId,
+      target: "production",
+      gitSource: {
+        type: link.type || "github",
+        repoId: link.repoId,
+        ref: branch,
+        sha: targetSha,
+      },
+    },
+  });
+  target = created;
+  ok(`deployment ${depId(created)} created (${depState(created)})`);
+}
+const targetId = depId(target);
+log("");
 
 // ─── 3. wait, clearing anything that blocks the single build slot ───
 
 log("2/4 waiting for the build");
 const startedAt = Date.now();
-let target = created;
 
-while (true) {
+while (!isFinal(depState(target))) {
   await sleep(POLL_MS);
 
   const all = await listDeployments(12);
-  target = all.find((d) => (d.uid || d.id) === targetId) || target;
+  target = all.find((d) => depId(d) === targetId) || target;
   const elapsed = Math.round((Date.now() - startedAt) / 1000);
 
-  log(`  [${clock()}] ${target.readyState || target.state} (${elapsed}s)`);
+  log(`  [${clock()}] ${depState(target)} (${elapsed}s)`);
 
-  if (isFinal(target.readyState || target.state)) break;
+  if (isFinal(depState(target))) break;
 
   // Cancel older non-final deployments: they are stuck duplicates holding the
   // only build slot on the Hobby plan.
   const targetCreated = new Date(target.created || Date.now()).getTime();
   for (const dep of all) {
-    const state = dep.readyState || dep.state;
-    const uid = dep.uid || dep.id;
-    if (uid === targetId || isFinal(state)) continue;
+    const uid = depId(dep);
+    if (uid === targetId || isFinal(depState(dep))) continue;
 
-    const depCreated = new Date(dep.created || 0).getTime();
-    const olderThanTarget = depCreated < targetCreated;
-    const sameCommit = dep.meta?.githubCommitSha === (target.meta?.githubCommitSha || fullSha);
+    const olderThanTarget = new Date(dep.created || 0).getTime() < targetCreated;
+    const sameCommit = dep.meta?.githubCommitSha === targetSha;
 
     if (olderThanTarget) {
       await cancel(uid, "stuck ahead of this deploy");
@@ -252,11 +300,11 @@ while (true) {
   }
 
   if (Date.now() - startedAt > MAX_WAIT_MS) {
-    fail(`Timed out after ${elapsed}s waiting for ${targetId} (state: ${target.readyState}).`);
+    fail(`Timed out after ${elapsed}s waiting for ${targetId} (state: ${depState(target)}).`);
   }
 }
 
-const finalState = target.readyState || target.state;
+const finalState = depState(target);
 const finalSha = shortSha(target);
 
 if (finalState !== "READY") {
@@ -268,26 +316,32 @@ ok(`build READY for ${finalSha}\n`);
 // ─── 4. promote the production domains ───
 
 log("3/4 promoting production domains");
-const alreadyAssigned = new Set(target.alias || []);
+const detail = await api(`/v13/deployments/${targetId}`).catch(() => ({}));
+const assigned = new Set(detail.alias || target.alias || []);
 
 if (domains.length === 0) {
   warn("no production domains configured on the project — skipping");
 } else {
-  const skipped = allDomains.length - domains.length;
-  if (skipped > 0) log(`  (${skipped} vercel.app alias${skipped > 1 ? "es" : ""} handled automatically)`);
-
   for (const domain of domains) {
-    if (alreadyAssigned.has(domain)) {
+    if (assigned.has(domain)) {
       ok(`${domain} already points here`);
       continue;
     }
     try {
-      await api(`/v2/deployments/${targetId}/aliases`, {
-        method: "POST",
-        body: { alias: domain },
-      });
+      await api(`/v2/deployments/${targetId}/aliases`, { method: "POST", body: { alias: domain } });
       ok(`${domain} assigned`);
     } catch (err) {
+      // A domain already serving this deployment reports as a conflict — check
+      // whether it simply points here after all before calling it a failure.
+      try {
+        const { alias } = await api(`/v13/deployments/${targetId}`);
+        if ((alias || []).includes(domain)) {
+          ok(`${domain} already points here`);
+          continue;
+        }
+      } catch {
+        /* fall through to the warning below */
+      }
       warn(`could not assign ${domain}: ${err.message}`);
     }
   }
@@ -299,30 +353,63 @@ log("");
 log("4/4 verifying the live site");
 let healthy = true;
 
+const deploymentUrl = target.url ? `https://${target.url}` : "";
+
+/** Cache-busted fingerprint of what a deployment actually serves. */
+async function fingerprint(baseUrl) {
+  const url = `${baseUrl}/?__deploy=${finalSha}-${Date.now()}`;
+  const res = await fetch(url, {
+    redirect: "follow",
+    headers: { "cache-control": "no-cache", pragma: "no-cache" },
+  });
+  const body = await res.text();
+  const asset = body.match(/\/_next\/static\/([^/"']+)\//);
+  return {
+    status: res.status,
+    kb: body.length / 1024,
+    build: asset?.[1] || null,
+    etag: res.headers.get("etag"),
+  };
+}
+
+let expectedBuild = null;
+if (deploymentUrl) {
+  try {
+    const fp = await fingerprint(deploymentUrl);
+    expectedBuild = fp.build;
+    ok(`deployment serves build ${fp.build || "unknown"} (${fp.status}, ${fp.kb.toFixed(1)} KB)`);
+  } catch (err) {
+    warn(`could not read the deployment URL: ${err.message}`);
+  }
+}
+
 const newestProd = (await listDeployments(12)).find(
-  (d) => d.target === "production" && (d.readyState || d.state) === "READY",
+  (d) => d.target === "production" && depState(d) === "READY",
 );
-if (newestProd && (newestProd.uid || newestProd.id) === targetId) {
-  ok(`production now points at ${finalSha}`);
+if (newestProd && depId(newestProd) === targetId) {
+  ok(`production points at ${finalSha}`);
 } else {
   healthy = false;
   warn(`production points at ${shortSha(newestProd)} — expected ${finalSha}`);
 }
 
 for (const domain of domains) {
-  const url = `https://${domain}/`;
   try {
-    const res = await fetch(url, { redirect: "follow", headers: { "cache-control": "no-cache" } });
-    const body = await res.text();
-    if (res.ok) {
-      ok(`${url} → ${res.status} · ${(body.length / 1024).toFixed(1)} KB · etag ${res.headers.get("etag") || "n/a"}`);
-    } else {
+    const fp = await fingerprint(`https://${domain}`);
+    if (!fp.status.toString().startsWith("2")) {
       healthy = false;
-      warn(`${url} → ${res.status}`);
+      warn(`https://${domain} → ${fp.status}`);
+      continue;
     }
+    if (expectedBuild && fp.build && fp.build !== expectedBuild) {
+      healthy = false;
+      warn(`https://${domain} serves build ${fp.build}, expected ${expectedBuild} (stale)`);
+      continue;
+    }
+    ok(`https://${domain} → ${fp.status} · build ${fp.build || "n/a"} · ${fp.kb.toFixed(1)} KB`);
   } catch (err) {
     healthy = false;
-    warn(`${url} unreachable: ${err.message}`);
+    warn(`https://${domain} unreachable: ${err.message}`);
   }
 }
 
