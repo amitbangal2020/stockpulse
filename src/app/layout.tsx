@@ -3,7 +3,7 @@ import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { ProtectionProvider } from "@/components/protection-provider";
-import { Analytics } from "@vercel/analytics/next";
+import { ConditionalAnalytics } from "@/components/conditional-analytics";
 import "./globals.css";
 
 const inter = Inter({
@@ -105,7 +105,7 @@ export default function RootLayout({
     >
       <body className="h-screen overflow-hidden flex flex-col antialiased">
         <ThemeProvider><AuthProvider><ProtectionProvider>{children}</ProtectionProvider></AuthProvider></ThemeProvider>
-        <Analytics />
+        <ConditionalAnalytics />
       </body>
     </html>
   );
