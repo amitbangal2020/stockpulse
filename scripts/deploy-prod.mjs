@@ -271,6 +271,24 @@ log("");
 log("2/4 waiting for the build");
 const startedAt = Date.now();
 
+/**
+ * Cancel non-final deployments that are either older than ours or a duplicate
+ * of the same commit. On the Hobby plan a single one of those holds the only
+ * build slot and blocks everything behind it.
+ */
+async function sweepStuck(all, targetCreated) {
+  for (const dep of all) {
+    const uid = depId(dep);
+    if (uid === targetId || isFinal(depState(dep))) continue;
+
+    if (new Date(dep.created || 0).getTime() < targetCreated) {
+      await cancel(uid, "stuck ahead of this deploy");
+    } else if (dep.meta?.githubCommitSha === targetSha) {
+      await cancel(uid, "duplicate of this commit");
+    }
+  }
+}
+
 while (!isFinal(depState(target))) {
   await sleep(POLL_MS);
 
@@ -282,22 +300,7 @@ while (!isFinal(depState(target))) {
 
   if (isFinal(depState(target))) break;
 
-  // Cancel older non-final deployments: they are stuck duplicates holding the
-  // only build slot on the Hobby plan.
-  const targetCreated = new Date(target.created || Date.now()).getTime();
-  for (const dep of all) {
-    const uid = depId(dep);
-    if (uid === targetId || isFinal(depState(dep))) continue;
-
-    const olderThanTarget = new Date(dep.created || 0).getTime() < targetCreated;
-    const sameCommit = dep.meta?.githubCommitSha === targetSha;
-
-    if (olderThanTarget) {
-      await cancel(uid, "stuck ahead of this deploy");
-    } else if (sameCommit) {
-      await cancel(uid, "duplicate of this commit");
-    }
-  }
+  await sweepStuck(all, new Date(target.created || Date.now()).getTime());
 
   if (Date.now() - startedAt > MAX_WAIT_MS) {
     fail(`Timed out after ${elapsed}s waiting for ${targetId} (state: ${depState(target)}).`);
@@ -311,7 +314,12 @@ if (finalState !== "READY") {
   const detail = await api(`/v13/deployments/${targetId}`).catch(() => ({}));
   fail(`Deployment ${finalState}: ${detail.errorMessage || "no error message reported"}`);
 }
-ok(`build READY for ${finalSha}\n`);
+ok(`build READY for ${finalSha}`);
+
+// The delayed Git webhook often drops a duplicate just after the build ends;
+// clear it now so it does not block the next deploy.
+await sweepStuck(await listDeployments(12), new Date(target.created || Date.now()).getTime());
+log("");
 
 // ─── 4. promote the production domains ───
 
@@ -366,6 +374,7 @@ async function probe(url) {
   const body = await res.text();
   return {
     status: res.status,
+    finalUrl: res.url,
     kb: body.length / 1024,
     marker: buildMarker(body),
     cache: res.headers.get("x-vercel-cache"),
@@ -397,7 +406,11 @@ if (newestProd && depId(newestProd) === targetId) {
 if (promoted.url) {
   try {
     const origin = await probe(`https://${promoted.url}/`);
-    ok(`origin serves build ${origin.marker || "(no marker)"} · ${origin.status} · ${origin.kb.toFixed(1)} KB`);
+    if (origin.finalUrl && !origin.finalUrl.includes(promoted.url)) {
+      log("  · the deployment URL sits behind Vercel SSO protection — live domains are the real check");
+    } else {
+      ok(`origin serves build ${origin.marker || "(no marker)"} · ${origin.status} · ${origin.kb.toFixed(1)} KB`);
+    }
   } catch (err) {
     throw new Error(`deployment URL unreachable: ${err.message}`);
   }
