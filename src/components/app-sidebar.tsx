@@ -105,7 +105,7 @@ export function AppSidebar() {
 
     <aside className="hidden w-[220px] shrink-0 flex-col border-r border-border bg-bg-secondary/80 backdrop-blur-sm lg:flex">
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 py-4.5">
+      <Link href="/" className="mx-2 mt-2 flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors hover:bg-accent/5">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white">
           <Sparkles className="h-4 w-4" strokeWidth={2.5} />
         </div>
@@ -115,7 +115,7 @@ export function AppSidebar() {
         <span className="rounded bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold text-white">
           PRO
         </span>
-      </div>
+      </Link>
 
       {/* Get Extension Card */}
       <div className="mx-4 mb-4 rounded-xl border border-border bg-surface p-3">
