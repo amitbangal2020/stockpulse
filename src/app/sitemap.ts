@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { BLOG_POSTS } from "@/lib/blog-posts";
 
 const BASE_URL = "https://www.abanti.in";
 
@@ -31,6 +32,7 @@ const tools = [
 
 const infoPages = [
   { path: "/how-it-works", changeFrequency: "monthly" as const, priority: 0.4 },
+  { path: "/blog", changeFrequency: "weekly" as const, priority: 0.7 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -54,6 +56,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: tool.changeFrequency,
       priority: tool.priority,
+    })),
+    ...BLOG_POSTS.map((post) => ({
+      url: `${BASE_URL}/blog/${post.slug}`,
+      lastModified: new Date(post.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
   ];
 
