@@ -238,7 +238,7 @@ export function AppSidebar() {
       {showTools && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setShowTools(false)} />
-          <div className="fixed left-[220px] top-16 z-50 bottom-0 w-[340px] border-r border-border bg-bg shadow-2xl overflow-y-auto">
+          <div className="fixed inset-x-0 top-[45px] bottom-0 z-50 w-full border-r border-border bg-bg shadow-2xl overflow-y-auto lg:inset-x-auto lg:left-[220px] lg:top-16 lg:w-[340px]">
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <div>
                 <h2 className="text-sm font-semibold text-text-primary">All Tools Collection</h2>
