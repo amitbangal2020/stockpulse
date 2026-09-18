@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { CandlestickChart as Chart } from "@/components/candlestick-chart-wrapper";
 import { ToolLayout } from "@/components/tool-layout";
+import { useTheme } from "@/components/theme-provider";
 import {
   Grid3X3, Download, Copy, Check, RefreshCw, ChevronUp, ChevronDown,
   Palette, Layers, Settings, Eye, EyeOff, Maximize, Minimize,
@@ -84,6 +85,8 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
 }
 
 export default function MarketHeatmapPage() {
+  const { theme } = useTheme();
+  const chartMode = theme === "dark" ? "dark" : "light";
   const [palette, setPalette] = useState(0);
   const [sortBy, setSortBy] = useState<"name" | "value" | "growth">("value");
   const [showLabels, setShowLabels] = useState(true);
@@ -118,7 +121,8 @@ export default function MarketHeatmapPage() {
   }, [sorted]);
 
   const chartOptions: any = {
-    chart: { type: "treemap", height: "100%", background: "#ffffff", toolbar: { show: false }, fontFamily: "Inter, sans-serif" },
+    chart: { type: "treemap", height: "100%", background: "transparent", toolbar: { show: false }, fontFamily: "Inter, sans-serif" },
+    theme: { mode: chartMode },
     plotOptions: {
       treemap: {
         distributed: true,
@@ -137,13 +141,13 @@ export default function MarketHeatmapPage() {
     },
     colors: sorted.map((c) => c.color),
     tooltip: {
-      theme: "light",
+      theme: chartMode,
       custom: ({ seriesIndex, w }: any) => {
         const item = sorted[seriesIndex];
         if (!item) return "";
         return `<div style="padding:12px;font-family:Inter,sans-serif;">
           <div style="font-size:14px;font-weight:700;margin-bottom:4px;">${item.name}</div>
-          <div style="font-size:12px;color:#666;">Assets: ${item.value.toLocaleString()}</div>
+          <div style="font-size:12px;color:#666;">Assets: ${item.value.toLocaleString("en-US")}</div>
           <div style="font-size:12px;color:${item.growth >= 0 ? "#3fb950" : "#f85149"};">
             Growth: ${item.growth >= 0 ? "+" : ""}${item.growth}%
           </div>
@@ -195,7 +199,7 @@ export default function MarketHeatmapPage() {
         {/* Stats */}
         <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar border-b border-border bg-bg px-5 py-2 [&>div]:shrink-0">
           <div><span className="text-[10px] text-text-muted">CATEGORIES</span><p className="text-sm font-semibold text-text-primary">{sorted.length}</p></div>
-          <div><span className="text-[10px] text-text-muted">TOTAL ASSETS</span><p className="text-sm font-semibold text-text-primary">{totalValue.toLocaleString()}</p></div>
+          <div><span className="text-[10px] text-text-muted">TOTAL ASSETS</span><p className="text-sm font-semibold text-text-primary">{totalValue.toLocaleString("en-US")}</p></div>
           <div><span className="text-[10px] text-text-muted">AVG GROWTH</span>
             <p className={`text-sm font-semibold ${avgGrowth >= 0 ? "text-green-600" : "text-red-500"}`}>{avgGrowth >= 0 ? "+" : ""}{avgGrowth.toFixed(1)}%</p>
           </div>
@@ -211,7 +215,7 @@ export default function MarketHeatmapPage() {
         </div>
 
         {/* Heatmap */}
-        <div className="flex-1 overflow-auto" style={{ minHeight: 0, background: "#ffffff" }}>
+        <div className="flex-1 overflow-auto bg-bg" style={{ minHeight: 0 }}>
           <div id="heatmap-chart" className="w-full" style={{ minHeight: 500 }}>
             <Chart options={chartOptions} series={series} type="treemap" height={500} />
           </div>
@@ -283,7 +287,7 @@ export default function MarketHeatmapPage() {
                 <div key={c.name} className="flex items-center gap-2 rounded-lg border border-border bg-surface px-2.5 py-1.5">
                   <div className="h-3 w-3 rounded-sm" style={{ background: c.color }} />
                   <span className="flex-1 text-[11px] font-medium text-text-primary">{c.name}</span>
-                  <span className="text-[10px] text-text-muted">{c.value.toLocaleString()}</span>
+                  <span className="text-[10px] text-text-muted">{c.value.toLocaleString("en-US")}</span>
                   <span className={`text-[10px] font-bold ${c.growth >= 0 ? "text-green-500" : "text-red-500"}`}>
                     {c.growth >= 0 ? "+" : ""}{c.growth}%
                   </span>

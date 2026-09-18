@@ -85,7 +85,7 @@ export default function TrendPredictorPage() {
       setMonthlyData(data.monthlyForecast || []);
       setStats(data.stats || { avgGrowth: 0, highOpp: 0, avgConfidence: 0, topTrend: "—" });
       setSelectedTrend(null);
-      setLastUpdated(new Date().toLocaleTimeString());
+      setLastUpdated(new Date().toLocaleTimeString("en-US"));
     } catch (e: any) {
       setError(e.message || "Failed to load trends");
     } finally {
@@ -119,7 +119,7 @@ export default function TrendPredictorPage() {
         </div>
 
         {/* Content */}
-        <div className="flex flex-1 overflow-auto" style={{ backgroundColor: "#f1f5f9" }}>
+        <div className="flex flex-1 overflow-auto bg-bg-secondary">
           <div className="flex-1 p-4 sm:p-6">
             {/* Stats Row */}
             <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -177,7 +177,7 @@ export default function TrendPredictorPage() {
                         <p className="text-sm font-semibold text-text-primary">{trend.name}</p>
                         <p className="text-[11px] text-text-muted">{trend.category} • {trend.season} • Confidence: {trend.confidence}%</p>
                         {trend.totalDownloads !== undefined && (
-                          <p className="text-[10px] text-text-muted">{trend.totalDownloads.toLocaleString()} downloads • {trend.assetCount?.toLocaleString()} assets</p>
+                          <p className="text-[10px] text-text-muted">{trend.totalDownloads.toLocaleString("en-US")} downloads • {trend.assetCount?.toLocaleString("en-US")} assets</p>
                         )}
                       </div>
                       <MiniChart data={trend.history} />
@@ -216,9 +216,9 @@ export default function TrendPredictorPage() {
                 </div>
                 {selectedTrend.totalDownloads !== undefined && (
                   <div className="mt-3 grid grid-cols-3 gap-4">
-                    <div><p className="text-[10px] text-text-muted">Total Downloads</p><p className="text-sm font-bold text-text-primary">{selectedTrend.totalDownloads?.toLocaleString()}</p></div>
-                    <div><p className="text-[10px] text-text-muted">Total Views</p><p className="text-sm font-bold text-text-primary">{selectedTrend.totalViews?.toLocaleString()}</p></div>
-                    <div><p className="text-[10px] text-text-muted">Assets Found</p><p className="text-sm font-bold text-text-primary">{selectedTrend.assetCount?.toLocaleString()}</p></div>
+                    <div><p className="text-[10px] text-text-muted">Total Downloads</p><p className="text-sm font-bold text-text-primary">{selectedTrend.totalDownloads?.toLocaleString("en-US")}</p></div>
+                    <div><p className="text-[10px] text-text-muted">Total Views</p><p className="text-sm font-bold text-text-primary">{selectedTrend.totalViews?.toLocaleString("en-US")}</p></div>
+                    <div><p className="text-[10px] text-text-muted">Assets Found</p><p className="text-sm font-bold text-text-primary">{selectedTrend.assetCount?.toLocaleString("en-US")}</p></div>
                   </div>
                 )}
                 <div className="mt-3">

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { mulberry32, type Rng } from "@/lib/prng";
 import { Download, RefreshCw, Grid3X3, Shuffle, ChevronUp, ChevronDown, LayoutGrid, SlidersHorizontal, Move, Settings } from "lucide-react";
 
 // ─── UI Components ───
@@ -31,22 +32,6 @@ function SliderRow({ label, value, set, min, max, step = 1 }: { label: string; v
 
 // ─── Grid Layout Generators ───
 interface Cell { x: number; y: number; w: number; h: number; shade: number; }
-type Rng = () => number;
-
-/**
- * Deterministic PRNG. The first grid has to render identically on the server
- * and in the browser, so the initial layout is seeded — Math.random() there
- * produces a hydration mismatch. User actions still use Math.random().
- */
-function mulberry32(seed: number): Rng {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 function generateBentoGrid(cols: number, rows: number, rng: Rng = Math.random): Cell[] {
   const cells: Cell[] = [];
@@ -243,10 +228,11 @@ export default function BentoBuilderPage() {
         </div>
 
         {/* Canvas */}
-        <div ref={stageRef} className="flex flex-1 items-center justify-center overflow-auto p-4 sm:p-8" style={{ backgroundColor: "#f1f5f9" }}>
+        <div ref={stageRef} className="flex flex-1 items-center justify-center overflow-auto bg-bg-secondary p-4 sm:p-8">
           {/* Sized box holds the scaled footprint so the stage never overflows. */}
           <div className="relative shrink-0" style={{ width: width * fit, height: height * fit }}>
-          <div ref={canvasRef} className="absolute left-0 top-0 bg-white shadow-xl rounded-xl transition-transform duration-200" style={{ width, height, padding: margins, transform: `scale(${fit})`, transformOrigin: "top left" }}>
+          {/* Matches the #f8fafc the PNG export fills, in either theme. */}
+          <div ref={canvasRef} className="absolute left-0 top-0 shadow-xl rounded-xl transition-transform duration-200" style={{ width, height, padding: margins, transform: `scale(${fit})`, transformOrigin: "top left", backgroundColor: "#f8fafc" }}>
             {cells.map((cell, i) => {
               const innerW = width - margins * 2;
               const innerH = height - margins * 2;

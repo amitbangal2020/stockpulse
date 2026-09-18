@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { CandlestickChart as CandlestickChartWidget } from "@/components/candlestick-chart-wrapper";
 import { ToolLayout } from "@/components/tool-layout";
+import { mulberry32, type Rng } from "@/lib/prng";
 import {
   TrendingUp, Download, Copy, Check, RefreshCw, FileImage, FileCode, Image,
   ChevronUp, ChevronDown, Upload, Activity, Layers, Palette, Settings,
@@ -12,16 +13,17 @@ import {
 
 interface OHLCPoint { x: Date; y: [number, number, number, number]; }
 
-function generateRandomOHLC(count = 60): OHLCPoint[] {
+/** `anchor` keeps the first render identical on the server and in the browser. */
+function generateRandomOHLC(count = 60, rng: Rng = Math.random, anchor?: Date): OHLCPoint[] {
   const data: OHLCPoint[] = [];
   let price = 50000;
-  const date = new Date();
+  const date = anchor ? new Date(anchor) : new Date();
   date.setHours(date.getHours() - count);
   for (let i = 0; i < count; i++) {
-    const open = price + (Math.random() - 0.5) * 1000;
-    const close = open + (Math.random() - 0.5) * 800;
-    const high = Math.max(open, close) + Math.random() * 400;
-    const low = Math.min(open, close) - Math.random() * 400;
+    const open = price + (rng() - 0.5) * 1000;
+    const close = open + (rng() - 0.5) * 800;
+    const high = Math.max(open, close) + rng() * 400;
+    const low = Math.min(open, close) - rng() * 400;
     price = close;
     date.setMinutes(date.getMinutes() + 15);
     data.push({ x: new Date(date), y: [parseFloat(open.toFixed(2)), parseFloat(high.toFixed(2)), parseFloat(low.toFixed(2)), parseFloat(close.toFixed(2))] });
@@ -154,7 +156,7 @@ function detectPatterns(data: OHLCPoint[]): Pattern[] {
     const range = h - l;
     const upperWick = h - Math.max(o, c);
     const lowerWick = Math.min(o, c) - l;
-    const dateStr = data[i].x.toLocaleDateString();
+    const dateStr = data[i].x.toLocaleDateString("en-US");
     // Doji
     if (body < range * 0.1 && range > 0) patterns.push({ name: "Doji", type: "neutral", index: i, date: dateStr });
     // Hammer (bullish)
@@ -243,7 +245,9 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
 }
 
 export default function CandlestickChartPage() {
-  const [data, setData] = useState<OHLCPoint[]>(() => generateRandomOHLC());
+  // Seeded snapshot for the first paint; replaced with live data after mount.
+  const [data, setData] = useState<OHLCPoint[]>(() => generateRandomOHLC(60, mulberry32(7), new Date(Date.UTC(2026, 0, 1))));
+  const [refreshed, setRefreshed] = useState(false);
   const [jsonInput, setJsonInput] = useState(() =>
     JSON.stringify(data.map((d) => ({ x: d.x.toISOString().split("T")[0], y: d.y })), null, 2));
   const [copied, setCopied] = useState(false);
@@ -278,6 +282,13 @@ export default function CandlestickChartPage() {
   const [showLegend, setShowLegend] = useState(true);
   const [lineWidth, setLineWidth] = useState(2);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+
+  // Swap the seeded snapshot for live data once hydrated.
+  useEffect(() => {
+    if (refreshed) return;
+    setRefreshed(true);
+    setData(generateRandomOHLC());
+  }, [refreshed]);
 
   const chartRef = useRef<any>(null);
 
@@ -315,7 +326,9 @@ export default function CandlestickChartPage() {
   const dates = activeData.map((d) => d.x.getTime());
   const patterns = detectPatterns(activeData);
 
-  const volumeData = activeData.map((d) => ({ x: d.x.getTime(), y: Math.floor(Math.random() * 50000) + 10000, fillColor: d.y[3] >= d.y[0] ? upColor + "80" : downColor + "80" }));
+  // Derived from the candle range instead of Math.random(), so re-renders keep
+  // the same bars (and the server and client agree).
+  const volumeData = activeData.map((d) => ({ x: d.x.getTime(), y: Math.round(Math.abs(d.y[1] - d.y[2]) * 90) + 9000, fillColor: d.y[3] >= d.y[0] ? upColor + "80" : downColor + "80" }));
 
   // Calculate indicators
   const maCalc = maType === "SMA" ? calcSMA : maType === "EMA" ? calcEMA : maType === "WMA" ? calcWMA : maType === "DEMA" ? calcDEMA : calcTEMA;
@@ -382,7 +395,7 @@ export default function CandlestickChartPage() {
     },
     xaxis: { type: "datetime", labels: { style: { fontSize: "11px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
     yaxis: [
-      { tooltip: { enabled: true }, labels: { formatter: (v: number) => "$" + v.toLocaleString(), style: { fontSize: "11px" } } },
+      { tooltip: { enabled: true }, labels: { formatter: (v: number) => "$" + v.toLocaleString("en-US"), style: { fontSize: "11px" } } },
       ...(showVolume ? [{ opposite: true, show: false }] : []),
     ],
     grid: { show: showGrid, borderColor: theme.grid, strokeDashArray: gridStyle === "none" ? 0 : gridStyle === "dashed" ? 4 : gridStyle === "dotted" ? 2 : 0, padding: { left: 10, right: 10 } },
@@ -464,7 +477,7 @@ export default function CandlestickChartPage() {
         <div className="flex items-center gap-5 border-b border-border bg-bg px-5 py-2">
           <div>
             <span className="text-[10px] text-text-muted">LAST</span>
-            <p className="text-sm font-semibold text-text-primary">${latestClose.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+            <p className="text-sm font-semibold text-text-primary">${latestClose.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
           </div>
           <div>
             <span className="text-[10px] text-text-muted">CHG</span>
@@ -472,13 +485,13 @@ export default function CandlestickChartPage() {
               {change >= 0 ? "+" : ""}{changePct.toFixed(2)}%
             </p>
           </div>
-          <div><span className="text-[10px] text-text-muted">HIGH</span><p className="text-xs font-medium text-text-primary">${high24h.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p></div>
-          <div><span className="text-[10px] text-text-muted">LOW</span><p className="text-xs font-medium text-text-primary">${low24h.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p></div>
+          <div><span className="text-[10px] text-text-muted">HIGH</span><p className="text-xs font-medium text-text-primary">${high24h.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p></div>
+          <div><span className="text-[10px] text-text-muted">LOW</span><p className="text-xs font-medium text-text-primary">${low24h.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p></div>
           {showMA && maData.filter((v) => v !== null).length > 0 && (
-            <div><span className="text-[10px] text-blue-400">{maType} {maPeriod}</span><p className="text-xs font-medium text-blue-500">${maData.filter((v) => v !== null).pop()?.toLocaleString()}</p></div>
+            <div><span className="text-[10px] text-blue-400">{maType} {maPeriod}</span><p className="text-xs font-medium text-blue-500">${maData.filter((v) => v !== null).pop()?.toLocaleString("en-US")}</p></div>
           )}
           {showVWAP && vwapData.filter((v) => v !== null).length > 0 && (
-            <div><span className="text-[10px] text-purple-400">VWAP</span><p className="text-xs font-medium text-purple-500">${vwapData.filter((v) => v !== null).pop()?.toLocaleString()}</p></div>
+            <div><span className="text-[10px] text-purple-400">VWAP</span><p className="text-xs font-medium text-purple-500">${vwapData.filter((v) => v !== null).pop()?.toLocaleString("en-US")}</p></div>
           )}
           {showRSI && latestRSI !== null && latestRSI !== undefined && (
             <div><span className={`text-[10px] ${latestRSI > 70 ? "text-red-400" : latestRSI < 30 ? "text-green-400" : "text-text-muted"}`}>RSI</span><p className={`text-xs font-medium ${latestRSI > 70 ? "text-red-500" : latestRSI < 30 ? "text-green-500" : "text-text-primary"}`}>{latestRSI}</p></div>

@@ -85,7 +85,7 @@ function DashboardPage() {
             <p className="text-xs text-text-muted">Track how your assets perform over time</p>
           </div>
           <div className="flex items-center gap-3">
-            {lastRefresh && <span className="text-xs text-text-muted">Last refresh: {new Date(lastRefresh).toLocaleString()}</span>}
+            {lastRefresh && <span className="text-xs text-text-muted">Last refresh: {new Date(lastRefresh).toLocaleString("en-US")}</span>}
             <button onClick={refreshData} disabled={isRefreshing} className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-md shadow-accent/20 transition-all hover:bg-accent-hover disabled:opacity-50">
               <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
               {isRefreshing ? "Refreshing..." : "Refresh Data"}
@@ -102,7 +102,7 @@ function DashboardPage() {
             </div>
             <div className="rounded-xl border border-border bg-surface px-4 py-3">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Total Downloads</p>
-              <p className="mt-1 text-2xl font-bold text-accent">{stats.totalDownloads.toLocaleString()}</p>
+              <p className="mt-1 text-2xl font-bold text-accent">{stats.totalDownloads.toLocaleString("en-US")}</p>
             </div>
             <div className="rounded-xl border border-border bg-surface px-4 py-3">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Rising</p>

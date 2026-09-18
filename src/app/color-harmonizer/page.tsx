@@ -172,7 +172,7 @@ export default function ColorHarmonizerPage() {
           </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-center overflow-auto p-8" style={{ backgroundColor: "#f1f5f9" }}>
+        <div className="flex flex-1 items-center justify-center overflow-auto bg-bg-secondary p-8">
           <div className="w-full max-w-3xl space-y-8">
             {/* Color Wheel */}
             <div className="flex justify-center">

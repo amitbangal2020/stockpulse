@@ -177,7 +177,7 @@ function TrendingPage() {
                           <span className="w-4 text-xs text-text-muted">#{i + 1}</span>
                           <div>
                             <p className="text-sm font-medium text-text-primary">{c.name}</p>
-                            <p className="text-[10px] text-text-muted">{c.downloads > 0 ? `${c.assets} assets · ${c.downloads.toLocaleString()} dl` : `${c.assets} assets uploaded`}</p>
+                            <p className="text-[10px] text-text-muted">{c.downloads > 0 ? `${c.assets} assets · ${c.downloads.toLocaleString("en-US")} dl` : `${c.assets} assets uploaded`}</p>
                           </div>
                         </div>
                         <span className={`text-xs font-medium ${c.momentum > 0 ? 'text-accent' : c.momentum < 0 ? 'text-danger' : 'text-text-muted'}`}>
@@ -203,7 +203,7 @@ function TrendingPage() {
                             <div className="flex items-center gap-2">
                               <span className="text-[10px] text-text-muted">{formatCount(cat.count)} assets</span>
                               {cat.topDownload > 0 ? (
-                                <span className="text-[10px] font-medium text-accent">Top: {cat.topDownload.toLocaleString()} dl</span>
+                                <span className="text-[10px] font-medium text-accent">Top: {cat.topDownload.toLocaleString("en-US")} dl</span>
                               ) : (
                                 <span className="text-[10px] text-text-muted">New uploads</span>
                               )}

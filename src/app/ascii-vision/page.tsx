@@ -110,7 +110,7 @@ export default function AsciiVisionPage() {
           </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-center overflow-auto p-6" style={{ backgroundColor: "#f1f5f9" }}
+        <div className="flex flex-1 items-center justify-center overflow-auto bg-bg-secondary p-6"
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={(e) => { e.preventDefault(); setIsDragging(false); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }}>

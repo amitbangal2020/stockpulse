@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { CandlestickChart as Chart } from "@/components/candlestick-chart-wrapper";
 import { ToolLayout } from "@/components/tool-layout";
+import { useTheme } from "@/components/theme-provider";
 import {
   BarChart3, Download, ChevronUp, ChevronDown, RefreshCw, Shuffle,
   Target, Activity, TrendingUp, Eye, EyeOff,
@@ -48,6 +49,8 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
 }
 
 export default function PortfolioAnalyticsPage() {
+  const { theme } = useTheme();
+  const chartMode = theme === "dark" ? "dark" : "light";
   const [profiles, setProfiles] = useState<PortfolioProfile[]>([
     { name: "Your Portfolio", color: "#0d9488", values: [75, 60, 82, 45, 68, 71, 55, 90] },
     { name: "Top Performer", color: "#3fb950", values: [92, 88, 95, 78, 94, 85, 91, 87] },
@@ -67,7 +70,8 @@ export default function PortfolioAnalyticsPage() {
 
   // Radar chart
   const radarOptions: any = {
-    chart: { type: radarType, height: 400, background: "#ffffff", toolbar: { show: false }, fontFamily: "Inter, sans-serif" },
+    chart: { type: radarType, height: 400, background: "transparent", toolbar: { show: false }, fontFamily: "Inter, sans-serif" },
+    theme: { mode: chartMode },
     colors: profiles.map((p) => p.color),
     stroke: { width: 2 },
     fill: { opacity: 0.15 },
@@ -75,7 +79,7 @@ export default function PortfolioAnalyticsPage() {
     xaxis: { categories: METRICS, labels: { style: { fontSize: "11px", colors: "var(--text-muted)" } } },
     yaxis: { show: false, max: 100 },
     legend: { show: true, position: "bottom", fontSize: "11px", labels: { useSeriesColors: true }, markers: { size: 8 } },
-    tooltip: { theme: "light" },
+    tooltip: { theme: chartMode },
     plotOptions: {
       radar: { polygons: { strokeColors: "var(--border)", strokeWidth: 1, connectorColors: "var(--border)", fill: { colors: ["transparent"] } } },
     },
@@ -85,14 +89,15 @@ export default function PortfolioAnalyticsPage() {
 
   // Bar chart
   const barOptions: any = {
-    chart: { type: "bar", height: 300, background: "#ffffff", toolbar: { show: false }, fontFamily: "Inter, sans-serif" },
+    chart: { type: "bar", height: 300, background: "transparent", toolbar: { show: false }, fontFamily: "Inter, sans-serif" },
+    theme: { mode: chartMode },
     colors: profiles.map((p) => p.color),
     xaxis: { categories: METRICS, labels: { style: { fontSize: "10px" } } },
     yaxis: { max: 100, labels: { style: { fontSize: "11px" }, formatter: (v: number) => v + "%" } },
     grid: { borderColor: "var(--border)", strokeDashArray: 4 },
     plotOptions: { bar: { horizontal: false, borderRadius: 4, columnWidth: "60%" } },
     legend: { show: false },
-    tooltip: { theme: "light" },
+    tooltip: { theme: chartMode },
   };
 
   const barSeries = profiles.map((p) => ({ name: p.name, data: p.values }));
@@ -154,7 +159,7 @@ export default function PortfolioAnalyticsPage() {
         </div>
 
         {/* Charts */}
-        <div className="flex-1 overflow-auto" style={{ minHeight: 0, background: "#ffffff" }}>
+        <div className="flex-1 overflow-auto bg-bg" style={{ minHeight: 0 }}>
           <div className="flex h-full flex-col gap-4 p-4">
             {showRadar && (
               <div className="rounded-xl border border-border bg-surface p-4">

@@ -311,7 +311,7 @@ export function SearchTool() {
                   </div>
                   <div className="text-center px-2">
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Downloads</p>
-                    <p className="text-sm font-bold text-accent leading-tight">{totalDownloads.toLocaleString()}</p>
+                    <p className="text-sm font-bold text-accent leading-tight">{totalDownloads.toLocaleString("en-US")}</p>
                   </div>
                   <div className="hidden md:block text-center px-2">
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Avg</p>
@@ -487,7 +487,7 @@ export function SearchTool() {
                     <div className="mt-3 flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         <Download className="h-3.5 w-3.5 text-accent" />
-                        <span className={`text-base font-bold ${asset.downloads >= 2 ? "text-accent" : "text-text-muted"}`}>{asset.downloads.toLocaleString()}</span>
+                        <span className={`text-base font-bold ${asset.downloads >= 2 ? "text-accent" : "text-text-muted"}`}>{asset.downloads.toLocaleString("en-US")}</span>
                         <span className="text-[10px] font-medium text-text-muted">dl</span>
                       </div>
                       <span className="text-[11px] text-text-muted">{dateStr}</span>

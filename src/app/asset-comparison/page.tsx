@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { CandlestickChart as Chart } from "@/components/candlestick-chart-wrapper";
 import { ToolLayout } from "@/components/tool-layout";
+import { useTheme } from "@/components/theme-provider";
+import { mulberry32, type Rng } from "@/lib/prng";
 import {
   BarChart3, Download, ChevronUp, ChevronDown, RefreshCw, Plus, X,
   GitCompare, TrendingUp, Activity, Maximize, Minimize,
@@ -23,10 +25,10 @@ const PRESET_ASSETS: Asset[] = [
   { name: "Pond5", symbol: "PND5", color: "#ff4081", data: [] },
 ];
 
-function generatePriceData(base: number, volatility: number, count = 30): number[] {
+function generatePriceData(base: number, volatility: number, count = 30, rng: Rng = Math.random): number[] {
   const data: number[] = [base]; let price = base;
   for (let i = 1; i < count; i++) {
-    price += (Math.random() - 0.5) * volatility;
+    price += (rng() - 0.5) * volatility;
     data.push(parseFloat(price.toFixed(2)));
   }
   return data;
@@ -71,12 +73,16 @@ function Section({ title, icon, defaultOpen = true, children }: { title: string;
 }
 
 export default function AssetComparisonPage() {
+  const { theme } = useTheme();
+  const chartMode = theme === "dark" ? "dark" : "light";
+  // Seeded so the server and client agree on the first render; reshuffled on mount.
   const [assets, setAssets] = useState<Asset[]>(() =>
-    PRESET_ASSETS.slice(0, 4).map((a) => ({
-      ...a,
-      data: generatePriceData(100 + Math.random() * 50, 5, 30),
-    }))
+    PRESET_ASSETS.slice(0, 4).map((a, i) => {
+      const rng = mulberry32(i * 977 + 13);
+      return { ...a, data: generatePriceData(100 + rng() * 50, 5, 30, rng) };
+    })
   );
+  const [shuffled, setShuffled] = useState(false);
   const [viewType, setViewType] = useState<"line" | "area" | "bar">("line");
   const [normalize, setNormalize] = useState(false);
   const [showCorrelation, setShowCorrelation] = useState(true);
@@ -90,6 +96,13 @@ export default function AssetComparisonPage() {
       data: generatePriceData(80 + Math.random() * 60, 3 + Math.random() * 8, 30),
     })));
   };
+
+  // Fresh prices for each visit, applied after hydration so the markup matches.
+  useEffect(() => {
+    if (shuffled) return;
+    setShuffled(true);
+    setAssets((prev) => prev.map((a) => ({ ...a, data: generatePriceData(80 + Math.random() * 60, 3 + Math.random() * 8, 30) })));
+  }, [shuffled]);
 
   const addAsset = () => {
     const available = PRESET_ASSETS.filter((p) => !assets.find((a) => a.symbol === p.symbol));
@@ -126,7 +139,8 @@ export default function AssetComparisonPage() {
   }, [normalizedData, days]);
 
   const chartOptions: any = {
-    chart: { type: viewType === "bar" ? "bar" : viewType, height: "100%", background: "#ffffff", toolbar: { show: false }, fontFamily: "Inter, sans-serif", animations: { enabled: true, speed: 800 } },
+    chart: { type: viewType === "bar" ? "bar" : viewType, height: "100%", background: "transparent", toolbar: { show: false }, fontFamily: "Inter, sans-serif", animations: { enabled: true, speed: 800 } },
+    theme: { mode: chartMode },
     colors: assets.map((a) => a.color),
     xaxis: { type: "datetime", labels: { style: { fontSize: "11px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
     yaxis: { labels: { style: { fontSize: "11px" }, formatter: (v: number) => normalize ? v.toFixed(1) + "%" : "$" + v.toFixed(0) } },
@@ -222,7 +236,7 @@ export default function AssetComparisonPage() {
         </div>
 
         {/* Chart */}
-        <div className="flex-1 overflow-auto" style={{ minHeight: 0, background: "#ffffff" }}>
+        <div className="flex-1 overflow-auto bg-bg" style={{ minHeight: 0 }}>
           <div id="comparison-chart" className="h-full w-full" style={{ minHeight: 500 }}>
             <Chart options={chartOptions} series={series} type={viewType === "bar" ? "bar" : "line"} height={500} />
           </div>

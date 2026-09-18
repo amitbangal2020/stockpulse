@@ -307,7 +307,7 @@ export default function SvgToEpsPage() {
         </div>
 
         {/* Canvas */}
-        <div className="flex flex-1 items-center justify-center overflow-auto p-8" style={{ backgroundColor: "#f1f5f9" }}
+        <div className="flex flex-1 items-center justify-center overflow-auto bg-bg-secondary p-8"
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}>
