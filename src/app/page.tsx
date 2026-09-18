@@ -23,6 +23,32 @@ const jsonLd = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
 
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "StockPulse",
+  url: "https://www.abanti.in",
+  logo: "https://www.abanti.in/og-image.png",
+  description:
+    "Free AI toolkit for microstock sellers: metadata generation, portfolio analytics and keyword research for Adobe Stock, Shutterstock and Freepik.",
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "StockPulse",
+  alternateName: "abanti.in",
+  url: "https://www.abanti.in",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://www.abanti.in/search?q={search_term_string}",
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -127,6 +153,14 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <script
         type="application/ld+json"
