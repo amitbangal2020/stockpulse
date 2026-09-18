@@ -10,12 +10,12 @@ export function ToolLayout({ children }: { children: React.ReactNode }) {
       <AppSidebar />
 
       {/* Right Content Area */}
-      <div className="flex flex-1 flex-col lg:overflow-hidden min-h-0">
+      <div className="flex min-w-0 flex-1 flex-col lg:overflow-hidden min-h-0">
         {/* Top Tab Bar */}
         <TopTabs />
 
-        {/* Tool Content */}
-        <div className="flex flex-1 flex-col lg:overflow-hidden min-h-0">{children}</div>
+        {/* Tool Content — stacked on mobile, side-by-side row on desktop (original behaviour) */}
+        <div className="flex flex-1 flex-col lg:flex-row lg:overflow-hidden min-h-0">{children}</div>
       </div>
     </div>
   );
