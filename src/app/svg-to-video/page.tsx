@@ -1159,10 +1159,10 @@ export default function SvgToVideoPage() {
 
 
 
-        {/* Main Content: Editor + Preview (EXACT from original layout) */}
-        <div className="flex flex-1 overflow-hidden min-h-0">
+        {/* Main Content: Editor + Preview (stacks on mobile, side-by-side on lg) */}
+        <div className="flex flex-1 flex-col lg:flex-row overflow-y-auto lg:overflow-hidden min-h-0">
           {/* Left: Code Editor / Batch Queue */}
-          <div className="flex w-[40%] flex-col border-r border-border min-h-0">
+          <div className="flex w-full lg:w-[40%] shrink-0 lg:shrink flex-col lg:border-r border-b lg:border-b-0 border-border min-h-0">
             {activeTab === "single" ? (
               <div className="flex flex-1 flex-col min-h-0">
                 {/* Upload zone (EXACT from original) */}
@@ -1234,9 +1234,9 @@ export default function SvgToVideoPage() {
           </div>
 
           {/* Right: Preview + Controls (EXACT from original layout) */}
-          <div className="flex flex-1 flex-col min-h-0">
+          <div className="flex flex-1 flex-col min-h-[420px] lg:min-h-0">
             {/* Preview Window (EXACT from original) */}
-            <div className="flex-1 relative flex items-center justify-center" style={{ backgroundColor: "#090c15" }}>
+            <div className="flex-1 relative flex items-center justify-center min-h-[280px]" style={{ backgroundColor: "#090c15" }}>
               <div className="absolute top-2 right-2 flex gap-2 z-10">
                 <span className="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-[10px] font-bold text-white">{format.toUpperCase()}</span>
                 <span className="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-[10px] font-bold text-white">{getDimensions().width}x{getDimensions().height}</span>

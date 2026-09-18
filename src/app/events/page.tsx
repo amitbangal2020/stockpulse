@@ -193,7 +193,7 @@ export default function EventsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
           {/* Calendar */}
           <div className="flex flex-1 flex-col items-center overflow-y-auto p-6">
             {/* Month Navigation */}
@@ -245,10 +245,10 @@ export default function EventsPage() {
             </div>
 
             {/* Month Bar */}
-            <div className="mt-6 flex items-center gap-1 rounded-xl border border-border bg-surface p-1">
+            <div className="mt-6 flex items-center gap-1 rounded-xl border border-border bg-surface p-1 max-w-[560px] w-full overflow-x-auto no-scrollbar">
               {MONTH_NAMES.map((m, i) => (
                 <button key={m} onClick={() => setCurrentMonth(i)}
-                  className={`rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
+                  className={`rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all shrink-0 ${
                     i === currentMonth
                       ? "bg-accent text-white shadow-md"
                       : "text-text-muted hover:text-text-primary hover:bg-accent/5"
@@ -260,7 +260,7 @@ export default function EventsPage() {
           </div>
 
           {/* Right: Events List */}
-          <div className="hidden w-[340px] shrink-0 overflow-y-auto border-l border-border bg-bg-secondary p-5 lg:block">
+          <div className="w-full lg:w-[340px] lg:shrink-0 overflow-y-auto border-t lg:border-t-0 lg:border-l border-border bg-bg-secondary p-5 max-h-[50vh] lg:max-h-none">
             <div className="mb-1 text-lg font-bold text-text-primary">
               {MONTH_NAMES[currentMonth]} Events
             </div>

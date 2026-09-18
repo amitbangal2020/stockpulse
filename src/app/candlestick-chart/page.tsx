@@ -436,9 +436,9 @@ export default function CandlestickChartPage() {
               <p className="text-[11px] text-text-muted">Analyze OHLC price data with interactive charts</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar max-w-[60%] sm:max-w-none">
             {/* Time intervals */}
-            <div className="flex items-center gap-0.5 rounded-lg border border-border bg-bg-secondary p-0.5">
+            <div className="flex items-center gap-0.5 rounded-lg border border-border bg-bg-secondary p-0.5 shrink-0">
               {TIME_INTERVALS.map((t) => (
                 <button key={t.label} onClick={() => setInterval(t.label)}
                   className={`rounded-md px-2 py-1 text-[10px] font-medium transition-colors ${interval === t.label ? "bg-accent text-white" : "text-text-muted hover:text-text-primary"}`}>

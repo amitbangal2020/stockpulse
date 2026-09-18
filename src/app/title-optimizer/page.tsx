@@ -174,7 +174,7 @@ export default function TitleOptimizerPage() {
   return (
     <ToolLayout>
       {/* ─── Middle: Results ─── */}
-      <main className="flex flex-1 flex-col overflow-hidden">
+      <main className="flex flex-1 flex-col overflow-y-auto lg:overflow-hidden min-h-0">
         <div className="flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10"><Type className="h-4 w-4 text-accent" /></div>
           <div>

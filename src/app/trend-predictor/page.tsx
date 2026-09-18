@@ -101,7 +101,7 @@ export default function TrendPredictorPage() {
     <ToolLayout>
       <main className="flex flex-1 flex-col overflow-hidden min-h-0">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border bg-bg px-5 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-bg px-4 sm:px-5 py-2.5">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10"><TrendingUp className="h-4 w-4 text-accent" /></div>
             <div>
@@ -110,7 +110,7 @@ export default function TrendPredictorPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {lastUpdated && <span className="text-[10px] text-text-muted">Last updated: {lastUpdated}</span>}
+            {lastUpdated && <span className="hidden sm:inline text-[10px] text-text-muted">Last updated: {lastUpdated}</span>}
             <button onClick={fetchTrends} disabled={loading}
               className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs text-text-secondary hover:border-accent hover:text-accent disabled:opacity-50">
               <RefreshCw className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} /> Refresh
@@ -120,7 +120,7 @@ export default function TrendPredictorPage() {
 
         {/* Content */}
         <div className="flex flex-1 overflow-auto" style={{ backgroundColor: "#f1f5f9" }}>
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-4 sm:p-6">
             {/* Stats Row */}
             <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
               {[

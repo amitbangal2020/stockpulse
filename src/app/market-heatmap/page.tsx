@@ -193,7 +193,7 @@ export default function MarketHeatmapPage() {
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-6 border-b border-border bg-bg px-5 py-2">
+        <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar border-b border-border bg-bg px-5 py-2 [&>div]:shrink-0">
           <div><span className="text-[10px] text-text-muted">CATEGORIES</span><p className="text-sm font-semibold text-text-primary">{sorted.length}</p></div>
           <div><span className="text-[10px] text-text-muted">TOTAL ASSETS</span><p className="text-sm font-semibold text-text-primary">{totalValue.toLocaleString()}</p></div>
           <div><span className="text-[10px] text-text-muted">AVG GROWTH</span>

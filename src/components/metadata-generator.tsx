@@ -862,11 +862,11 @@ export function MetadataGenerator() {
   const errorCount = files.filter(f => f.status === "error").length;
 
   return (
-    <div className="flex flex-1 overflow-hidden">
+    <div className="flex flex-1 flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
       {/* Main Content */}
       <main className="flex flex-1 flex-col overflow-y-auto min-h-0">
         {/* Header */}
-        <div className="flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-bg px-4 sm:px-5 py-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
             <Sparkles className="h-4 w-4 text-accent" />
           </div>
@@ -874,7 +874,7 @@ export function MetadataGenerator() {
             <h2 className="text-sm font-semibold text-text-primary">Generator</h2>
             <p className="text-[11px] text-text-muted">AI-powered metadata for microstock platforms</p>
           </div>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Tab Toggle */}
             <div className="flex overflow-hidden rounded-lg border border-border bg-surface">
               <button onClick={() => setActiveTab("metadata")}
