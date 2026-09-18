@@ -15,6 +15,81 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "how-to-write-adobe-stock-titles-that-rank",
+    title: "How to Write Adobe Stock Titles That Actually Rank",
+    description:
+      "Your title is the single strongest ranking signal on Adobe Stock. Here's the formula top contributors use — with real before/after rewrites you can copy.",
+    date: "2026-09-18",
+    readingTime: "6 min read",
+    tags: ["Adobe Stock", "Titles", "SEO", "Keywords"],
+    body: `On Adobe Stock, the title is not a label — it's the heaviest ranking signal your asset has. Two nearly identical images can be pages apart in search results purely because of how their titles are written. The good news: writing a ranking title is a formula, not a talent. Here's the formula.
+
+## The Core Formula
+
+> **[Subject] + [doing what] + [where/when] + [style/technique], with your most important keyword first.**
+
+Adobe Stock's own guidance says titles should describe the image the way a colleague would over the phone — and their search engine rewards titles that front-load the literal subject. A ranking title is:
+
+- **Descriptive, not decorative** — it states what's *in* the frame
+- **Keyword-dense but human** — buyers should read it as a sentence
+- **70–130 characters** — long enough to rank, short enough to stay sharp
+- **Free of filler** — no "beautiful", "amazing", "high quality", "best"
+
+## Real Before/After Rewrites
+
+**❌ Before:**
+> "Beautiful amazing business team working hard in modern office for success"
+
+**✅ After:**
+> "Business team collaborating around laptop in bright modern office, teamwork and financial planning concept"
+
+Why it wins: starts with the exact keyword ("business team"), names the action ("collaborating"), the setting ("modern office"), and ends with buyer-intent concepts ("teamwork", "financial planning"). Zero filler.
+
+---
+
+**❌ Before:**
+> "Sunset landscape 4K wallpaper background"
+
+**✅ After:**
+> "Golden sunset over calm ocean horizon with dramatic clouds, serene coastal seascape, copy space for text"
+
+Why it wins: "sunset landscape" told the search engine almost nothing. The rewrite adds the specific subject (ocean horizon), the mood (serene), and a use-case buyers actually search for (copy space).
+
+---
+
+**❌ Before:**
+> "Technology innovation digital transformation future concept"
+
+**✅ After:**
+> "Futuristic AI robot arm assembling circuit board in high-tech factory, automation and Industry 4.0 concept"
+
+Why it wins: abstract concept titles rank for nothing. The rewrite names visible objects (robot arm, circuit board, factory) — which is exactly what the matching engine needs — then hangs the concepts on top.
+
+## The Rules Behind the Rewrites
+
+1. **First 3–5 words = your ranking keywords.** The engine weights the front of the title heaviest. Never open with "A", "The", or an adjective.
+2. **Name what's visible.** If a human looking at the image wouldn't say the word, the search engine shouldn't rank it for it. Concepts go *after* the literal description.
+3. **One title, one subject.** Don't cram three scenes into a title — the algorithm can't tell what the asset *is*, so it ranks it for nothing.
+4. **End with use-cases.** "Copy space", "banner background", "web banner", "social media template" are searched constantly and almost never used as title openers.
+5. **Match your first keywords.** Your title's opening phrase should reappear as your first 2–3 keywords. Consistency across fields reads as relevance.
+
+## Filler Words That Kill Rankings
+
+These appear in thousands of rejected and buried titles: *beautiful, amazing, awesome, stunning, high quality, best, great, wonderful, very, really, hd, 4k, wallpaper* (as a descriptor), *photo of, image of, picture of*.
+
+Every filler word wastes characters the engine could be matching. If deleting a word changes nothing for a buyer's search, delete it.
+
+## Scoring Your Own Titles
+
+The fastest way to internalize this is mechanical feedback. Paste a draft into a scorer (StockPulse's Title Optimizer gives an A+–F grade with filler-word detection and a character weight map), fix what it flags, and re-score. After a dozen cycles you'll write 90+ titles on instinct.
+
+## Titles Are Only Half the Pair
+
+A perfect title with lazy keywords still underperforms — the two fields are read together. Your opening title phrase should be your #1 keyword, your title's concepts should appear in your keyword list, and nothing should contradict. Write the title first, then derive the keyword order from it — not the other way around.
+
+Write the title like the match depends on it — because on Adobe Stock, it does.`,
+  },
+  {
     slug: "how-many-keywords-stock-photo-adobe-stock",
     title: "How Many Keywords Should a Stock Photo Have? (Adobe Stock Best Practices)",
     description:
