@@ -22,7 +22,7 @@ export function ToolLayout({ children }: { children: React.ReactNode }) {
             Keyed by pathname so navigation fades in smoothly. */}
         <div
           key={pathname}
-          className="flex flex-1 flex-col lg:flex-row lg:overflow-hidden min-h-0 animate-fade-in"
+          className="flex flex-1 flex-col lg:flex-row lg:overflow-hidden min-h-0 animate-page-fade"
         >
           {children}
         </div>
