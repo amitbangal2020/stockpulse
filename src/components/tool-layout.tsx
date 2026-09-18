@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { TopTabs } from "@/components/top-tabs";
+import { SettingsDrawer } from "@/components/settings-drawer";
 
 export function ToolLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -26,6 +27,9 @@ export function ToolLayout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </div>
+
+      {/* Mobile-only: turns the right settings panel into a slide-up drawer */}
+      <SettingsDrawer />
     </div>
   );
 }

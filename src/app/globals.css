@@ -183,6 +183,31 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Mobile settings drawer — the desktop right panel becomes a slide-up sheet on phones */
+@media (max-width: 1023.98px) {
+  .tool-settings-panel {
+    display: none;
+  }
+  html.settings-drawer-open .tool-settings-panel {
+    display: block;
+    position: fixed;
+    top: 45px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 55;
+    width: 100%;
+    max-height: none;
+    overflow-y: auto;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    animation: popIn 0.2s ease-out;
+  }
+  html.settings-drawer-open {
+    overflow: hidden;
+  }
+}
+
 .animate-shimmer {
   background: linear-gradient(90deg, transparent 25%, var(--accent-subtle) 50%, transparent 75%);
   background-size: 200% 100%;

@@ -1019,7 +1019,7 @@ ${citiesStr}  </g>
         </main>
 
         {/* Right Sidebar */}
-        <aside className="w-full shrink-0 flex-col overflow-y-auto min-h-0 border-t border-border bg-bg-secondary lg:w-[280px] lg:border-t-0 lg:border-l">
+        <aside className="w-full shrink-0 flex-col overflow-y-auto min-h-0 border-t border-border bg-bg-secondary lg:w-[280px] lg:border-t-0 lg:border-l tool-settings-panel">
           <div className="p-4">
 
             {mapMode === "country" ? (
