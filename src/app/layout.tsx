@@ -54,6 +54,10 @@ export const metadata: Metadata = {
   authors: [{ name: "StockPulse" }],
   creator: "StockPulse",
   metadataBase: new URL("https://www.abanti.in"),
+  // Baked in at build time so scripts can prove which commit is serving.
+  other: {
+    "build-sha": (process.env.VERCEL_GIT_COMMIT_SHA || "local").slice(0, 7),
+  },
   openGraph: {
     title: "StockPulse — AI Metadata & Analytics for Microstock",
     description:

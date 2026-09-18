@@ -353,33 +353,34 @@ log("");
 log("4/4 verifying the live site");
 let healthy = true;
 
-const deploymentUrl = target.url ? `https://${target.url}` : "";
+/** The app bakes VERCEL_GIT_COMMIT_SHA into a <meta name="build-sha"> tag. */
+function buildMarker(html) {
+  return html.match(/<meta name="build-sha" content="([^"]+)"/)?.[1] || null;
+}
 
-/** Cache-busted fingerprint of what a deployment actually serves. */
-async function fingerprint(baseUrl) {
-  const url = `${baseUrl}/?__deploy=${finalSha}-${Date.now()}`;
+async function probe(url) {
   const res = await fetch(url, {
     redirect: "follow",
     headers: { "cache-control": "no-cache", pragma: "no-cache" },
   });
   const body = await res.text();
-  const asset = body.match(/\/_next\/static\/([^/"']+)\//);
   return {
     status: res.status,
     kb: body.length / 1024,
-    build: asset?.[1] || null,
-    etag: res.headers.get("etag"),
+    marker: buildMarker(body),
+    cache: res.headers.get("x-vercel-cache"),
+    age: res.headers.get("age"),
   };
 }
 
-let expectedBuild = null;
-if (deploymentUrl) {
-  try {
-    const fp = await fingerprint(deploymentUrl);
-    expectedBuild = fp.build;
-    ok(`deployment serves build ${fp.build || "unknown"} (${fp.status}, ${fp.kb.toFixed(1)} KB)`);
-  } catch (err) {
-    warn(`could not read the deployment URL: ${err.message}`);
+// Aliases are the authoritative answer to "which build does this domain serve?"
+const promoted = await api(`/v13/deployments/${targetId}`).catch(() => ({}));
+const servedAliases = new Set(promoted.alias || target.alias || []);
+for (const domain of domains) {
+  if (servedAliases.has(domain)) ok(`${domain} is aliased to this deployment`);
+  else {
+    healthy = false;
+    warn(`${domain} is not aliased to ${finalSha} yet — run the script again if the API is lagging`);
   }
 }
 
@@ -393,23 +394,50 @@ if (newestProd && depId(newestProd) === targetId) {
   warn(`production points at ${shortSha(newestProd)} — expected ${finalSha}`);
 }
 
-for (const domain of domains) {
+if (promoted.url) {
   try {
-    const fp = await fingerprint(`https://${domain}`);
-    if (!fp.status.toString().startsWith("2")) {
-      healthy = false;
-      warn(`https://${domain} → ${fp.status}`);
-      continue;
-    }
-    if (expectedBuild && fp.build && fp.build !== expectedBuild) {
-      healthy = false;
-      warn(`https://${domain} serves build ${fp.build}, expected ${expectedBuild} (stale)`);
-      continue;
-    }
-    ok(`https://${domain} → ${fp.status} · build ${fp.build || "n/a"} · ${fp.kb.toFixed(1)} KB`);
+    const origin = await probe(`https://${promoted.url}/`);
+    ok(`origin serves build ${origin.marker || "(no marker)"} · ${origin.status} · ${origin.kb.toFixed(1)} KB`);
   } catch (err) {
+    throw new Error(`deployment URL unreachable: ${err.message}`);
+  }
+}
+
+// The edge keeps serving the previous build briefly after a promotion, so give
+// the marker a minute to catch up before calling the deploy stale.
+const deadline = Date.now() + 60_000;
+for (const domain of domains) {
+  const url = `https://${domain}/`;
+  let seen = null;
+
+  while (true) {
+    try {
+      const res = await probe(url);
+      if (!res.status.toString().startsWith("2")) {
+        healthy = false;
+        warn(`${url} → ${res.status}`);
+        break;
+      }
+      seen = res;
+      if (res.marker === targetShaShort) break;
+      if (!res.marker) break; // deployment predates the build marker
+      if (Date.now() > deadline) break;
+      await sleep(7_000);
+    } catch (err) {
+      healthy = false;
+      warn(`${url} unreachable: ${err.message}`);
+      break;
+    }
+  }
+
+  if (!seen) continue;
+  if (!seen.marker) {
+    ok(`${url} → ${seen.status} · ${seen.kb.toFixed(1)} KB (no build marker to compare)`);
+  } else if (seen.marker === targetShaShort) {
+    ok(`${url} → ${seen.status} · serving ${seen.marker} (edge: ${seen.cache || "n/a"} ${seen.age || ""})`);
+  } else {
     healthy = false;
-    warn(`https://${domain} unreachable: ${err.message}`);
+    warn(`${url} serves ${seen.marker}, expected ${targetShaShort} (edge cache: ${seen.cache || "n/a"})`);
   }
 }
 
