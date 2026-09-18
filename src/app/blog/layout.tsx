@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { seoMetadata } from "@/lib/seo";
+import { ToolLayout } from "@/components/tool-layout";
 
 export const metadata: Metadata = seoMetadata({
   title: "StockPulse Blog — Microstock Tips, AI Workflows & Keyword Research",
@@ -10,5 +11,5 @@ export const metadata: Metadata = seoMetadata({
 });
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
-  return children;
+  return <ToolLayout>{children}</ToolLayout>;
 }
