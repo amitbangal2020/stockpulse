@@ -251,7 +251,7 @@ export function SearchTool() {
         </div>
 
         {/* Search Bar */}
-        <div className="mt-3 flex w-full max-w-xl items-center gap-3">
+        <div className="mt-3 flex w-full max-w-xl flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             <input
@@ -266,7 +266,7 @@ export function SearchTool() {
           <button
             onClick={() => doSearch()}
             disabled={isLoading}
-            className="shrink-0 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white shadow-md shadow-accent/20 transition-all hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 disabled:opacity-50"
+            className="sm:shrink-0 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white shadow-md shadow-accent/20 transition-all hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 disabled:opacity-50"
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
           </button>
@@ -285,12 +285,10 @@ export function SearchTool() {
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Control Bar (sticky - doesn't scroll) */}
-      {searched && (
-        <div className="sticky top-0 z-10 border-b border-border bg-bg/80 backdrop-blur-sm p-3">
-          <div className="flex items-center gap-3 overflow-x-auto">
+      </div>        {/* Control Bar (sticky - doesn't scroll) */}
+        {searched && (
+          <div className="sticky top-0 z-10 border-b border-border bg-bg/80 backdrop-blur-sm p-3">
+            <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar">
               {/* Portfolio Info */}
               {isCreatorResults && results.length > 0 && (
                 <div className="flex shrink-0 items-center gap-2.5 pr-3 border-r border-border">
@@ -315,7 +313,7 @@ export function SearchTool() {
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Downloads</p>
                     <p className="text-sm font-bold text-accent leading-tight">{totalDownloads.toLocaleString()}</p>
                   </div>
-                  <div className="text-center px-2">
+                  <div className="hidden md:block text-center px-2">
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">Avg</p>
                     <p className="text-sm font-bold text-text-primary leading-tight">{avgDownloads}</p>
                   </div>

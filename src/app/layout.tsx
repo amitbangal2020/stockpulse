@@ -103,7 +103,7 @@ export default function RootLayout({
       className={`${inter.variable} ${jakarta.variable} ${mono.variable} h-full`}
       suppressHydrationWarning
     >
-      <body className="h-screen overflow-hidden flex flex-col antialiased">
+      <body className="min-h-screen flex flex-col antialiased lg:h-screen lg:overflow-hidden">
         <ThemeProvider><AuthProvider><ProtectionProvider>{children}</ProtectionProvider></AuthProvider></ThemeProvider>
         <ConditionalAnalytics />
       </body>

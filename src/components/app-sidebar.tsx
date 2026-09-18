@@ -84,6 +84,25 @@ export function AppSidebar() {
 
   return (
     <>
+    {/* Mobile top bar (only visible below lg) */}
+    <div className="lg:hidden flex items-center gap-2 border-b border-border bg-bg px-4 py-2">
+      <Link href="/" className="flex items-center gap-2 shrink-0">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-white">
+          <Sparkles className="h-3.5 w-3.5" strokeWidth={2.5} />
+        </div>
+        <span className="font-heading text-sm font-bold tracking-tight text-text-primary">
+          Stock<span className="text-accent">Pulse</span>
+        </span>
+      </Link>
+      <div className="flex flex-1 items-center gap-1 overflow-x-auto no-scrollbar">
+        <Link href="/metagen" className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/metagen") ? "bg-accent text-white" : "text-text-secondary"}`}>Generate</Link>
+        <Link href="/search" className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/search") ? "bg-accent text-white" : "text-text-secondary"}`}>Tracker</Link>
+        <button onClick={() => setShowTools(!showTools)} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isAnyToolActive ? "bg-accent text-white" : "text-text-secondary"}`}>Tools</button>
+        <Link href="/blog" className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/blog") ? "bg-accent text-white" : "text-text-secondary"}`}>Blog</Link>
+        <Link href="/how-it-works" className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/how-it-works") ? "bg-accent text-white" : "text-text-secondary"}`}>Guides</Link>
+      </div>
+    </div>
+
     <aside className="hidden w-[220px] shrink-0 flex-col border-r border-border bg-bg-secondary/80 backdrop-blur-sm lg:flex">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-4.5">

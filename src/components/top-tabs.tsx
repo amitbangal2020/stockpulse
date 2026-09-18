@@ -105,30 +105,30 @@ export function TopTabs() {
   const HeadingIcon = heading?.icon;
   
   return (
-    <nav className="flex items-center border-b border-border bg-bg px-5 py-2.5">
+    <nav className="flex items-center border-b border-border bg-bg px-4 sm:px-5 py-2.5">
       {/* Page Heading - Left */}
       {heading && HeadingIcon && (
-        <div className="flex items-center gap-3 shrink-0 mr-6">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 mr-3 sm:mr-6">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
             <HeadingIcon className="h-4 w-4 text-accent" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-text-primary">{heading.title}</h2>
-            <p className="text-[11px] text-text-muted">{heading.subtitle}</p>
+            <p className="hidden sm:block text-[11px] text-text-muted">{heading.subtitle}</p>
           </div>
         </div>
       )}
       
-      {/* Tabs - Right/Center */}
+      {/* Tabs - Right/Center (scrollable on mobile) */}
       {tabs.length > 0 && (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
           {tabs.map((tab) => {
             const active = pathname === tab.href;
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all shrink-0 ${
                   active
                     ? "bg-accent/10 text-accent shadow-sm"
                     : "text-text-secondary hover:bg-accent/5 hover:text-text-primary"
