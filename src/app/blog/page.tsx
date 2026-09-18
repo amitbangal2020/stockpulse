@@ -4,9 +4,9 @@ import { Calendar, Clock, Tag, BookOpen } from "lucide-react";
 
 export default function BlogIndexPage() {
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto">
-      {/* Page Heading — same as other pages */}
-      <div className="flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5">
+    <div className="flex flex-1 flex-col lg:overflow-y-auto">
+      {/* Page Heading — sticky, same fixed behaviour as other pages */}
+      <div className="sticky top-[45px] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
           <BookOpen className="h-4 w-4 text-accent" />
         </div>

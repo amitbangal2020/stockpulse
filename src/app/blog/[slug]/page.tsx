@@ -66,14 +66,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const otherPosts = BLOG_POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto">
+    <div className="flex flex-1 flex-col lg:overflow-y-auto">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
 
-      {/* Page Heading */}
-      <div className="flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5">
+      {/* Page Heading — sticky, same fixed behaviour as other pages */}
+      <div className="sticky top-[45px] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
         <Link
           href="/blog"
           className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-[10px] font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
