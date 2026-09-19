@@ -1038,21 +1038,23 @@ export default function HowItWorksPage() {
           </div>
         </div>
 
-        {/* Category Tabs — scrollable on mobile */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar border-b border-border bg-bg px-5 py-3">
-          {CATEGORY_KEYS.map(cat => (
-            <button key={cat} onClick={() => { setActiveCategory(cat); setExpandedTool(null); }}
-              className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
-                activeCategory === cat
-                  ? "bg-accent text-white"
-                  : "border border-border bg-surface text-text-secondary hover:border-accent/30"
-              }`}>
-              {t.howItWorks.categories[cat]}
-              {cat !== "all" && (
-                <span className="ml-1 text-[9px] opacity-70">({TOOLS.filter((tool) => inCategory(tool, cat)).length})</span>
-              )}
-            </button>
-          ))}
+        {/* Category Tabs — centered over the content column, scrollable on mobile */}
+        <div className="border-b border-border bg-bg px-5 py-3">
+          <div className="mx-auto flex w-full max-w-3xl justify-start gap-2 overflow-x-auto no-scrollbar sm:justify-center">
+            {CATEGORY_KEYS.map(cat => (
+              <button key={cat} onClick={() => { setActiveCategory(cat); setExpandedTool(null); }}
+                className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
+                  activeCategory === cat
+                    ? "bg-accent text-white"
+                    : "border border-border bg-surface text-text-secondary hover:border-accent/30"
+                }`}>
+                {t.howItWorks.categories[cat]}
+                {cat !== "all" && (
+                  <span className="ml-1 text-[9px] opacity-70">({TOOLS.filter((tool) => inCategory(tool, cat)).length})</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
