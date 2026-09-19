@@ -58,7 +58,7 @@ const faqJsonLd = {
       name: "What is StockPulse?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "StockPulse is a free AI toolkit for microstock sellers: generate optimized titles, keywords and descriptions for Adobe Stock, Shutterstock and Freepik, track downloads in real time, and research trending keywords — 22 tools in one place.",
+        text: "StockPulse is a free AI toolkit for microstock sellers: generate optimized titles, keywords and descriptions for Adobe Stock, Shutterstock and Freepik, track downloads in real time, and research trending keywords — 24 tools in one place.",
       },
     },
     {

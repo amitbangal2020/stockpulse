@@ -20,7 +20,7 @@ const faqJsonLd = {
       name: "What is StockPulse?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "StockPulse is a free browser-based toolkit for microstock sellers with 22 tools covering AI metadata generation, Adobe Stock tracking and analytics, keyword research, and creative utilities like SVG to Video, Dither Studio and Halftone Studio.",
+        text: "StockPulse is a free browser-based toolkit for microstock sellers with 24 tools covering AI metadata generation, Adobe Stock tracking and analytics, keyword research, and creative utilities like SVG to Video, Dither Studio and Halftone Studio.",
       },
     },
     {
@@ -60,7 +60,7 @@ const faqJsonLd = {
       name: "Is StockPulse free to use?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes, all 22 tools are free. The metadata generator uses your own AI provider API keys, so you stay in control of usage and costs.",
+        text: "Yes, all 24 tools are free. The metadata generator uses your own AI provider API keys, so you stay in control of usage and costs.",
       },
     },
     {
