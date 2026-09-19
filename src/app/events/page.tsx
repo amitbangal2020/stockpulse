@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { ToolLayout } from "@/components/tool-layout";
 
@@ -165,19 +165,56 @@ function getFirstDayOfMonth(year: number, month: number): number {
   return day === 0 ? 6 : day - 1; // Monday = 0
 }
 
+/**
+ * These celebrations repeat every year but only 2026 is written out, so any
+ * other year falls back to that table instead of showing an empty month.
+ */
+function eventsFor(year: number, month: number) {
+  const key = `${year}-${String(month + 1).padStart(2, "0")}`;
+  return EVENTS[key] || EVENTS[`2026-${String(month + 1).padStart(2, "0")}`] || [];
+}
+
+/**
+ * UTC on the first paint so the server and the browser agree (a local-time
+ * read at midnight would differ by timezone and tear the hydration). The local
+ * month is applied right after mount.
+ */
+function utcToday() {
+  const d = new Date();
+  return { year: d.getUTCFullYear(), month: d.getUTCMonth(), day: d.getUTCDate() };
+}
+
 export default function EventsPage() {
-  const [currentMonth, setCurrentMonth] = useState(7); // August (0-indexed)
-  const [currentYear] = useState(2026);
+  // Open on the month we are actually in — "September" in September.
+  const [currentMonth, setCurrentMonth] = useState(() => utcToday().month);
+  const [currentYear, setCurrentYear] = useState(() => utcToday().year);
+  const [today, setToday] = useState(utcToday);
+  const userPickedMonth = useRef(false);
+
+  useEffect(() => {
+    const d = new Date();
+    const local = { year: d.getFullYear(), month: d.getMonth(), day: d.getDate() };
+    setToday(local);
+    // Snap to the local month unless the visitor already navigated away.
+    if (!userPickedMonth.current) {
+      setCurrentMonth(local.month);
+      setCurrentYear(local.year);
+    }
+  }, []);
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
-  const monthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
-  const events = EVENTS[monthKey] || [];
+  const events = eventsFor(currentYear, currentMonth);
 
-  const prevMonth = () => setCurrentMonth(m => (m === 0 ? 11 : m - 1));
-  const nextMonth = () => setCurrentMonth(m => (m === 11 ? 0 : m + 1));
+  const goToMonth = (month: number, year: number) => {
+    userPickedMonth.current = true;
+    setCurrentMonth(month);
+    setCurrentYear(year);
+  };
 
-  const hasEvent = (day: number) => events.some(e => e.day === day);
+  const prevMonth = () => goToMonth(currentMonth === 0 ? 11 : currentMonth - 1, currentMonth === 0 ? currentYear - 1 : currentYear);
+  const nextMonth = () => goToMonth(currentMonth === 11 ? 0 : currentMonth + 1, currentMonth === 11 ? currentYear + 1 : currentYear);
+
   const getEvent = (day: number) => events.find(e => e.day === day);
 
   return (
@@ -224,8 +261,7 @@ export default function EventsPage() {
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
                 const event = getEvent(day);
-                const today = new Date();
-                const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === day;
+                const isToday = today.year === currentYear && today.month === currentMonth && today.day === day;
                 return (
                   <div key={day}
                     className={`relative flex h-14 items-center justify-center rounded-xl border text-sm font-medium transition-all ${
@@ -247,7 +283,7 @@ export default function EventsPage() {
             {/* Month Bar */}
             <div className="mt-6 flex items-center gap-1 rounded-xl border border-border bg-surface p-1 max-w-[560px] w-full overflow-x-auto no-scrollbar">
               {MONTH_NAMES.map((m, i) => (
-                <button key={m} onClick={() => setCurrentMonth(i)}
+                <button key={m} onClick={() => goToMonth(i, currentYear)}
                   className={`rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all shrink-0 ${
                     i === currentMonth
                       ? "bg-accent text-white shadow-md"
