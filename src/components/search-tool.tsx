@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { TrackerTabs } from "@/components/tracker-tabs";
 import {
   Search,
   TrendingUp,
@@ -226,7 +227,8 @@ export function SearchTool() {
     <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
       {/* Hero Section */}
       <div className="flex w-full flex-col items-center px-6 pt-6 pb-5 text-center border-b border-border">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-subtle px-4 py-1.5 text-xs font-semibold text-accent">
+        <TrackerTabs />
+        <div className="mt-5 mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-subtle px-4 py-1.5 text-xs font-semibold text-accent">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
           Live Adobe Stock Data
         </div>

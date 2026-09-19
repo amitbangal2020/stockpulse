@@ -12,39 +12,41 @@ import {
   Moon,
   Sparkles,
   BarChart3,
-  HelpCircle,
-  ChevronDown,
-  Globe,
+  Video,
   LayoutGrid,
   TrendingUp,
   Type,
   Target,
   GitCompare,
-  Video,
   Calendar,
   Monitor,
   BookOpen,
+  HelpCircle,
   Layers,
   CircleDot,
   Palette,
   FileCode,
   Grid3X3,
+  Globe,
   X,
 } from "lucide-react";
 
 /**
- * Top navigation shell.
+ * Single-row top navigation.
  *
- * Design intent: the opposite of a left rail. Brand and section links share a
- * horizontal bar; the tool collection lives behind a "Tools" dropdown on
- * desktop and a full-screen launcher sheet on phones. Active sections are
- * marked with an underline accent that slides along the bar's bottom edge.
+ * The whole nav is one bar: brand on the left, a centered segmented capsule
+ * holding every destination (no second strip underneath), controls on the
+ * right. The active segment fills with the accent color. The tool collection
+ * opens as a floating panel from the capsule's last segment. On phones the
+ * capsule becomes a scrollable pill row under a slim brand bar.
  */
 
-const SECTIONS = [
+const SEGMENTS = [
   { label: "Generator", href: "/metagen", icon: Sparkles, match: ["/metagen"] },
   { label: "Tracker", href: "/search", icon: BarChart3, match: ["/search", "/dashboard", "/portfolio", "/trending", "/keywords", "/watchlist"] },
   { label: "SVG to Video", href: "/svg-to-video", icon: Video, match: ["/svg-to-video"] },
+  { label: "Blog", href: "/blog", icon: BookOpen, match: ["/blog"] },
+  { label: "How it Works", href: "/how-it-works", icon: HelpCircle, match: ["/how-it-works"] },
 ];
 
 const ALL_TOOLS = [
@@ -69,12 +71,12 @@ const ALL_TOOLS = [
 export function AppNav() {
   const { theme, setTheme } = useTheme();
   const { t, locale } = useLanguage();
-  const blogHref = blogPath(locale);
   const [showTools, setShowTools] = useState(false);
   const [mobileTools, setMobileTools] = useState(false);
   const pathname = usePathname();
   const mobileNavRef = useRef<HTMLDivElement | null>(null);
   const mobileHeaderRef = useRef<HTMLDivElement | null>(null);
+  const toolsWrapRef = useRef<HTMLDivElement | null>(null);
 
   // Hydration-safe mounted flag: false on the server snapshot, true after
   // hydration — no effect or cascading setState needed.
@@ -86,8 +88,6 @@ export function AppNav() {
 
   // Publish the mobile header's height as --shell-top so sticky page bars and
   // the settings drawer can sit flush beneath it without hardcoded offsets.
-  // Kept out of the effect body proper (and in a rAF) so layout measurement
-  // happens after paint and lint stays quiet about synchronous work.
   useEffect(() => {
     const el = mobileHeaderRef.current;
     if (!el) return;
@@ -102,10 +102,7 @@ export function AppNav() {
     };
   }, []);
 
-  // Close the launchers on navigation. Reset via the render-time key (the
-  // pathname of the active route) rather than a setState-in-effect, which
-  // this ESLint rule flags. Both panels are modal overlays, so remounting a
-  // closed copy costs nothing.
+  // Close the tools panels on Escape.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -117,10 +114,19 @@ export function AppNav() {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  const navKey = `${pathname}|${showTools ? "t" : ""}`;
-  const mobileKey = `${pathname}|${mobileTools ? "t" : ""}`;
+  // Click-outside for the desktop tools panel.
+  useEffect(() => {
+    if (!showTools) return;
+    const onDown = (e: Event) => {
+      if (e.target instanceof Element && !e.target.closest("[data-tools-panel]")) {
+        setShowTools(false);
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [showTools]);
 
-  // Keep the active chip centred in the scrollable mobile nav row
+  // Keep the active pill centred in the scrollable mobile nav row
   useEffect(() => {
     const container = mobileNavRef.current;
     const active = container?.querySelector<HTMLElement>('[data-active="true"]');
@@ -136,131 +142,106 @@ export function AppNav() {
     return pathname === href || pathname.startsWith(href + "/");
   };
 
-  const activeSection = SECTIONS.find((s) => s.match.some((m) => isActive(m)));
+  const activeSegment = SEGMENTS.find((s) => s.match.some((m) => isActive(m)));
   const isAnyToolActive = ALL_TOOLS.some((t2) => isActive(t2.href));
-  const onBlog = isActive(blogHref);
+  const blogHref = blogPath(locale);
+  const onBlog = pathname === blogHref || pathname.startsWith(blogHref + "/");
 
-  // Overlays render keyed by route: navigating unmounts them (the old code
-  // closed them from an effect; same behaviour without cascading renders).
+  // The centered capsule: main destinations plus a Tools segment. "Blog" maps
+  // to the visitor's language, matching the old shell's behaviour.
+  const capsule = SEGMENTS.map((s) => {
+    if (s.match.includes("/blog")) return { ...s, href: blogHref, active: onBlog };
+    return { ...s, active: activeSegment?.href === s.href };
+  });
+  const toolsActive = isAnyToolActive || showTools;
+  // Overlays remount per route + open state: navigating unmounts them (same
+  // behaviour as the old close-on-navigate effect, without setState-in-effect).
+  const navKey = `${pathname}|${showTools ? "t" : ""}`;
+  const mobileKey = `${pathname}|${mobileTools ? "t" : ""}`;
+
+  const segmentClass = (active: boolean) =>
+    `relative flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+      active ? "bg-accent text-white shadow-sm" : "text-text-secondary hover:bg-accent/8 hover:text-accent"
+    }`;
 
   return (
     <>
-      {/* ── Desktop top bar ─────────────────────────────────────────────── */}
+      {/* ── Desktop: one-row nav ────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 hidden border-b border-border bg-bg/90 backdrop-blur-md lg:block">
-        <div className="flex h-12 items-center gap-1 px-4">
-          {/* Brand — left */}
-          <Link href="/" className="mr-4 flex shrink-0 items-center gap-2" aria-label="StockPulse home">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-white">
-              <Sparkles className="h-3.5 w-3.5" strokeWidth={2.5} />
+        <div className="flex h-14 items-center px-5">
+          {/* Brand */}
+          <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="StockPulse home">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-white">
+              <Sparkles className="h-4 w-4" strokeWidth={2.5} />
             </span>
-            <span className="font-heading text-sm font-bold tracking-tight text-text-primary">
+            <span className="font-heading text-base font-bold tracking-tight text-text-primary">
               Stock<span className="text-accent">Pulse</span>
-            </span>
-            <span className="rounded border border-amber-500/40 bg-amber-500/10 px-1 py-px text-[9px] font-bold uppercase text-amber-600">
-              PRO
             </span>
           </Link>
 
-          {/* Section tabs — underline style, sits flush with the bottom border */}
-          <nav className="flex h-full items-stretch" aria-label={t.nav.menu}>
-            {SECTIONS.map((s) => {
-              const active = activeSection?.href === s.href;
-              return (
-                <Link
-                  key={s.href}
-                  href={s.href}
-                  className={`relative flex items-center gap-1.5 border-b-2 px-3 text-sm font-medium transition-colors ${
-                    active
-                      ? "border-accent text-accent"
-                      : "border-transparent text-text-secondary hover:text-text-primary"
-                  }`}
-                >
+          {/* Centered capsule — absolute so it stays truly centered */}
+          <nav
+            className="pointer-events-none absolute left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-surface p-1 shadow-sm"
+            aria-label={t.nav.menu}
+          >
+            <div className="pointer-events-auto flex items-center gap-1">
+              {capsule.map((s) => (
+                <Link key={s.label} href={s.href} className={segmentClass(s.active)}>
                   <s.icon className="h-3.5 w-3.5" />
                   {s.label}
                 </Link>
-              );
-            })}
-
-            {/* Tools launcher */}
-            <div className="relative flex items-stretch">
-              <button
-                onClick={() => setShowTools((v) => !v)}
-                aria-expanded={showTools}
-                className={`relative flex items-center gap-1.5 border-b-2 px-3 text-sm font-medium transition-colors ${
-                  isAnyToolActive || showTools
-                    ? "border-accent text-accent"
-                    : "border-transparent text-text-secondary hover:text-text-primary"
-                }`}
-              >
-                <LayoutGrid className="h-3.5 w-3.5" />
-                {t.nav.allTools}
-                <ChevronDown className={`h-3 w-3 transition-transform ${showTools ? "rotate-180" : ""}`} />
-              </button>
-
-              {showTools && (
-                <div key={navKey} className="absolute left-0 top-full z-50 mt-px w-[420px] animate-pop-in rounded-b-2xl border border-t-0 border-border bg-surface-elevated p-3 shadow-2xl">
-                  <div className="grid grid-cols-2 gap-1">
-                    {ALL_TOOLS.map((tool) => (
-                      <Link
-                        key={tool.href}
-                        href={tool.href}
-                        onClick={() => setShowTools(false)}
-                        className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-                          isActive(tool.href)
-                            ? "bg-accent/10 text-accent"
-                            : "text-text-secondary hover:bg-accent/5 hover:text-accent"
-                        }`}
-                      >
-                        <tool.icon className="h-3.5 w-3.5 shrink-0" />
-                        <span className="truncate">{tool.label}</span>
-                      </Link>
-                    ))}
+              ))}
+              <div ref={toolsWrapRef} className="relative">
+                <button onClick={() => setShowTools((v) => !v)} aria-expanded={showTools} className={segmentClass(toolsActive)}>
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  {t.nav.allTools}
+                </button>
+                {showTools && (
+                  <div
+                    key={navKey}
+                    data-tools-panel
+                    className="absolute right-0 top-full z-50 mt-2 w-[420px] animate-pop-in rounded-2xl border border-border bg-surface-elevated p-3 shadow-2xl"
+                  >
+                    <div className="grid grid-cols-2 gap-1">
+                      {ALL_TOOLS.map((tool) => (
+                        <Link
+                          key={tool.href}
+                          href={tool.href}
+                          onClick={() => setShowTools(false)}
+                          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                            isActive(tool.href)
+                              ? "bg-accent/10 text-accent"
+                              : "text-text-secondary hover:bg-accent/5 hover:text-accent"
+                          }`}
+                        >
+                          <tool.icon className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{tool.label}</span>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-
-            {/* Blog */}
-            <Link
-              href={blogHref}
-              className={`relative flex items-center gap-1.5 border-b-2 px-3 text-sm font-medium transition-colors ${
-                onBlog ? "border-accent text-accent" : "border-transparent text-text-secondary hover:text-text-primary"
-              }`}
-            >
-              <BookOpen className="h-3.5 w-3.5" />
-              {t.nav.blog}
-            </Link>
-
-            <Link
-              href="/how-it-works"
-              className={`relative flex items-center gap-1.5 border-b-2 px-3 text-sm font-medium transition-colors ${
-                isActive("/how-it-works")
-                  ? "border-accent text-accent"
-                  : "border-transparent text-text-secondary hover:text-text-primary"
-              }`}
-            >
-              <HelpCircle className="h-3.5 w-3.5" />
-              {t.nav.howItWorks}
-            </Link>
           </nav>
 
           {/* Right controls */}
           <div className="ml-auto flex items-center gap-2">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-surface text-text-secondary transition-colors hover:border-accent/40 hover:text-accent"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-text-secondary transition-colors hover:border-accent/40 hover:text-accent"
               aria-label={mounted && theme === "dark" ? t.nav.lightMode : t.nav.darkMode}
             >
-              {mounted ? theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" /> : <span className="h-3.5 w-3.5" />}
+              {mounted ? theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" /> : <span className="h-4 w-4" />}
             </button>
             <LanguageMenu />
           </div>
         </div>
       </header>
 
-      {/* ── Mobile brand row + chip nav ─────────────────────────────────── */}
+      {/* ── Mobile: slim brand row + scrollable capsule pills ───────────── */}
       <div ref={mobileHeaderRef} className="order-first sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur-md lg:hidden">
-        <div className="flex items-center justify-between px-4 py-1.5">
+        <div className="flex items-center justify-between px-4 py-2">
           <Link href="/" className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-white">
               <Sparkles className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -273,7 +254,7 @@ export function AppNav() {
             <button
               onClick={() => setMobileTools((v) => !v)}
               aria-label={t.nav.allTools}
-              className={`flex h-8 w-8 items-center justify-center rounded-lg border ${
+              className={`flex h-8 w-8 items-center justify-center rounded-full border ${
                 isAnyToolActive || mobileTools
                   ? "border-accent bg-accent/10 text-accent"
                   : "border-border bg-surface text-text-secondary"
@@ -283,7 +264,7 @@ export function AppNav() {
             </button>
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-surface text-text-secondary"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-text-secondary"
               aria-label={mounted && theme === "dark" ? t.nav.lightMode : t.nav.darkMode}
             >
               {mounted ? theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" /> : <span className="h-3.5 w-3.5" />}
@@ -292,23 +273,20 @@ export function AppNav() {
           </div>
         </div>
 
-        <div ref={mobileNavRef} className="flex items-center gap-1 overflow-x-auto px-3 pb-1.5 pt-0.5 no-scrollbar">
-          <Link href="/metagen" data-active={isActive("/metagen") || undefined}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${isActive("/metagen") ? "bg-accent text-white" : "bg-surface text-text-secondary border border-border"}`}>
-            {t.nav.quickGenerate}
-          </Link>
-          <Link href="/search" data-active={isActive("/search") || undefined}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${isActive("/search") ? "bg-accent text-white" : "bg-surface text-text-secondary border border-border"}`}>
-            {t.nav.quickTracker}
-          </Link>
-          <Link href={blogHref} data-active={onBlog || undefined}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${onBlog ? "bg-accent text-white" : "bg-surface text-text-secondary border border-border"}`}>
-            {t.nav.blog}
-          </Link>
-          <Link href="/how-it-works" data-active={isActive("/how-it-works") || undefined}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${isActive("/how-it-works") ? "bg-accent text-white" : "bg-surface text-text-secondary border border-border"}`}>
-            {t.nav.quickGuides}
-          </Link>
+        <div ref={mobileNavRef} className="flex items-center gap-1.5 overflow-x-auto px-3 pb-2 no-scrollbar">
+          {capsule.map((s) => (
+            <Link
+              key={s.label}
+              href={s.href}
+              data-active={s.active || undefined}
+              className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium ${
+                s.active ? "border-accent bg-accent text-white" : "border-border bg-surface text-text-secondary"
+              }`}
+            >
+              <s.icon className="h-3 w-3" />
+              {s.label}
+            </Link>
+          ))}
         </div>
       </div>
 

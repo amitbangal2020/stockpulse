@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { TrackerTabs } from "@/components/tracker-tabs";
 import { Flame, Users, Tag, Loader2, RefreshCw } from "lucide-react";
 
 interface TrendingNiche {
@@ -69,7 +70,8 @@ function TrendingPage() {
     <ToolLayout>
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
         <div className="border-b border-border px-5 py-4">
-          <div className="flex items-center justify-between">
+          <TrackerTabs />
+          <div className="mt-3 flex items-center justify-between">
             <div>
               <h2 className="text-base font-semibold text-text-primary">Trending on Adobe Stock</h2>
               <p className="text-xs text-text-muted">{data?.sortOrder === 'creation' ? 'Recently uploaded content from Adobe Stock' : 'Most downloaded content from Adobe Stock'}</p>

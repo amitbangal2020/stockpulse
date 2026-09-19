@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { TrackerTabs } from "@/components/tracker-tabs";
 import { useAuth } from "@/lib/auth-context";
 import { Star, Trash2 } from "lucide-react";
 
@@ -57,7 +58,8 @@ function WatchlistPage() {
     <ToolLayout>
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
         <div className="border-b border-border bg-bg-secondary px-5 py-2.5">
-          <h2 className="font-heading text-sm font-semibold tracking-tight text-text-primary">My Watchlist</h2>
+          <TrackerTabs />
+          <h2 className="mt-3 font-heading text-sm font-semibold tracking-tight text-text-primary">My Watchlist</h2>
           <p className="text-[11px] text-text-muted">Track your favorite Adobe Stock assets</p>
         </div>
         <div className="flex-1 overflow-y-auto p-5">

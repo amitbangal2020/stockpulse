@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { TrackerTabs } from "@/components/tracker-tabs";
 import { Download, Eye } from "lucide-react";
 
 const SAMPLE_PORTFOLIO = [
@@ -29,7 +30,8 @@ function PortfolioPage() {
     <ToolLayout>
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
         <div className="border-b border-border px-5 py-4">
-          <h2 className="text-base font-semibold text-text-primary">My Portfolio</h2>
+          <TrackerTabs />
+          <h2 className="mt-3 text-base font-semibold text-text-primary">My Portfolio</h2>
           <p className="text-xs text-text-muted">Track all your Adobe Stock assets</p>
           <div className="mt-3 flex gap-3">
             <div className="rounded-lg border border-border bg-surface px-3 py-1.5 text-center"><p className="text-lg font-bold text-text-primary">{SAMPLE_PORTFOLIO.length}</p><p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">Assets</p></div>
