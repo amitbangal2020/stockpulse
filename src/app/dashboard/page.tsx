@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
 import { TrackerTabs } from "@/components/tracker-tabs";
 import { getDashboardStats, getAllTrends, AssetTrend, recordSnapshot, getTrackedAssets } from "@/lib/tracking";
+import { trackEvent } from "@/lib/track-event";
 import { RefreshCw, TrendingUp, BarChart3, Activity, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import Link from "next/link";
 
@@ -71,6 +72,7 @@ function DashboardPage() {
     setLastRefresh(new Date().toISOString());
     loadStats();
     setIsRefreshing(false);
+    trackEvent("portfolio_refreshed", { assets: trackedIds.length });
   };
 
   if (!stats) return <div className="flex items-center justify-center py-20"><div className="h-10 w-10 animate-spin rounded-full border-2 border-accent/20 border-t-accent" /></div>;

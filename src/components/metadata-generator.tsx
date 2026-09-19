@@ -37,6 +37,7 @@ import {
 import { extractEmbeddedPreview, extractVideoFrame, rasterizeSvgFile } from "@/lib/thumbnail-extractors";
 import { detectTransparency } from "@/lib/transparency-detect";
 import { buildMetadataPrompt, ensureCompleteSentences, cleanKeywords, parseMetadataResponse, buildEvaluationPrompt, PLATFORM_CONFIGS } from "@/lib/generation-logic";
+import { trackEvent } from "@/lib/track-event";
 import { calculateQualityScore, type QualityScore } from "@/lib/quality-scorer";
 import { buildVisionAnalysisPrompt, parseVisionAnalysis, buildEnhancedPromptWithVision, type VisionAnalysis } from "@/lib/vision-analysis";
 import { getUserPreferences, saveUserPreferences, recordTitleSelection, getRecommendedSettings } from "@/lib/user-preferences";
@@ -259,6 +260,7 @@ export function MetadataGenerator() {
       [activeProvider]: [...prev[activeProvider], newEntry],
     }));
     setTempApiKey("");
+    trackEvent("api_key_added", { provider: activeProvider });
     toast(`Key added for ${PROVIDERS.find(p => p.id === activeProvider)?.name}`);
   };
 
@@ -649,6 +651,7 @@ export function MetadataGenerator() {
       setFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: "done", metadata, endTime: Date.now() } : f));
     } catch (err: any) {
       if (abortRef.current) return;
+      trackEvent("generate_failed", { file: fileItem.name, error: String(err?.message || "Generation failed").slice(0, 120) });
       setFiles(prev => prev.map(f => f.id === fileItem.id ? { ...f, status: "error", error: err.message || "Generation failed", endTime: Date.now() } : f));
     }
   };
@@ -662,7 +665,9 @@ export function MetadataGenerator() {
     abortControllerRef.current = new AbortController();
     keyRotationIndexRef.current = 0;
     const pending = files.filter(f => f.status === "pending" || f.status === "error");
+    trackEvent("generate_started", { count: pending.length, mode: parallelGen ? "parallel" : "sequential", language });
     const signal = abortControllerRef.current.signal;
+    let failed = 0;
     if (parallelGen) {
       const tasks = pending.map(f => () => generateSingle(f, signal));
       await runWithConcurrency(tasks, concurrencyLimit);
@@ -672,6 +677,8 @@ export function MetadataGenerator() {
         await generateSingle(f, signal);
       }
     }
+    failed = files.filter(f => f.status === "error").length;
+    trackEvent("generate_completed", { total: pending.length, failed, language });
     setIsGenerating(false);
   };
 
@@ -830,6 +837,7 @@ export function MetadataGenerator() {
       }
     };
 
+    trackEvent("csv_downloaded", { files: doneFiles.length, platforms: selectedPlatforms.length });
     if (selectedPlatforms.length === 1) {
       // Single platform — download CSV directly
       const csv = generatePlatformCSV(selectedPlatforms[0]);

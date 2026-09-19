@@ -6,6 +6,7 @@ import { Check, ChevronDown, Globe } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, type Locale } from "@/lib/i18n/locales";
 import { localizedPath } from "@/lib/i18n/localized-path";
+import { trackEvent } from "@/lib/track-event";
 
 /** Panel geometry, used both to place it and to decide which way it opens. */
 const PANEL_WIDTH = 160; // matches w-40
@@ -39,6 +40,7 @@ export function LanguageMenu({
 
   const choose = useCallback(
     (code: Locale) => {
+      trackEvent("language_switched", { from: locale, to: code });
       setLocale(code);
       setOpen(false);
       // Pages that exist as two separate URLs (the blog) also move with the
@@ -47,7 +49,7 @@ export function LanguageMenu({
       const next = localizedPath(pathname, code);
       if (next) router.push(next);
     },
-    [pathname, router, setLocale],
+    [pathname, router, setLocale, locale],
   );
 
   const place = useCallback(() => {

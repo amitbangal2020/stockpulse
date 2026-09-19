@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { TrackerTabs } from "@/components/tracker-tabs";
+import { trackEvent } from "@/lib/track-event";
 import {
   Search,
   TrendingUp,
@@ -132,6 +133,7 @@ export function SearchTool() {
         const resp = await fetch(`/api/asset?id=${encodeURIComponent(searchQ)}${gentechParam}`);
         const data = await resp.json();
         if (data.found && data.assetId && String(data.assetId) === searchQ.replace(/\s/g, "")) {
+          trackEvent("asset_tracked", { asset_id: String(data.assetId).slice(0, 12) });
           const asset: StockAsset = {
             id: data.assetId, title: data.title,
             thumbnailUrl: data.thumbnail || `https://stock.adobe.com/${data.assetId}`,
