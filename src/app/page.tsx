@@ -203,6 +203,20 @@ export default function Home() {
             </Link>
           ))}
         </div>
+
+        {/* Footer — site info + policy pages (AdSense requires these to be reachable) */}
+        <footer className="border-t border-border px-6 py-8">
+          <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 text-center">
+            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-text-muted">
+              <Link href="/about" className="transition-colors hover:text-accent">About</Link>
+              <Link href="/privacy" className="transition-colors hover:text-accent">Privacy Policy</Link>
+              <Link href="/terms" className="transition-colors hover:text-accent">Terms of Service</Link>
+            </nav>
+            <p className="text-[11px] text-text-muted">
+              © {new Date().getFullYear()} StockPulse · abanti.in — free tools for microstock sellers.
+            </p>
+          </div>
+        </footer>
       </div>
     </ToolLayout>
   );
