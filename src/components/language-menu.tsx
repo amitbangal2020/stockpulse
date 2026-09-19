@@ -114,7 +114,7 @@ export function LanguageMenu({
         className={
           full
             ? "flex w-full items-center gap-2.5 rounded-xl border border-border bg-surface px-3 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
-            : "flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-accent/40 hover:text-text-primary"
+            : "flex w-[118px] items-center justify-between gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-accent/40 hover:text-text-primary"
         }
       >
         <Globe className={full ? "h-4 w-4 shrink-0 text-text-muted" : "h-3.5 w-3.5 shrink-0 text-text-muted"} />

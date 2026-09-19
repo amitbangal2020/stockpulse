@@ -338,6 +338,13 @@ export function buildMetadataPrompt(
 
   const promptLength = opts.promptLength || 427;
 
+  // Output language. The default model behaviour is to answer in the language
+  // of the prompt (English), so a non-English selection needs a strong,
+  // explicit override — a passing mention only reaches the keywords.
+  const languageInstruction = opts.language && opts.language !== 'English'
+    ? `\nLANGUAGE REQUIREMENT — STRICT, HIGHEST PRIORITY:\n- The TITLE, DESCRIPTION and KEYWORDS you generate MUST be written in ${opts.language}. Do NOT write them in English.\n- The text must read as natural, native ${opts.language} — not a literal word-by-word translation.\n- Keep the "prompt" field (the image-generation prompt) in English: AI image models understand English best.\n- Keep the "category" exactly as one of the listed English category names.`
+    : '';
+
   // Prompt style instructions
   let promptStyleInstruction = '';
   const ps = opts.promptStyle || 'highly-optimized';
@@ -450,6 +457,8 @@ ${groundingRules}
 ${iconSetInstruction}
 ${editableRule}
 
+${languageInstruction}
+
 Generate:
 1. A highly searchable, SEO-optimized title (${minTitleInstruction}) Focus on high-volume commercial search terms, placing the main subject and key action at the beginning. Do NOT use generic terms or filler words (beautiful, amazing, stunning, 4k, hd, high quality). Keep it highly descriptive, natural, and clickable.
 2. A detailed, search-friendly description (${descLenText}). Incorporate relevant context, mood, style, color schemes, and key elements that buyers search for.
@@ -466,7 +475,7 @@ CRITICAL INSTRUCTIONS:
 - The generated Title and Description MUST ALWAYS be complete, grammatically correct sentences ending with a period.
 - Never use filler words: beautiful, amazing, stunning, gorgeous, 4k, 8k, hd, high quality, trending, viral, popular
 - If the content would exceed the character limit, shorten the sentence earlier to ensure it ends cleanly before the limit.
-- Keywords must be in ${opts.language}.
+- Title, description and keywords must all be in ${opts.language}${opts.language !== 'English' ? ' (see the LANGUAGE REQUIREMENT above — this is mandatory)' : ''}.
 ${negKeywordsList}
 ${negTitleList}
 ${customKwInstruction}
