@@ -152,6 +152,21 @@ const sha = fullSha.slice(0, 7);
 log(`\n▶ StockPulse production deploy`);
 log(`  commit ${sha} on ${branch}  @ ${clock()}`);
 
+// Pre-flight: docs must lint clean before anything ships. Runs even when the
+// deploy targets the already-pushed commit — the tree is the source of truth.
+log("0/4 pre-flight checks");
+try {
+  execSync("npx markdownlint-cli2", { encoding: "utf8", stdio: "pipe" });
+  ok("docs lint clean");
+} catch (err) {
+  fail(
+    "docs lint failed — fix README/markdown issues before deploying\n" +
+      String(err.stdout || "") +
+      String(err.stderr || "") +
+      "\n  Run `npm run lint:docs` to see and fix the problems."
+  );
+}
+
 if (sh("git status --porcelain")) {
   warn("working tree has uncommitted changes — only pushed commits are deployed");
 }
