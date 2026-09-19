@@ -5,7 +5,9 @@ import Link from "next/link";
 import { ToolLayout } from "@/components/tool-layout";
 import { useLanguage } from "@/components/language-provider";
 import { format } from "@/lib/i18n/messages";
+import { type TranslatedLocale } from "@/lib/i18n/locales";
 import { TOOL_BODY_BN } from "./tools.bn";
+import { TOOL_BODY_HI } from "./tools.hi";
 import {
   Sparkles, BarChart3, Video, Layers, CircleDot, LayoutGrid, Palette,
   Grid3X3, Type, FileCode, TrendingUp, GitCompare, Calendar, Monitor,
@@ -14,16 +16,23 @@ import {
 } from "lucide-react";
 
 // ─── Tool Data ───
+/** Collapsed-card copy in one translated language. */
+interface ToolCardCopy {
+  name: string;
+  description: string;
+}
+
 interface ToolInfo {
   id: string;
   name: string;
   description: string;
-  /** Bengali copy. Required, so a new tool cannot ship without a translation. */
-  bn: {
-    name: string;
-    description: string;
-    // Features, steps, output and tips follow in a later pass.
-  };
+  /**
+   * Translated card copy, required for every translated locale — a new tool,
+   * like a new language, refuses to compile until both are written. The
+   * expanded body lives in the `tools.<locale>.ts` files instead.
+   */
+  bn: ToolCardCopy;
+  hi: ToolCardCopy;
   href: string;
   icon: React.ReactNode;
   color: string;
@@ -41,6 +50,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "মেটাডেটা জেনারেটর (MetaGen)",
       description: "AI দিয়ে মাইক্রোস্টক মেটাডেটা ব্যাচে তৈরি — আপনার ফাইল থেকে টাইটেল, কীওয়ার্ড, ডেসক্রিপশন আর প্রম্পট।",
+    },
+    hi: {
+      name: "मेटाडेटा जनरेटर (MetaGen)",
+      description: "AI से माइक्रोस्टॉक मेटाडेटा बैच में तैयार — आपकी फ़ाइलों से टाइटल, कीवर्ड, डिस्क्रिप्शन और प्रॉम्प्ट।",
     },
     name: "Metadata Generator (MetaGen)",
     description: "AI-powered batch metadata generation for microstock platforms — titles, keywords, descriptions and prompts from your files.",
@@ -85,6 +98,10 @@ const TOOLS: ToolInfo[] = [
       name: "Adobe Tracker",
       description: "Adobe Stock অ্যাসেট রিয়েল-টাইমে খুঁজুন, ট্র্যাক ও বিশ্লেষণ করুন — লাইভ ডাউনলোড সংখ্যা, AI শনাক্তকরণ, ফিল্টার আর প্রতিযোগী-রিসার্চ।",
     },
+    hi: {
+      name: "Adobe Tracker",
+      description: "Adobe Stock असेट रियल-टाइम में सर्च, ट्रैक और एनालाइज़ करें — लाइव डाउनलोड संख्या, AI पहचान, फ़िल्टर और प्रतिद्वंद्वी रिसर्च।",
+    },
     name: "Adobe Tracker",
     description: "Search, track and analyze Adobe Stock assets in real time — live download counts, AI detection, filters and competitor research.",
     href: "/search",
@@ -121,6 +138,10 @@ const TOOLS: ToolInfo[] = [
       name: "ড্যাশবোর্ড",
       description: "আপনার ট্র্যাকিংয়ের মূল জায়গা — পোর্টফোলিওর হিসাব, ডাউনলোডের ট্রেন্ড আর প্রতিটা অ্যাসেটের পারফরম্যান্স।",
     },
+    hi: {
+      name: "डैशबोर्ड",
+      description: "आपकी ट्रैकिंग का केंद्र — पोर्टफ़ोलियो के आँकड़े, डाउनलोड ट्रेंड और हर ट्रैक किए असेट का परफ़ॉर्मेंस।",
+    },
     name: "Dashboard",
     description: "Your tracking home base — portfolio stats, download trends and top performers for every asset you track.",
     href: "/dashboard",
@@ -151,6 +172,10 @@ const TOOLS: ToolInfo[] = [
       name: "পোর্টফোলিও ম্যানেজার",
       description: "এক গ্রিডে আপনার স্টক অ্যাসেট দেখা ও গুছিয়ে রাখা — মিডিয়া টাইপ অনুযায়ী ফিল্টার, দরকারি হিসেবে সাজানো।",
     },
+    hi: {
+      name: "पोर्टफ़ोलियो मैनेजर",
+      description: "एक ही ग्रिड में अपने स्टॉक असेट देखें और सँभालें — मीडिया टाइप से फ़िल्टर करें और ज़रूरी क्रम में सॉर्ट करें।",
+    },
     name: "Portfolio Manager",
     description: "Browse and organize your stock assets in one grid — filter by media type and sort by what matters.",
     href: "/portfolio",
@@ -179,6 +204,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "ওয়াচলিস্ট",
       description: "প্রিয় Adobe Stock অ্যাসেট স্টার দিয়ে রাখুন আর নজরে রাখুন — আপনার নিজের বানানো ছোট তালিকা।",
+    },
+    hi: {
+      name: "वॉचलिस्ट",
+      description: "पसंदीदा Adobe Stock असेट स्टार करके नज़र में रखें — आपकी अपनी बनाई छोटी सूची।",
     },
     name: "Watchlist",
     description: "Star and monitor your favorite Adobe Stock assets — a personal shortlist you control.",
@@ -209,6 +238,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "SVG থেকে ভিডিও",
       description: "অ্যানিমেটেড SVG-কে সত্যিকারের ভিডিও ফাইলে বদলান — MP4, WebM বা GIF, সাথে ফিল্টার, সাউন্ডট্র্যাক, ওয়াটারমার্ক ও ব্যাচ কিউ।",
+    },
+    hi: {
+      name: "SVG से वीडियो",
+      description: "एनिमेटेड SVG को असली वीडियो फ़ाइलों में बदलें — MP4, WebM या GIF, साथ में फ़िल्टर, साउंडट्रैक, वॉटरमार्क और बैच क्यू।",
     },
     name: "SVG to Video",
     description: "Turn animated SVGs into real video files — MP4, WebM or GIF with filters, soundtrack, watermark and batch queue.",
@@ -246,6 +279,10 @@ const TOOLS: ToolInfo[] = [
       name: "ডিদার স্টুডিও",
       description: "৯টা অ্যালগরিদমে রেট্রো ডিদারিং ইফেক্ট — Game Boy ও Commodore প্রিসেট, কাস্টম প্যালেট আর পিক্সেলেশন।",
     },
+    hi: {
+      name: "डिदर स्टूडियो",
+      description: "9 एल्गोरिदम के साथ रेट्रो डिदरिंग इफ़ेक्ट — Game Boy और Commodore प्रीसेट, कस्टम पैलेट और पिक्सेलेशन।",
+    },
     name: "Dither Studio",
     description: "Retro dithering effects with 9 algorithms, Game Boy & Commodore presets, custom palettes and pixelation.",
     href: "/dither-studio",
@@ -276,6 +313,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "হাফটোন স্টুডিও",
       description: "যেকোনো ছবি থেকে হাফটোন ডট আর্ট — ৩টা হাফটোন ইঞ্জিন, ৭টা প্রিন্ট-ধাঁচের প্রিসেট, হেক্সাগোনাল গ্রিড ও ডুওটোন প্যালেট।",
+    },
+    hi: {
+      name: "हाफटोन स्टूडियो",
+      description: "किसी भी इमेज से हाफटोन डॉट आर्ट — 3 हाफटोन इंजन, 7 प्रिंट-प्रेरित प्रीसेट, हेक्सागोनल ग्रिड और डुओटोन पैलेट।",
     },
     name: "Halftone Studio",
     description: "Halftone dot art from any image — 3 halftone engines, 7 print-inspired presets, hexagonal grids and duotone palettes.",
@@ -308,6 +349,10 @@ const TOOLS: ToolInfo[] = [
       name: "বেন্টো বিল্ডার",
       description: "এক ক্লিকে সুন্দর বেন্টো-গ্রিড লেআউট — শাফল করুন, স্পেসিং ঠিক করুন, PNG বা ভেক্টর SVG এক্সপোর্ট করুন।",
     },
+    hi: {
+      name: "बेंटो बिल्डर",
+      description: "एक क्लिक में सुंदर बेंटो-ग्रिड लेआउट बनाएँ — शफ़ल करें, स्पेसिंग ठीक करें और PNG या वेक्टर SVG में एक्सपोर्ट करें।",
+    },
     name: "Bento Builder",
     description: "Generate beautiful bento-grid layouts in one click — shuffle, tune spacing and export as PNG or vector SVG.",
     href: "/bento-builder",
@@ -335,6 +380,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "কালার প্যালেট",
       description: "যেকোনো ছবি থেকে সুন্দর কালার প্যালেট বের করুন — নাম, শতাংশ আর এক ক্লিকে CSS ভেরিয়েবল।",
+    },
+    hi: {
+      name: "कलर पैलेट",
+      description: "किसी भी इमेज से सुंदर कलर पैलेट निकालें — नाम, प्रतिशत और एक क्लिक में CSS वेरिएबल के साथ।",
     },
     name: "Color Palette",
     description: "Extract beautiful color palettes from any image — with names, percentages and one-click CSS variables.",
@@ -365,6 +414,10 @@ const TOOLS: ToolInfo[] = [
       name: "কালার হারমনাইজার",
       description: "একটা বেস রং থেকে নিখুঁত কালার হারমোনি — ইন্টারঅ্যাকটিভ কালার হুইলে ৭ রকম হারমোনি।",
     },
+    hi: {
+      name: "कलर हारमोनाइज़र",
+      description: "एक बेस रंग से परफ़ेक्ट कलर हारमोनी बनाएँ — इंटरैक्टिव कलर व्हील पर 7 हारमोनी टाइप।",
+    },
     name: "Color Harmonizer",
     description: "Generate perfect color harmonies from one base color — 7 harmony types on an interactive color wheel.",
     href: "/color-harmonizer",
@@ -392,6 +445,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "ASCII ভিশন",
       description: "যেকোনো ছবিকে ASCII আর্টে বদলান — একাধিক ক্যারেক্টার সেট, রঙিন মোড আর সাথে সাথে টেক্সট এক্সপোর্ট।",
+    },
+    hi: {
+      name: "ASCII विज़न",
+      description: "किसी भी इमेज को ASCII आर्ट में बदलें — कई कैरेक्टर सेट, कलर मोड और तुरंत टेक्स्ट एक्सपोर्ट।",
     },
     name: "ASCII Vision",
     description: "Convert any image into ASCII art — multiple character sets, colored mode and instant text export.",
@@ -425,6 +482,10 @@ const TOOLS: ToolInfo[] = [
       name: "ট্রেন্ডিং",
       description: "Adobe Stock-এ এখন কী চলছে দেখুন — লাইভ ডেটা থেকে ট্রেন্ডিং নিশ, সেরা কনট্রিবিউটর আর ক্যাটাগরি ভাগ।",
     },
+    hi: {
+      name: "ट्रेंडिंग",
+      description: "देखें कि Adobe Stock पर इस समय क्या चल रहा है — लाइव डेटा से ट्रेंडिंग निश, टॉप कॉन्ट्रिब्यूटर और कैटेगरी विभाजन।",
+    },
     name: "Trending",
     description: "See what's hot on Adobe Stock right now — trending niches, top contributors and category breakdowns from live data.",
     href: "/trending",
@@ -455,6 +516,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "কীওয়ার্ড অ্যানালাইজার",
       description: "যেকোনো কীওয়ার্ডের চাহিদা, প্রতিযোগিতা ও ট্রেন্ড বিশ্লেষণ — নিশ সাজেশন আর অপ্টিমাইজেশনের টিপস সহ।",
+    },
+    hi: {
+      name: "कीवर्ड एनालाइज़र",
+      description: "किसी भी कीवर्ड की मांग, प्रतिस्पर्धा और ट्रेंड एनालाइज़ करें — निश सुझाव और ऑप्टिमाइज़ेशन टिप्स के साथ।",
     },
     name: "Keyword Analyzer",
     description: "Analyze any keyword's demand, competition and trend — with niche suggestions and optimization tips.",
@@ -489,6 +554,10 @@ const TOOLS: ToolInfo[] = [
       name: "পোর্টফোলিও অ্যানালিটিক্স",
       description: "৮টা পারফরম্যান্স মেট্রিকে নিজের পোর্টফোলিও মাপুন — রাডার ও বার চার্টে সেরা পারফরমার ও বাজারের সাথে তুলনা।",
     },
+    hi: {
+      name: "पोर्टफ़ोलियो एनालिटिक्स",
+      description: "8 परफ़ॉर्मेंस मेट्रिक्स पर अपना पोर्टफ़ोलियो मापें — रडार और बार चार्ट में टॉप परफ़ॉर्मर व बाज़ार से तुलना।",
+    },
     name: "Portfolio Analytics",
     description: "Benchmark your portfolio across 8 performance metrics — radar & bar charts comparing you to top performers and the market.",
     href: "/portfolio-analytics",
@@ -519,6 +588,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "ট্রেন্ড প্রেডিক্টর",
       description: "Adobe Stock ডেটা থেকে রিয়েল-টাইম ট্রেন্ড পূর্বাভাস — মাসের আউটলুক, কনফিডেন্স স্কোর আর ক্যাটাগরি অনুযায়ী সুযোগ।",
+    },
+    hi: {
+      name: "ट्रेंड प्रेडिक्टर",
+      description: "Adobe Stock डेटा से रियल-टाइम ट्रेंड पूर्वानुमान — महीने का आउटलुक, कॉन्फ़िडेंस स्कोर और कैटेगरी के हिसाब से अवसर।",
     },
     name: "Trend Predictor",
     description: "Real-time trend forecasting from Adobe Stock data — monthly outlooks, confidence scores and niche opportunities by category.",
@@ -552,6 +625,10 @@ const TOOLS: ToolInfo[] = [
       name: "ক্যান্ডেলস্টিক চার্ট",
       description: "পূর্ণাঙ্গ ফাইন্যান্সিয়াল চার্ট — ৫ ধরনের মুভিং এভারেজ, বোলিঙ্গার ব্যান্ড, RSI ও MACD, নিজের ডেটা দিয়ে।",
     },
+    hi: {
+      name: "कैंडलस्टिक चार्ट",
+      description: "पूरी सुविधाओं वाला फ़ाइनेंशियल चार्ट — 5 मूविंग एवरेज टाइप, Bollinger Bands, RSI और MACD, अपने डेटा के साथ।",
+    },
     name: "Candlestick Chart",
     description: "Full-featured financial charting — 5 moving-average types, Bollinger Bands, RSI & MACD with custom data.",
     href: "/candlestick-chart",
@@ -583,6 +660,10 @@ const TOOLS: ToolInfo[] = [
       name: "মার্কেট হিটম্যাপ",
       description: "স্টক-কনটেন্টের ৩০টা ক্যাটাগরির ট্রিম্যাপ — বাজারমূল্যে আকার, গ্রোথে রং, ৬টা প্যালেট সহ।",
     },
+    hi: {
+      name: "मार्केट हीटमैप",
+      description: "स्टॉक-कंटेंट की 30 कैटेगरी का ट्रीमैप — साइज़ मार्केट वैल्यू से, रंग ग्रोथ से, और 6 पैलेट।",
+    },
     name: "Market Heatmap",
     description: "A treemap of 30 stock-content categories — sized by market value, colored by growth, with 6 palettes.",
     href: "/market-heatmap",
@@ -613,6 +694,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "অ্যাসেট তুলনা",
       description: "একসাথে ৮টা মাইক্রোস্টক প্ল্যাটফর্ম পাশাপাশি মেলান — নরমালাইজড চার্ট, কোরিলেশন ম্যাট্রিক্স আর অ্যাসেটভিত্তিক RSI।",
+    },
+    hi: {
+      name: "असेट तुलना",
+      description: "8 माइक्रोस्टॉक प्लेटफ़ॉर्म एक साथ आमने-सामने मिलाएँ — नॉर्मलाइज़्ड चार्ट, कोरिलेशन मैट्रिक्स और हर असेट के RSI आँकड़े।",
     },
     name: "Asset Comparison",
     description: "Compare up to 8 microstock platforms side-by-side — normalized charts, correlation matrix and per-asset RSI stats.",
@@ -647,6 +732,10 @@ const TOOLS: ToolInfo[] = [
       name: "SVG থেকে EPS",
       description: "SVG ভেক্টরকে প্রিন্ট-রেডি EPS ফাইলে বদলান, পুরোটাই ব্রাউজারে — আপলোড নেই, সার্ভার নেই।",
     },
+    hi: {
+      name: "SVG से EPS",
+      description: "SVG वेक्टर को प्रिंट-रेडी EPS फ़ाइलों में बदलें — पूरा काम ब्राउज़र में, कोई अपलोड नहीं, कोई सर्वर नहीं।",
+    },
     name: "SVG to EPS",
     description: "Convert SVG vectors to print-ready EPS files entirely in your browser — no uploads, no server.",
     href: "/svg-to-eps",
@@ -674,6 +763,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "কান্ট্রি ম্যাপ জেনারেটর",
       description: "যেকোনো দেশের পরিষ্কার ভেক্টর-স্টাইল ম্যাপ — সাথে OpenStreetMap থেকে বিল্ডিং, পানি ও পার্কসহ আসল স্ট্রিট ম্যাপ।",
+    },
+    hi: {
+      name: "कंट्री मैप जेनरेटर",
+      description: "किसी भी देश का साफ़ वेक्टर-स्टाइल नक़्शा बनाएँ — साथ में OpenStreetMap से इमारतों, पानी और पार्कों वाला असली स्ट्रीट मैप।",
     },
     name: "Country Map Generator",
     description: "Generate clean vector-style maps of any country — plus real street maps with buildings, water and parks from OpenStreetMap.",
@@ -706,6 +799,10 @@ const TOOLS: ToolInfo[] = [
       name: "মকআপ জেনারেটর",
       description: "আপনার ডিজাইন প্রফেশনাল ডিভাইস মকআপে বসান — iPhone, MacBook ও আরও অনেক, ব্যাকগ্রাউন্ড প্রিসেট ও 2x এক্সপোর্ট সহ।",
     },
+    hi: {
+      name: "मॉकअप जेनरेटर",
+      description: "अपने डिज़ाइन प्रोफ़ेशनल डिवाइस मॉकअप पर रखें — iPhone, MacBook और अन्य, बैकग्राउंड प्रीसेट और 2x एक्सपोर्ट के साथ।",
+    },
     name: "Mockup Generator",
     description: "Place your designs on professional device mockups — iPhone, MacBook and more, with background presets and 2x export.",
     href: "/mockup-generator",
@@ -733,6 +830,10 @@ const TOOLS: ToolInfo[] = [
     bn: {
       name: "টাইটেল অপ্টিমাইজার",
       description: "স্টক টাইটেল স্কোর করুন, ঠিক করুন, নিখুঁত করুন — লাইভ SEO বিশ্লেষণ, A/B টেস্ট, বাল্ক স্কোরিং আর প্রমাণিত ফর্মুলা।",
+    },
+    hi: {
+      name: "टाइटल ऑप्टिमाइज़र",
+      description: "अपने स्टॉक टाइटल स्कोर करें, सुधारें और परफ़ेक्ट बनाएँ — लाइव SEO एनालिसिस, A/B टेस्ट, बल्क स्कोरिंग और आज़माए हुए फ़ॉर्मूले।",
     },
     name: "Title Optimizer",
     description: "Score, fix and perfect your stock titles — live SEO analysis, A/B testing, bulk scoring and proven formulas.",
@@ -769,6 +870,10 @@ const TOOLS: ToolInfo[] = [
       name: "ইভেন্ট ক্যালেন্ডার",
       description: "সারা বছরের ছুটি ও দিবস, স্টক-কনটেন্টের সুযোগে সাজানো — চাহিদা বাড়ার আগেই আপলোড পরিকল্পনা করুন।",
     },
+    hi: {
+      name: "इवेंट कैलेंडर",
+      description: "साल भर की छुट्टियाँ और दिवस, स्टॉक-कंटेंट के अवसरों से जोड़े हुए — मांग बढ़ने से पहले अपलोड की योजना बनाएँ।",
+    },
     name: "Events Calendar",
     description: "A full year of holidays and observances mapped to stock-content opportunities — plan uploads before demand spikes.",
     href: "/events",
@@ -793,6 +898,19 @@ const TOOLS: ToolInfo[] = [
   },
 ];
 
+/** Expanded card bodies, one file per translated language, keyed by tool id. */
+interface ToolBody {
+  features: string[];
+  steps: { title: string; detail: string }[];
+  output: string;
+  tips: string[];
+}
+
+const TOOL_BODIES: Record<TranslatedLocale, Record<string, ToolBody>> = {
+  bn: TOOL_BODY_BN,
+  hi: TOOL_BODY_HI,
+};
+
 // TOOLS keeps the English category as its data value; the visible label comes
 // from the dictionary, so filtering never depends on the active language.
 const CATEGORY_KEYS = ["all", "main", "creative", "analytics", "utility"] as const;
@@ -801,12 +919,12 @@ type CategoryKey = (typeof CATEGORY_KEYS)[number];
 // ─── Components ───
 function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: boolean; onToggle: () => void }) {
   const { locale, t } = useLanguage();
-  const bn = locale === "bn";
-  const name = bn ? tool.bn.name : tool.name;
-  const description = bn ? tool.bn.description : tool.description;
-  // The expanded body lives in tools.bn.ts; a tool missing from there keeps its
-  // English copy instead of rendering nothing.
-  const body = bn ? TOOL_BODY_BN[tool.id] : undefined;
+  const copy = locale === "bn" ? tool.bn : locale === "hi" ? tool.hi : undefined;
+  const name = copy?.name ?? tool.name;
+  const description = copy?.description ?? tool.description;
+  // The expanded body lives in tools.<locale>.ts; a tool missing from there
+  // keeps its English copy instead of rendering nothing.
+  const body = locale === "en" ? undefined : TOOL_BODIES[locale][tool.id];
   const features = body?.features ?? tool.features;
   const steps = body?.steps ?? tool.steps;
   const output = body?.output ?? tool.output;
