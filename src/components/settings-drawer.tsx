@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { SlidersHorizontal, X } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
 
 /**
  * Mobile-only settings drawer.
@@ -13,6 +14,7 @@ import { SlidersHorizontal, X } from "lucide-react";
  */
 export function SettingsDrawer() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const [available, setAvailable] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -49,7 +51,7 @@ export function SettingsDrawer() {
         data-settings-toggle
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        aria-label={open ? "Close settings" : "Open settings"}
+        aria-label={open ? t.drawer.closeAria : t.drawer.openAria}
         className={`fixed bottom-5 right-4 z-[60] flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold shadow-lg transition-all lg:hidden ${
           open
             ? "border border-border bg-surface text-text-primary shadow-black/10"
@@ -57,7 +59,7 @@ export function SettingsDrawer() {
         }`}
       >
         {open ? <X className="h-4 w-4" /> : <SlidersHorizontal className="h-4 w-4" />}
-        {open ? "Close" : "Settings"}
+        {open ? t.drawer.close : t.drawer.open}
       </button>
     </>
   );

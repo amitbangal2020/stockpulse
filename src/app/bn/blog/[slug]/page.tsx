@@ -1,45 +1,45 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BLOG_POSTS, getPostBySlug } from "@/lib/blog-posts";
-import { getBnPostBySlug } from "@/lib/blog-posts-bn";
+import { BLOG_POSTS_BN, formatBengaliDate, getBnPostBySlug } from "@/lib/blog-posts-bn";
 import { RenderMarkdown } from "@/components/render-markdown";
+import { BlogHeaderBn, BlogKeepReadingBn } from "@/components/blog-bn";
 import { Calendar, Clock, Tag } from "lucide-react";
-import { BlogHeader, BlogKeepReading } from "@/components/blog-chrome";
-import { BengaliPostLink } from "@/components/bengali-post-link";
 
 const SITE_URL = "https://www.abanti.in";
 
-// Pre-render every post at build time — fully static, crawlable HTML.
+// Pre-render every Bengali post at build time — same static, crawlable HTML as
+// the English side, only the text differs.
 export function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({ slug: post.slug }));
+  return BLOG_POSTS_BN.map((post) => ({ slug: post.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = getBnPostBySlug(slug);
   if (!post) return {};
 
-  const url = `${SITE_URL}/blog/${post.slug}`;
   const bnUrl = `${SITE_URL}/bn/blog/${post.slug}`;
-  const hasBengali = Boolean(getBnPostBySlug(post.slug));
+  const enUrl = `${SITE_URL}/blog/${post.slug}`;
+
   return {
     title: post.title,
     description: post.description,
     alternates: {
-      canonical: url,
-      // hreflang (only when a Bengali translation exists) — without it Google
-      // can end up choosing between the two versions itself.
-      ...(hasBengali
-        ? { languages: { en: url, bn: bnUrl, "x-default": url } }
-        : {}),
+      canonical: bnUrl,
+      languages: { en: enUrl, bn: bnUrl, "x-default": enUrl },
     },
     openGraph: {
       title: post.title,
       description: post.description,
-      url,
+      url: bnUrl,
       siteName: "StockPulse",
       type: "article",
+      locale: "bn_IN",
       publishedTime: post.date,
       tags: post.tags,
       images: [{ url: "/og-image.png", width: 1200, height: 630, alt: post.title }],
@@ -53,17 +53,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BengaliBlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = getBnPostBySlug(slug);
   if (!post) notFound();
 
-  // Article structured data for Google rich results.
+  // Bengali structured data, explicitly marked bn-IN so the rich result is
+  // attributed to the Bengali language version.
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.description,
+    inLanguage: "bn-IN",
     datePublished: post.date,
     author: { "@type": "Organization", name: "StockPulse", url: SITE_URL },
     publisher: {
@@ -71,11 +77,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       name: "StockPulse",
       logo: { "@type": "ImageObject", url: `${SITE_URL}/og-image.png` },
     },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${post.slug}` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/bn/blog/${post.slug}` },
     keywords: post.tags.join(", "),
   };
 
-  const otherPosts = BLOG_POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
+  const otherPosts = BLOG_POSTS_BN.filter((p) => p.slug !== post.slug).slice(0, 3);
 
   return (
     <div className="flex flex-1 flex-col lg:overflow-y-auto">
@@ -84,16 +90,17 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
 
-      {/* Page Heading — sticky, same fixed behaviour as other pages */}
-      <BlogHeader variant="post" />
+      <BlogHeaderBn variant="post" />
 
-      {/* Article */}
       <article className="flex-1 px-5 py-8">
         <div className="mx-auto max-w-3xl">
           <header className="mb-8">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               {post.tags.map((tag) => (
-                <span key={tag} className="flex items-center gap-1 rounded-full border border-accent/20 bg-accent-subtle px-2.5 py-0.5 text-[10px] font-semibold text-accent">
+                <span
+                  key={tag}
+                  className="flex items-center gap-1 rounded-full border border-accent/20 bg-accent-subtle px-2.5 py-0.5 text-[10px] font-semibold text-accent"
+                >
                   <Tag className="h-2.5 w-2.5" />
                   {tag}
                 </span>
@@ -106,7 +113,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <div className="mt-4 flex items-center gap-4 border-b border-border pb-6 text-[11px] text-text-muted">
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-3 w-3" />
-                {new Date(post.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                {formatBengaliDate(post.date)}
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="h-3 w-3" />
@@ -115,23 +122,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
           </header>
 
-          {getBnPostBySlug(post.slug) && (
-            <div className="mb-8">
-              <BengaliPostLink slug={post.slug} />
-            </div>
-          )}
-
           <RenderMarkdown source={post.body} />
 
-          {/* More Posts */}
           {otherPosts.length > 0 && (
             <div className="mt-12 border-t border-border pt-8">
-              <BlogKeepReading />
+              <BlogKeepReadingBn />
               <div className="grid gap-3 sm:grid-cols-2">
                 {otherPosts.map((p) => (
                   <Link
                     key={p.slug}
-                    href={`/blog/${p.slug}`}
+                    href={`/bn/blog/${p.slug}`}
                     className="rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent/40"
                   >
                     <h3 className="text-sm font-semibold text-text-primary">{p.title}</h3>

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ToolLayout } from "@/components/tool-layout";
+import { useLanguage } from "@/components/language-provider";
+import { format } from "@/lib/i18n/messages";
+import { TOOL_BODY_BN } from "./tools.bn";
 import {
   Sparkles, BarChart3, Video, Layers, CircleDot, LayoutGrid, Palette,
   Grid3X3, Type, FileCode, TrendingUp, GitCompare, Calendar, Monitor,
@@ -15,6 +18,12 @@ interface ToolInfo {
   id: string;
   name: string;
   description: string;
+  /** Bengali copy. Required, so a new tool cannot ship without a translation. */
+  bn: {
+    name: string;
+    description: string;
+    // Features, steps, output and tips follow in a later pass.
+  };
   href: string;
   icon: React.ReactNode;
   color: string;
@@ -29,6 +38,10 @@ const TOOLS: ToolInfo[] = [
   // ─── Main Tools ───
   {
     id: "generator",
+    bn: {
+      name: "মেটাডেটা জেনারেটর (MetaGen)",
+      description: "AI দিয়ে মাইক্রোস্টক মেটাডেটা ব্যাচে তৈরি — আপনার ফাইল থেকে টাইটেল, কীওয়ার্ড, ডেসক্রিপশন আর প্রম্পট।",
+    },
     name: "Metadata Generator (MetaGen)",
     description: "AI-powered batch metadata generation for microstock platforms — titles, keywords, descriptions and prompts from your files.",
     href: "/metagen",
@@ -68,6 +81,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "tracker",
+    bn: {
+      name: "Adobe Tracker",
+      description: "Adobe Stock অ্যাসেট রিয়েল-টাইমে খুঁজুন, ট্র্যাক ও বিশ্লেষণ করুন — লাইভ ডাউনলোড সংখ্যা, AI শনাক্তকরণ, ফিল্টার আর প্রতিযোগী-রিসার্চ।",
+    },
     name: "Adobe Tracker",
     description: "Search, track and analyze Adobe Stock assets in real time — live download counts, AI detection, filters and competitor research.",
     href: "/search",
@@ -100,6 +117,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "dashboard",
+    bn: {
+      name: "ড্যাশবোর্ড",
+      description: "আপনার ট্র্যাকিংয়ের মূল জায়গা — পোর্টফোলিওর হিসাব, ডাউনলোডের ট্রেন্ড আর প্রতিটা অ্যাসেটের পারফরম্যান্স।",
+    },
     name: "Dashboard",
     description: "Your tracking home base — portfolio stats, download trends and top performers for every asset you track.",
     href: "/dashboard",
@@ -126,6 +147,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "portfolio",
+    bn: {
+      name: "পোর্টফোলিও ম্যানেজার",
+      description: "এক গ্রিডে আপনার স্টক অ্যাসেট দেখা ও গুছিয়ে রাখা — মিডিয়া টাইপ অনুযায়ী ফিল্টার, দরকারি হিসেবে সাজানো।",
+    },
     name: "Portfolio Manager",
     description: "Browse and organize your stock assets in one grid — filter by media type and sort by what matters.",
     href: "/portfolio",
@@ -151,6 +176,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "watchlist",
+    bn: {
+      name: "ওয়াচলিস্ট",
+      description: "প্রিয় Adobe Stock অ্যাসেট স্টার দিয়ে রাখুন আর নজরে রাখুন — আপনার নিজের বানানো ছোট তালিকা।",
+    },
     name: "Watchlist",
     description: "Star and monitor your favorite Adobe Stock assets — a personal shortlist you control.",
     href: "/watchlist",
@@ -177,6 +206,10 @@ const TOOLS: ToolInfo[] = [
   // ─── Creative Tools ───
   {
     id: "svg-video",
+    bn: {
+      name: "SVG থেকে ভিডিও",
+      description: "অ্যানিমেটেড SVG-কে সত্যিকারের ভিডিও ফাইলে বদলান — MP4, WebM বা GIF, সাথে ফিল্টার, সাউন্ডট্র্যাক, ওয়াটারমার্ক ও ব্যাচ কিউ।",
+    },
     name: "SVG to Video",
     description: "Turn animated SVGs into real video files — MP4, WebM or GIF with filters, soundtrack, watermark and batch queue.",
     href: "/svg-to-video",
@@ -209,6 +242,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "dither",
+    bn: {
+      name: "ডিদার স্টুডিও",
+      description: "৯টা অ্যালগরিদমে রেট্রো ডিদারিং ইফেক্ট — Game Boy ও Commodore প্রিসেট, কাস্টম প্যালেট আর পিক্সেলেশন।",
+    },
     name: "Dither Studio",
     description: "Retro dithering effects with 9 algorithms, Game Boy & Commodore presets, custom palettes and pixelation.",
     href: "/dither-studio",
@@ -236,6 +273,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "halftone",
+    bn: {
+      name: "হাফটোন স্টুডিও",
+      description: "যেকোনো ছবি থেকে হাফটোন ডট আর্ট — ৩টা হাফটোন ইঞ্জিন, ৭টা প্রিন্ট-ধাঁচের প্রিসেট, হেক্সাগোনাল গ্রিড ও ডুওটোন প্যালেট।",
+    },
     name: "Halftone Studio",
     description: "Halftone dot art from any image — 3 halftone engines, 7 print-inspired presets, hexagonal grids and duotone palettes.",
     href: "/halftone-studio",
@@ -263,6 +304,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "bento",
+    bn: {
+      name: "বেন্টো বিল্ডার",
+      description: "এক ক্লিকে সুন্দর বেন্টো-গ্রিড লেআউট — শাফল করুন, স্পেসিং ঠিক করুন, PNG বা ভেক্টর SVG এক্সপোর্ট করুন।",
+    },
     name: "Bento Builder",
     description: "Generate beautiful bento-grid layouts in one click — shuffle, tune spacing and export as PNG or vector SVG.",
     href: "/bento-builder",
@@ -287,6 +332,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "color-palette",
+    bn: {
+      name: "কালার প্যালেট",
+      description: "যেকোনো ছবি থেকে সুন্দর কালার প্যালেট বের করুন — নাম, শতাংশ আর এক ক্লিকে CSS ভেরিয়েবল।",
+    },
     name: "Color Palette",
     description: "Extract beautiful color palettes from any image — with names, percentages and one-click CSS variables.",
     href: "/color-palette",
@@ -312,6 +361,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "color-harmonizer",
+    bn: {
+      name: "কালার হারমনাইজার",
+      description: "একটা বেস রং থেকে নিখুঁত কালার হারমোনি — ইন্টারঅ্যাকটিভ কালার হুইলে ৭ রকম হারমোনি।",
+    },
     name: "Color Harmonizer",
     description: "Generate perfect color harmonies from one base color — 7 harmony types on an interactive color wheel.",
     href: "/color-harmonizer",
@@ -336,6 +389,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "ascii",
+    bn: {
+      name: "ASCII ভিশন",
+      description: "যেকোনো ছবিকে ASCII আর্টে বদলান — একাধিক ক্যারেক্টার সেট, রঙিন মোড আর সাথে সাথে টেক্সট এক্সপোর্ট।",
+    },
     name: "ASCII Vision",
     description: "Convert any image into ASCII art — multiple character sets, colored mode and instant text export.",
     href: "/ascii-vision",
@@ -364,6 +421,10 @@ const TOOLS: ToolInfo[] = [
   // ─── Analytics Tools ───
   {
     id: "trending",
+    bn: {
+      name: "ট্রেন্ডিং",
+      description: "Adobe Stock-এ এখন কী চলছে দেখুন — লাইভ ডেটা থেকে ট্রেন্ডিং নিশ, সেরা কনট্রিবিউটর আর ক্যাটাগরি ভাগ।",
+    },
     name: "Trending",
     description: "See what's hot on Adobe Stock right now — trending niches, top contributors and category breakdowns from live data.",
     href: "/trending",
@@ -391,6 +452,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "keywords",
+    bn: {
+      name: "কীওয়ার্ড অ্যানালাইজার",
+      description: "যেকোনো কীওয়ার্ডের চাহিদা, প্রতিযোগিতা ও ট্রেন্ড বিশ্লেষণ — নিশ সাজেশন আর অপ্টিমাইজেশনের টিপস সহ।",
+    },
     name: "Keyword Analyzer",
     description: "Analyze any keyword's demand, competition and trend — with niche suggestions and optimization tips.",
     href: "/keywords",
@@ -420,6 +485,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "portfolio-analytics",
+    bn: {
+      name: "পোর্টফোলিও অ্যানালিটিক্স",
+      description: "৮টা পারফরম্যান্স মেট্রিকে নিজের পোর্টফোলিও মাপুন — রাডার ও বার চার্টে সেরা পারফরমার ও বাজারের সাথে তুলনা।",
+    },
     name: "Portfolio Analytics",
     description: "Benchmark your portfolio across 8 performance metrics — radar & bar charts comparing you to top performers and the market.",
     href: "/portfolio-analytics",
@@ -447,6 +516,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "trend",
+    bn: {
+      name: "ট্রেন্ড প্রেডিক্টর",
+      description: "Adobe Stock ডেটা থেকে রিয়েল-টাইম ট্রেন্ড পূর্বাভাস — মাসের আউটলুক, কনফিডেন্স স্কোর আর ক্যাটাগরি অনুযায়ী সুযোগ।",
+    },
     name: "Trend Predictor",
     description: "Real-time trend forecasting from Adobe Stock data — monthly outlooks, confidence scores and niche opportunities by category.",
     href: "/trend-predictor",
@@ -475,6 +548,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "candlestick",
+    bn: {
+      name: "ক্যান্ডেলস্টিক চার্ট",
+      description: "পূর্ণাঙ্গ ফাইন্যান্সিয়াল চার্ট — ৫ ধরনের মুভিং এভারেজ, বোলিঙ্গার ব্যান্ড, RSI ও MACD, নিজের ডেটা দিয়ে।",
+    },
     name: "Candlestick Chart",
     description: "Full-featured financial charting — 5 moving-average types, Bollinger Bands, RSI & MACD with custom data.",
     href: "/candlestick-chart",
@@ -502,6 +579,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "heatmap",
+    bn: {
+      name: "মার্কেট হিটম্যাপ",
+      description: "স্টক-কনটেন্টের ৩০টা ক্যাটাগরির ট্রিম্যাপ — বাজারমূল্যে আকার, গ্রোথে রং, ৬টা প্যালেট সহ।",
+    },
     name: "Market Heatmap",
     description: "A treemap of 30 stock-content categories — sized by market value, colored by growth, with 6 palettes.",
     href: "/market-heatmap",
@@ -529,6 +610,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "comparison",
+    bn: {
+      name: "অ্যাসেট তুলনা",
+      description: "একসাথে ৮টা মাইক্রোস্টক প্ল্যাটফর্ম পাশাপাশি মেলান — নরমালাইজড চার্ট, কোরিলেশন ম্যাট্রিক্স আর অ্যাসেটভিত্তিক RSI।",
+    },
     name: "Asset Comparison",
     description: "Compare up to 8 microstock platforms side-by-side — normalized charts, correlation matrix and per-asset RSI stats.",
     href: "/asset-comparison",
@@ -558,6 +643,10 @@ const TOOLS: ToolInfo[] = [
   // ─── Utility Tools ───
   {
     id: "svg-eps",
+    bn: {
+      name: "SVG থেকে EPS",
+      description: "SVG ভেক্টরকে প্রিন্ট-রেডি EPS ফাইলে বদলান, পুরোটাই ব্রাউজারে — আপলোড নেই, সার্ভার নেই।",
+    },
     name: "SVG to EPS",
     description: "Convert SVG vectors to print-ready EPS files entirely in your browser — no uploads, no server.",
     href: "/svg-to-eps",
@@ -582,6 +671,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "country-map",
+    bn: {
+      name: "কান্ট্রি ম্যাপ জেনারেটর",
+      description: "যেকোনো দেশের পরিষ্কার ভেক্টর-স্টাইল ম্যাপ — সাথে OpenStreetMap থেকে বিল্ডিং, পানি ও পার্কসহ আসল স্ট্রিট ম্যাপ।",
+    },
     name: "Country Map Generator",
     description: "Generate clean vector-style maps of any country — plus real street maps with buildings, water and parks from OpenStreetMap.",
     href: "/country-map",
@@ -609,6 +702,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "mockup",
+    bn: {
+      name: "মকআপ জেনারেটর",
+      description: "আপনার ডিজাইন প্রফেশনাল ডিভাইস মকআপে বসান — iPhone, MacBook ও আরও অনেক, ব্যাকগ্রাউন্ড প্রিসেট ও 2x এক্সপোর্ট সহ।",
+    },
     name: "Mockup Generator",
     description: "Place your designs on professional device mockups — iPhone, MacBook and more, with background presets and 2x export.",
     href: "/mockup-generator",
@@ -633,6 +730,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "title-optimizer",
+    bn: {
+      name: "টাইটেল অপ্টিমাইজার",
+      description: "স্টক টাইটেল স্কোর করুন, ঠিক করুন, নিখুঁত করুন — লাইভ SEO বিশ্লেষণ, A/B টেস্ট, বাল্ক স্কোরিং আর প্রমাণিত ফর্মুলা।",
+    },
     name: "Title Optimizer",
     description: "Score, fix and perfect your stock titles — live SEO analysis, A/B testing, bulk scoring and proven formulas.",
     href: "/title-optimizer",
@@ -664,6 +765,10 @@ const TOOLS: ToolInfo[] = [
   },
   {
     id: "events",
+    bn: {
+      name: "ইভেন্ট ক্যালেন্ডার",
+      description: "সারা বছরের ছুটি ও দিবস, স্টক-কনটেন্টের সুযোগে সাজানো — চাহিদা বাড়ার আগেই আপলোড পরিকল্পনা করুন।",
+    },
     name: "Events Calendar",
     description: "A full year of holidays and observances mapped to stock-content opportunities — plan uploads before demand spikes.",
     href: "/events",
@@ -688,10 +793,24 @@ const TOOLS: ToolInfo[] = [
   },
 ];
 
-const CATEGORIES = ["All", "Main", "Creative", "Analytics", "Utility"];
+// TOOLS keeps the English category as its data value; the visible label comes
+// from the dictionary, so filtering never depends on the active language.
+const CATEGORY_KEYS = ["all", "main", "creative", "analytics", "utility"] as const;
+type CategoryKey = (typeof CATEGORY_KEYS)[number];
 
 // ─── Components ───
 function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: boolean; onToggle: () => void }) {
+  const { locale, t } = useLanguage();
+  const bn = locale === "bn";
+  const name = bn ? tool.bn.name : tool.name;
+  const description = bn ? tool.bn.description : tool.description;
+  // The expanded body lives in tools.bn.ts; a tool missing from there keeps its
+  // English copy instead of rendering nothing.
+  const body = bn ? TOOL_BODY_BN[tool.id] : undefined;
+  const features = body?.features ?? tool.features;
+  const steps = body?.steps ?? tool.steps;
+  const output = body?.output ?? tool.output;
+  const tips = body?.tips ?? tool.tips;
   return (
     <div className={`rounded-2xl border transition-all ${isExpanded ? "border-accent/30 bg-surface shadow-lg" : "border-border bg-surface hover:border-accent/20"}`}>
       <button onClick={onToggle}
@@ -701,10 +820,12 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-text-primary">{tool.name}</h3>
-            <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-[9px] font-medium text-text-muted">{tool.category}</span>
+            <h3 className="text-sm font-semibold text-text-primary">{name}</h3>
+            <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-[9px] font-medium text-text-muted">
+              {t.howItWorks.categories[tool.category.toLowerCase() as CategoryKey] ?? tool.category}
+            </span>
           </div>
-          <p className="mt-0.5 text-[11px] text-text-muted line-clamp-1">{tool.description}</p>
+          <p className="mt-0.5 text-[11px] text-text-muted line-clamp-1">{description}</p>
         </div>
         <ChevronDown className={`h-4 w-4 shrink-0 text-text-muted transition-transform ${isExpanded ? "rotate-180" : ""}`} />
       </button>
@@ -714,10 +835,10 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
           {/* Features */}
           <div className="mt-4">
             <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
-              <Zap className="h-3 w-3" style={{ color: tool.color }} /> Features ({tool.features.length})
+              <Zap className="h-3 w-3" style={{ color: tool.color }} /> {format(t.howItWorks.features, { count: features.length })}
             </p>
             <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-              {tool.features.map((feature, i) => (
+              {features.map((feature, i) => (
                 <div key={i} className="flex items-start gap-1.5">
                   <Check className="mt-0.5 h-3 w-3 shrink-0" style={{ color: tool.color }} />
                   <span className="text-[11px] text-text-secondary leading-snug">{feature}</span>
@@ -728,8 +849,8 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
 
           {/* Steps */}
           <div className="mt-4 space-y-3">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">How to use</p>
-            {tool.steps.map((step, i) => (
+            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">{t.howItWorks.howToUse}</p>
+            {steps.map((step, i) => (
               <div key={i} className="flex gap-3">
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: tool.color }}>
                   {i + 1}
@@ -744,17 +865,17 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
 
           {/* Output */}
           <div className="mt-4 rounded-xl border border-border bg-bg-secondary/50 p-3">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-1">Output</p>
-            <p className="text-[11px] text-text-secondary">{tool.output}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-1">{t.howItWorks.output}</p>
+            <p className="text-[11px] text-text-secondary">{output}</p>
           </div>
 
           {/* Tips */}
           <div className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
             <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-600">
-              <Lightbulb className="h-3 w-3" /> Tips
+              <Lightbulb className="h-3 w-3" /> {t.howItWorks.tips}
             </p>
             <ul className="space-y-1">
-              {tool.tips.map((tip, i) => (
+              {tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-1.5 text-[11px] text-text-secondary">
                   <Star className="mt-0.5 h-2.5 w-2.5 shrink-0 text-amber-500" />
                   {tip}
@@ -767,7 +888,7 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
           <Link href={tool.href}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white transition-all hover:brightness-110"
             style={{ backgroundColor: tool.color }}>
-            Open {tool.name} <ExternalLink className="h-3.5 w-3.5" />
+            {format(t.howItWorks.openTool, { name })} <ExternalLink className="h-3.5 w-3.5" />
           </Link>
         </div>
       )}
@@ -777,10 +898,12 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
 
 // ─── Main Page ───
 export default function HowItWorksPage() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const { t } = useLanguage();
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>("all");
   const [expandedTool, setExpandedTool] = useState<string | null>(null);
 
-  const filteredTools = activeCategory === "All" ? TOOLS : TOOLS.filter(t => t.category === activeCategory);
+  const inCategory = (tool: ToolInfo, key: CategoryKey) => tool.category.toLowerCase() === key;
+  const filteredTools = activeCategory === "all" ? TOOLS : TOOLS.filter((tool) => inCategory(tool, activeCategory));
 
   return (
     <ToolLayout>
@@ -792,23 +915,23 @@ export default function HowItWorksPage() {
             <Lightbulb className="h-4 w-4 text-accent" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-text-primary">How It Works</h2>
-            <p className="text-[11px] text-text-muted">Every tool & feature, step by step — {TOOLS.length} tools documented</p>
+            <h2 className="text-sm font-semibold text-text-primary">{t.howItWorks.title}</h2>
+            <p className="text-[11px] text-text-muted">{format(t.howItWorks.subtitle, { count: TOOLS.length })}</p>
           </div>
         </div>
 
         {/* Category Tabs — scrollable on mobile */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar border-b border-border bg-bg px-5 py-3">
-          {CATEGORIES.map(cat => (
+          {CATEGORY_KEYS.map(cat => (
             <button key={cat} onClick={() => { setActiveCategory(cat); setExpandedTool(null); }}
               className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
                 activeCategory === cat
                   ? "bg-accent text-white"
                   : "border border-border bg-surface text-text-secondary hover:border-accent/30"
               }`}>
-              {cat}
-              {cat !== "All" && (
-                <span className="ml-1 text-[9px] opacity-70">({TOOLS.filter(t => t.category === cat).length})</span>
+              {t.howItWorks.categories[cat]}
+              {cat !== "all" && (
+                <span className="ml-1 text-[9px] opacity-70">({TOOLS.filter((tool) => inCategory(tool, cat)).length})</span>
               )}
             </button>
           ))}

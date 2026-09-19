@@ -1,24 +1,21 @@
 import Link from "next/link";
 import { BLOG_POSTS } from "@/lib/blog-posts";
-import { Calendar, Clock, Tag, BookOpen } from "lucide-react";
+import { BLOG_POSTS_BN } from "@/lib/blog-posts-bn";
+import { Calendar, Clock } from "lucide-react";
+import { BlogEmptyState, BlogHeader } from "@/components/blog-chrome";
+import { BengaliPostLink } from "@/components/bengali-post-link";
 
 export default function BlogIndexPage() {
   return (
     <div className="flex flex-1 flex-col lg:overflow-y-auto">
       {/* Page Heading — sticky, same fixed behaviour as other pages */}
-      <div className="sticky top-[45px] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
-          <BookOpen className="h-4 w-4 text-accent" />
-        </div>
-        <div>
-          <h2 className="text-sm font-semibold text-text-primary">Blog</h2>
-          <p className="text-[11px] text-text-muted">Microstock tips, AI workflows & keyword strategy</p>
-        </div>
-      </div>
+      <BlogHeader />
 
       {/* Posts */}
       <div className="flex-1 p-5">
         <div className="mx-auto max-w-3xl space-y-4">
+          {BLOG_POSTS_BN.length > 0 && <BengaliPostLink />}
+
           {BLOG_POSTS.map((post) => (
             <Link
               key={post.slug}
@@ -49,17 +46,7 @@ export default function BlogIndexPage() {
             </Link>
           ))}
 
-          {BLOG_POSTS.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/10">
-                <Tag className="h-6 w-6 text-accent" />
-              </div>
-              <h3 className="font-heading text-lg font-semibold text-text-primary">Coming Soon</h3>
-              <p className="mt-1.5 max-w-sm text-sm text-text-muted">
-                Guides on AI metadata, keyword research and microstock strategy are on the way.
-              </p>
-            </div>
-          )}
+          {BLOG_POSTS.length === 0 && <BlogEmptyState />}
         </div>
       </div>
     </div>

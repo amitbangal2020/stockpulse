@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/lib/blog-posts";
+import { BLOG_POSTS_BN } from "@/lib/blog-posts-bn";
 
 const BASE_URL = "https://www.abanti.in";
 
@@ -35,6 +36,13 @@ const infoPages = [
   { path: "/blog", changeFrequency: "weekly" as const, priority: 0.7 },
 ];
 
+// Every post exists in English and Bengali, sharing a slug. Listing both URLs
+// with each other as alternates is the sitemap half of the hreflang pair.
+const blogLanguages = (slug: string) => ({
+  en: `${BASE_URL}/blog${slug}`,
+  bn: `${BASE_URL}/bn/blog${slug}`,
+});
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
@@ -50,7 +58,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: page.changeFrequency,
       priority: page.priority,
+      ...(page.path === "/blog" ? { alternates: { languages: blogLanguages("") } } : {}),
     })),
+    {
+      url: `${BASE_URL}/bn/blog`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+      alternates: { languages: blogLanguages("") },
+    },
     ...tools.map((tool) => ({
       url: `${BASE_URL}${tool.path}`,
       lastModified: now,
@@ -62,6 +78,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(post.date),
       changeFrequency: "monthly" as const,
       priority: 0.6,
+      alternates: { languages: blogLanguages(`/${post.slug}`) },
+    })),
+    ...BLOG_POSTS_BN.map((post) => ({
+      url: `${BASE_URL}/bn/blog/${post.slug}`,
+      lastModified: new Date(post.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+      alternates: { languages: blogLanguages(`/${post.slug}`) },
     })),
   ];
 

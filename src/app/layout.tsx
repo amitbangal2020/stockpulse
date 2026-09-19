@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, JetBrains_Mono, Noto_Sans_Bengali } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { LanguageProvider } from "@/components/language-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { ProtectionProvider } from "@/components/protection-provider";
 import { ConditionalAnalytics } from "@/components/conditional-analytics";
@@ -23,6 +24,14 @@ const jakarta = Plus_Jakarta_Sans({
 const mono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Applied by CSS only while <html lang="bn"> — Inter and Jakarta have no
+// Bengali glyphs, so the browser's fallback would look inconsistent.
+const bengali = Noto_Sans_Bengali({
+  variable: "--font-bengali",
+  subsets: ["bengali"],
   display: "swap",
 });
 
@@ -105,7 +114,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jakarta.variable} ${mono.variable} h-full`}
+      className={`${inter.variable} ${jakarta.variable} ${mono.variable} ${bengali.variable} h-full`}
       suppressHydrationWarning
     >
       <head>
@@ -113,7 +122,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-screen flex flex-col antialiased lg:h-screen lg:overflow-hidden">
-        <ThemeProvider><AuthProvider><ProtectionProvider>{children}</ProtectionProvider></AuthProvider></ThemeProvider>
+        <ThemeProvider><LanguageProvider><AuthProvider><ProtectionProvider>{children}</ProtectionProvider></AuthProvider></LanguageProvider></ThemeProvider>
         <ConditionalAnalytics />
       </body>
     </html>

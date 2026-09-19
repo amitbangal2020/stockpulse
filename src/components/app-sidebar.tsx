@@ -1,6 +1,8 @@
 "use client";
 
 import { useTheme } from "@/components/theme-provider";
+import { useLanguage } from "@/components/language-provider";
+import { LanguageMenu } from "@/components/language-menu";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -64,6 +66,10 @@ const BOTTOM_ITEMS = [
 
 export function AppSidebar() {
   const { theme, setTheme } = useTheme();
+  const { t, locale } = useLanguage();
+  // Bengali visitors land on the Bengali posts straight from the sidebar — the
+  // English blog is one click away via the header link on those pages.
+  const blogHref = locale === "bn" ? "/bn/blog" : "/blog";
   const [mounted, setMounted] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const pathname = usePathname();
@@ -107,12 +113,13 @@ export function AppSidebar() {
         </span>
       </Link>
       <div ref={mobileNavRef} className="flex flex-1 items-center gap-1 overflow-x-auto no-scrollbar">
-        <Link href="/metagen" data-active={isActive("/metagen") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/metagen") ? "bg-accent text-white" : "text-text-secondary"}`}>Generate</Link>
-        <Link href="/search" data-active={isActive("/search") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/search") ? "bg-accent text-white" : "text-text-secondary"}`}>Tracker</Link>
-        <button onClick={() => setShowTools(!showTools)} data-active={isAnyToolActive || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isAnyToolActive ? "bg-accent text-white" : "text-text-secondary"}`}>Tools</button>
-        <Link href="/blog" data-active={isActive("/blog") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/blog") ? "bg-accent text-white" : "text-text-secondary"}`}>Blog</Link>
-        <Link href="/how-it-works" data-active={isActive("/how-it-works") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/how-it-works") ? "bg-accent text-white" : "text-text-secondary"}`}>Guides</Link>
+        <Link href="/metagen" data-active={isActive("/metagen") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/metagen") ? "bg-accent text-white" : "text-text-secondary"}`}>{t.nav.quickGenerate}</Link>
+        <Link href="/search" data-active={isActive("/search") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/search") ? "bg-accent text-white" : "text-text-secondary"}`}>{t.nav.quickTracker}</Link>
+        <button onClick={() => setShowTools(!showTools)} data-active={isAnyToolActive || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isAnyToolActive ? "bg-accent text-white" : "text-text-secondary"}`}>{t.nav.quickTools}</button>
+        <Link href={blogHref} data-active={isActive(blogHref) || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive(blogHref) ? "bg-accent text-white" : "text-text-secondary"}`}>{t.nav.blog}</Link>
+        <Link href="/how-it-works" data-active={isActive("/how-it-works") || undefined} className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium ${isActive("/how-it-works") ? "bg-accent text-white" : "text-text-secondary"}`}>{t.nav.quickGuides}</Link>
       </div>
+      <LanguageMenu compact />
     </div>
 
     <aside className="hidden w-[220px] shrink-0 flex-col border-r border-border bg-bg-secondary/80 backdrop-blur-sm lg:flex">
@@ -136,8 +143,8 @@ export function AppSidebar() {
             <Globe className="h-4 w-4 text-text-muted" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-text-primary">Get Extension</p>
-            <p className="text-[10px] text-text-muted">Chrome Web Store</p>
+            <p className="text-xs font-semibold text-text-primary">{t.nav.getExtension}</p>
+            <p className="text-[10px] text-text-muted">{t.nav.chromeStore}</p>
           </div>
         </div>
       </div>
@@ -145,7 +152,7 @@ export function AppSidebar() {
       {/* Menu */}
       <div className="px-4">
         <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
-          Menu
+          {t.nav.menu}
         </p>
         <nav className="flex flex-col gap-0.5">
           {/* Main Items */}
@@ -174,7 +181,7 @@ export function AppSidebar() {
             }`}
           >
             <Grid3X3 className="h-4 w-4" />
-            All Tools
+            {t.nav.allTools}
             <ChevronRight className={`ml-auto h-3.5 w-3.5 transition-transform ${showTools ? "rotate-90" : ""}`} />
           </button>
         </nav>
@@ -187,15 +194,15 @@ export function AppSidebar() {
       <div className="px-4">
         <nav className="flex flex-col gap-0.5 border-t border-border pt-3">
           <Link
-            href="/blog"
+            href={blogHref}
             className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-              isActive("/blog")
+              isActive(blogHref)
                 ? "bg-accent text-white shadow-md shadow-accent/20"
                 : "text-text-secondary hover:bg-accent-subtle hover:text-accent"
             }`}
           >
             <BookOpen className="h-4 w-4" />
-            Blog
+            {t.nav.blog}
           </Link>
           <Link
             href="/how-it-works"
@@ -206,12 +213,12 @@ export function AppSidebar() {
             }`}
           >
             <HelpCircle className="h-4 w-4" />
-            How it Works
+            {t.nav.howItWorks}
           </Link>
         </nav>
       </div>
 
-      {/* Dark Mode Toggle */}
+      {/* Dark Mode (the language dropdown lives in the top bar) */}
       <div className="mx-4 mt-3 mb-4">
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -226,7 +233,7 @@ export function AppSidebar() {
           ) : (
             <div className="h-4 w-4" />
           )}
-          {mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
+          {mounted && theme === "dark" ? t.nav.lightMode : t.nav.darkMode}
         </button>
       </div>
 

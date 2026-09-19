@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LanguageMenu } from "@/components/language-menu";
 import {
   Search,
   BarChart3,
@@ -100,15 +101,15 @@ export function TopTabs() {
   const tabs = getTabsForPath(pathname);
   const heading = getHeadingForPath(pathname);
 
-  if (tabs.length === 0 && !heading) return null;
-  
   const HeadingIcon = heading?.icon;
-  
+
+  // Always rendered: this bar also holds the language dropdown, so it stays
+  // consistent on pages that have no page heading or tabs.
   return (
-    <nav className="flex items-center border-b border-border bg-bg px-4 sm:px-5 py-2.5">
+    <nav className="flex items-center gap-2 border-b border-border bg-bg px-3 py-2 sm:px-5">
       {/* Page Heading - Left */}
       {heading && HeadingIcon && (
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0 mr-3 sm:mr-6">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 mr-1 sm:mr-6">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
             <HeadingIcon className="h-4 w-4 text-accent" />
           </div>
@@ -121,7 +122,7 @@ export function TopTabs() {
       
       {/* Tabs - Right/Center (scrollable on mobile) */}
       {tabs.length > 0 && (
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto no-scrollbar">
           {tabs.map((tab) => {
             const active = pathname === tab.href;
             return (
@@ -140,6 +141,11 @@ export function TopTabs() {
           })}
         </div>
       )}
+
+      {/* Language — top-right; on phones the mobile top bar carries it */}
+      <div className="ml-auto hidden shrink-0 lg:block">
+        <LanguageMenu />
+      </div>
     </nav>
   );
 }

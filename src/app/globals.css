@@ -115,6 +115,24 @@
   background: var(--text-muted);
 }
 
+/* Bengali has its own face (Inter/Jakarta ship latin glyphs only). */
+html[lang="bn"] body,
+html[lang="bn"] input,
+html[lang="bn"] button,
+html[lang="bn"] select,
+html[lang="bn"] textarea {
+  font-family: var(--font-bengali), var(--font-inter), system-ui, sans-serif;
+}
+
+html[lang="bn"] h1,
+html[lang="bn"] h2,
+html[lang="bn"] h3,
+html[lang="bn"] h4,
+html[lang="bn"] h5,
+html[lang="bn"] h6 {
+  font-family: var(--font-bengali), var(--font-jakarta), system-ui, sans-serif;
+}
+
 body {
   background: var(--bg);
   color: var(--text-primary);

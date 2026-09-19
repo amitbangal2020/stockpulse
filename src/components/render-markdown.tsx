@@ -67,10 +67,67 @@ export function RenderMarkdown({ source }: { source: string }) {
     listItems = [];
   };
 
-  for (const raw of lines) {
-    const line = raw.trimEnd();
+  const isTableRow = (value: string) => /^\|.*\|$/.test(value.trim());
 
-    if (line.startsWith("### ")) {
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li].trimEnd();
+
+    if (isTableRow(line)) {
+      // A table is a run of | cells | lines; the header separator (|---|---|)
+      // is dropped rather than rendered.
+      flushParagraph();
+      flushList();
+      const rows: string[][] = [];
+      while (li < lines.length && isTableRow(lines[li])) {
+        rows.push(
+          lines[li]
+            .trim()
+            .slice(1, -1)
+            .split("|")
+            .map((cell) => cell.trim())
+        );
+        li++;
+      }
+      li--; // the loop's own increment steps past the table
+
+      const [head, ...body] = rows.filter(
+        (row) => !row.every((cell) => /^:?-{2,}:?$/.test(cell))
+      );
+      if (head) {
+        blocks.push(
+          <div key={`tbl${key++}`} className="overflow-x-auto">
+            <table className="w-full border-collapse text-left text-[13px]">
+              <thead>
+                <tr>
+                  {head.map((cell, i) => (
+                    <th
+                      key={`th${i}`}
+                      className="border-b border-border px-3 py-2 font-semibold text-text-primary"
+                    >
+                      {renderInline(cell, `th${i}`)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {body.map((row, ri) => (
+                  <tr key={`tr${ri}`}>
+                    {row.map((cell, ci) => (
+                      <td
+                        key={`td${ri}-${ci}`}
+                        className="border-b border-border/60 px-3 py-2 align-top text-text-secondary"
+                      >
+                        {renderInline(cell, `td${ri}-${ci}`)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+    } else if (line.startsWith("### ")) {
       flushParagraph();
       flushList();
       blocks.push(
