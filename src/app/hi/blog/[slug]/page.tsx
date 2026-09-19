@@ -3,10 +3,10 @@ import { BlogPostView } from "@/components/blog-locale-view";
 import { localizedPost, localizedPosts } from "@/lib/blog-posts-localized";
 import { blogPostMetadata } from "@/lib/blog-seo";
 
-// Pre-render every Bengali post at build time — same static, crawlable HTML as
-// the English side, only the text differs.
+// Pre-render every Hindi post at build time — static, crawlable HTML, exactly
+// like the English and Bengali sides.
 export function generateStaticParams() {
-  return localizedPosts("bn").map((post) => ({ slug: post.slug }));
+  return localizedPosts("hi").map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({
@@ -15,15 +15,15 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = localizedPost("bn", slug);
-  return post ? blogPostMetadata("bn", post) : {};
+  const post = localizedPost("hi", slug);
+  return post ? blogPostMetadata("hi", post) : {};
 }
 
-export default async function BengaliBlogPostPage({
+export default async function HindiBlogPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <BlogPostView locale="bn" slug={slug} />;
+  return <BlogPostView locale="hi" slug={slug} />;
 }

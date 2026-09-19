@@ -7,19 +7,34 @@ import { useLanguage } from "@/components/language-provider";
 import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, type Locale } from "@/lib/i18n/locales";
 import { localizedPath } from "@/lib/i18n/localized-path";
 
+/** Panel geometry, used both to place it and to decide which way it opens. */
+const PANEL_WIDTH = 160; // matches w-40
+const ITEM_HEIGHT = 34; // one option row, padding included
+const PANEL_PADDING = 8; // the p-1 wrapper
+const GAP = 6; // distance from the trigger
+/** Keep a long language list scrollable instead of taller than the window. */
+const MAX_PANEL_VH = 0.6;
+
 /**
- * Language dropdown for the top-right corner of the tool shell.
+ * Language dropdown: `full` for the sidebar row, `compact` for the phone top
+ * bar, default for anywhere else that needs a chip.
  *
  * The panel is positioned with `fixed` coordinates measured from the trigger:
  * the tool column is `lg:overflow-hidden`, which would clip an absolutely
  * positioned dropdown rendered inside it.
  */
-export function LanguageMenu({ compact = false }: { compact?: boolean }) {
+export function LanguageMenu({
+  compact = false,
+  full = false,
+}: {
+  compact?: boolean;
+  full?: boolean;
+}) {
   const { locale, setLocale, t } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, right: 8 });
+  const [pos, setPos] = useState({ top: 0, left: 8 });
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   const choose = useCallback(
@@ -38,8 +53,26 @@ export function LanguageMenu({ compact = false }: { compact?: boolean }) {
   const place = useCallback(() => {
     const rect = triggerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    setPos({ top: rect.bottom + 6, right: Math.max(8, window.innerWidth - rect.right) });
-  }, []);
+
+    const width = PANEL_WIDTH;
+    // Sidebar rows line up on their left edge; floating chips keep the panel's
+    // right edge under the trigger, the way a menu usually behaves.
+    const left = full
+      ? rect.left
+      : Math.min(Math.max(8, rect.right - width), Math.max(8, window.innerWidth - width - 8));
+
+    // The sidebar trigger sits at the bottom of the window, so a panel that only
+    // opens downwards pushes its last languages — Hindi, for one — off screen.
+    // Measure the room and flip above the trigger when there isn't enough.
+    const height = Math.min(
+      LOCALES.length * ITEM_HEIGHT + PANEL_PADDING,
+      Math.round(window.innerHeight * MAX_PANEL_VH),
+    );
+    const below = rect.bottom + GAP + height <= window.innerHeight - GAP;
+    const top = below ? rect.bottom + GAP : Math.max(GAP, rect.top - GAP - height);
+
+    setPos({ top, left });
+  }, [full]);
 
   useEffect(() => {
     if (!open) return;
@@ -78,11 +111,19 @@ export function LanguageMenu({ compact = false }: { compact?: boolean }) {
         aria-expanded={open}
         title={t.language.change}
         aria-label={`${t.language.change}: ${LOCALE_LABELS[locale]}`}
-        className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-accent/40 hover:text-text-primary"
+        className={
+          full
+            ? "flex w-full items-center gap-2.5 rounded-xl border border-border bg-surface px-3 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
+            : "flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-accent/40 hover:text-text-primary"
+        }
       >
-        <Globe className="h-3.5 w-3.5 shrink-0 text-text-muted" />
+        <Globe className={full ? "h-4 w-4 shrink-0 text-text-muted" : "h-3.5 w-3.5 shrink-0 text-text-muted"} />
         {compact ? LOCALE_SHORT[locale] : LOCALE_LABELS[locale]}
-        <ChevronDown className={`h-3 w-3 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`shrink-0 transition-transform ${full ? "ml-auto h-3.5 w-3.5" : "h-3 w-3"} ${
+            open ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
       {open && (
@@ -90,8 +131,8 @@ export function LanguageMenu({ compact = false }: { compact?: boolean }) {
           data-language-menu
           role="listbox"
           aria-label={t.language.label}
-          style={{ top: pos.top, right: pos.right }}
-          className="fixed z-[70] w-40 overflow-hidden rounded-xl border border-border bg-surface-elevated p-1 shadow-2xl"
+          style={{ top: pos.top, left: pos.left }}
+          className="fixed z-[70] max-h-[60vh] w-40 overflow-y-auto rounded-xl border border-border bg-surface-elevated p-1 shadow-2xl"
         >
           {LOCALES.map((code) => (
             <button

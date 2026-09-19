@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BLOG_POSTS, getPostBySlug } from "@/lib/blog-posts";
-import { getBnPostBySlug } from "@/lib/blog-posts-bn";
+import { availableLocales } from "@/lib/blog-posts-localized";
 import { RenderMarkdown } from "@/components/render-markdown";
 import { Calendar, Clock, Tag } from "lucide-react";
 import { BlogHeader, BlogKeepReading } from "@/components/blog-chrome";
-import { BengaliPostLink } from "@/components/bengali-post-link";
-
-const SITE_URL = "https://www.abanti.in";
+import { BlogLanguageMenu } from "@/components/blog-language-menu";
+import { blogArticleJsonLd, blogPostMetadata } from "@/lib/blog-seo";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 
 // Pre-render every post at build time — fully static, crawlable HTML.
 export function generateStaticParams() {
@@ -20,37 +20,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = getPostBySlug(slug);
   if (!post) return {};
 
-  const url = `${SITE_URL}/blog/${post.slug}`;
-  const bnUrl = `${SITE_URL}/bn/blog/${post.slug}`;
-  const hasBengali = Boolean(getBnPostBySlug(post.slug));
-  return {
-    title: post.title,
-    description: post.description,
-    alternates: {
-      canonical: url,
-      // hreflang (only when a Bengali translation exists) — without it Google
-      // can end up choosing between the two versions itself.
-      ...(hasBengali
-        ? { languages: { en: url, bn: bnUrl, "x-default": url } }
-        : {}),
-    },
-    openGraph: {
-      title: post.title,
-      description: post.description,
-      url,
-      siteName: "StockPulse",
-      type: "article",
-      publishedTime: post.date,
-      tags: post.tags,
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: post.title }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.description,
-      images: ["/og-image.png"],
-    },
-  };
+  // Canonical plus an hreflang entry per translation that exists.
+  return blogPostMetadata(DEFAULT_LOCALE, post);
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -58,24 +29,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
-  // Article structured data for Google rich results.
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.description,
-    datePublished: post.date,
-    author: { "@type": "Organization", name: "StockPulse", url: SITE_URL },
-    publisher: {
-      "@type": "Organization",
-      name: "StockPulse",
-      logo: { "@type": "ImageObject", url: `${SITE_URL}/og-image.png` },
-    },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${post.slug}` },
-    keywords: post.tags.join(", "),
-  };
-
+  const articleJsonLd = blogArticleJsonLd(DEFAULT_LOCALE, post);
   const otherPosts = BLOG_POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
+  const translations = availableLocales(post.slug).filter((locale) => locale !== DEFAULT_LOCALE);
 
   return (
     <div className="flex flex-1 flex-col lg:overflow-y-auto">
@@ -115,9 +71,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
           </header>
 
-          {getBnPostBySlug(post.slug) && (
+          {translations.length > 0 && (
             <div className="mb-8">
-              <BengaliPostLink slug={post.slug} />
+              <BlogLanguageMenu targets={translations} slug={post.slug} />
             </div>
           )}
 

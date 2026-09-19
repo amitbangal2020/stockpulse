@@ -3,6 +3,7 @@
 import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
 import { LanguageMenu } from "@/components/language-menu";
+import { blogPath } from "@/lib/i18n/localized-path";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -67,9 +68,10 @@ const BOTTOM_ITEMS = [
 export function AppSidebar() {
   const { theme, setTheme } = useTheme();
   const { t, locale } = useLanguage();
-  // Bengali visitors land on the Bengali posts straight from the sidebar — the
-  // English blog is one click away via the header link on those pages.
-  const blogHref = locale === "bn" ? "/bn/blog" : "/blog";
+  // The sidebar opens the blog in the visitor's language, so a Bengali or Hindi
+  // reader lands on articles they can actually read; the other languages stay
+  // one click away via the pills on those pages.
+  const blogHref = blogPath(locale);
   const [mounted, setMounted] = useState(false);
   const [showTools, setShowTools] = useState(false);
   const pathname = usePathname();
@@ -218,8 +220,10 @@ export function AppSidebar() {
         </nav>
       </div>
 
-      {/* Dark Mode (the language dropdown lives in the top bar) */}
-      <div className="mx-4 mt-3 mb-4">
+      {/* Language + Dark Mode — the shell's own controls sit in the sidebar,
+          so the page header stays about the page. */}
+      <div className="mx-4 mt-3 mb-4 space-y-2">
+        <LanguageMenu full />
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="flex w-full items-center gap-2.5 rounded-xl border border-border bg-surface px-3 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"

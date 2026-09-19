@@ -6,7 +6,7 @@
 // Add new posts here newest-first, exactly like `blog-posts.ts`.
 
 import type { BlogPost } from "./blog-posts";
-import { BN_POST_SLUGS } from "./blog-posts-bn-slugs";
+import { assertSlugsMatchLocale } from "./blog-translated-slugs";
 
 const BN_MONTHS = [
   "জানুয়ারি",
@@ -337,15 +337,10 @@ export function getBnPostBySlug(slug: string): BlogPost | undefined {
 /**
  * The language switcher needs to know which posts have a Bengali twin without
  * dragging the post bodies into every visitor's client bundle, so the slugs
- * live in `blog-posts-bn-slugs.ts` too (the pairs share their slug, which keeps
- * the pairing one-to-one). This is the tripwire for the two drifting apart.
+ * live in `blog-translated-slugs.ts` too (the pairs share their slug, which
+ * keeps the pairing one-to-one). This is the tripwire for the two drifting apart.
  */
-if (process.env.NODE_ENV !== "production") {
-  const posted = BLOG_POSTS_BN.map((post) => post.slug);
-  if (posted.join() !== BN_POST_SLUGS.join()) {
-    console.warn("[blog] blog-posts-bn-slugs.ts is out of sync with BLOG_POSTS_BN", {
-      posted,
-      listed: [...BN_POST_SLUGS],
-    });
-  }
-}
+assertSlugsMatchLocale(
+  "bn",
+  BLOG_POSTS_BN.map((post) => post.slug),
+);

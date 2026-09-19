@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
-import { BLOG_POSTS } from "@/lib/blog-posts";
+import { BLOG_POSTS, type BlogPost } from "@/lib/blog-posts";
 import { BLOG_POSTS_BN } from "@/lib/blog-posts-bn";
+import { BLOG_POSTS_HI } from "@/lib/blog-posts-hi";
+import { blogPath } from "@/lib/i18n/localized-path";
+import { LOCALES, type Locale } from "@/lib/i18n/locales";
 
 const BASE_URL = "https://www.abanti.in";
 
@@ -31,17 +34,21 @@ const tools = [
   { path: "/watchlist", changeFrequency: "weekly" as const, priority: 0.6 },
 ];
 
-const infoPages = [
-  { path: "/how-it-works", changeFrequency: "monthly" as const, priority: 0.4 },
-  { path: "/blog", changeFrequency: "weekly" as const, priority: 0.7 },
-];
+/**
+ * Every post exists in each language under its own URL, sharing the slug.
+ * Listing all of them with each other as alternates is the sitemap half of the
+ * hreflang pair.
+ */
+const blogLanguages = (slug: string) =>
+  Object.fromEntries(
+    LOCALES.map((locale) => [locale, `${BASE_URL}${blogPath(locale, slug)}`]),
+  );
 
-// Every post exists in English and Bengali, sharing a slug. Listing both URLs
-// with each other as alternates is the sitemap half of the hreflang pair.
-const blogLanguages = (slug: string) => ({
-  en: `${BASE_URL}/blog${slug}`,
-  bn: `${BASE_URL}/bn/blog${slug}`,
-});
+const postsByLocale: { locale: Locale; posts: BlogPost[] }[] = [
+  { locale: "en", posts: BLOG_POSTS },
+  { locale: "bn", posts: BLOG_POSTS_BN },
+  { locale: "hi", posts: BLOG_POSTS_HI },
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -53,40 +60,35 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1.0,
     },
-    ...infoPages.map((page) => ({
-      url: `${BASE_URL}${page.path}`,
-      lastModified: now,
-      changeFrequency: page.changeFrequency,
-      priority: page.priority,
-      ...(page.path === "/blog" ? { alternates: { languages: blogLanguages("") } } : {}),
-    })),
     {
-      url: `${BASE_URL}/bn/blog`,
+      url: `${BASE_URL}/how-it-works`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
+    // The blog index in every language, each pointing at its siblings.
+    ...LOCALES.map((locale) => ({
+      url: `${BASE_URL}${blogPath(locale)}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
-      priority: 0.7,
+      priority: locale === "en" ? 0.7 : 0.6,
       alternates: { languages: blogLanguages("") },
-    },
+    })),
     ...tools.map((tool) => ({
       url: `${BASE_URL}${tool.path}`,
       lastModified: now,
       changeFrequency: tool.changeFrequency,
       priority: tool.priority,
     })),
-    ...BLOG_POSTS.map((post) => ({
-      url: `${BASE_URL}/blog/${post.slug}`,
-      lastModified: new Date(post.date),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-      alternates: { languages: blogLanguages(`/${post.slug}`) },
-    })),
-    ...BLOG_POSTS_BN.map((post) => ({
-      url: `${BASE_URL}/bn/blog/${post.slug}`,
-      lastModified: new Date(post.date),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-      alternates: { languages: blogLanguages(`/${post.slug}`) },
-    })),
+    ...postsByLocale.flatMap(({ locale, posts }) =>
+      posts.map((post) => ({
+        url: `${BASE_URL}${blogPath(locale, post.slug)}`,
+        lastModified: new Date(post.date),
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+        alternates: { languages: blogLanguages(`/${post.slug}`) },
+      })),
+    ),
   ];
 
   return staticPages;

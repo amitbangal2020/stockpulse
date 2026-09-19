@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans, JetBrains_Mono, Noto_Sans_Bengali } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, JetBrains_Mono, Noto_Sans_Bengali, Noto_Sans_Devanagari } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { AuthProvider } from "@/lib/auth-context";
@@ -32,6 +32,13 @@ const mono = JetBrains_Mono({
 const bengali = Noto_Sans_Bengali({
   variable: "--font-bengali",
   subsets: ["bengali"],
+  display: "swap",
+});
+
+// Same deal for Hindi, which needs Devanagari.
+const hindi = Noto_Sans_Devanagari({
+  variable: "--font-hindi",
+  subsets: ["devanagari"],
   display: "swap",
 });
 
@@ -114,7 +121,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jakarta.variable} ${mono.variable} ${bengali.variable} h-full`}
+      className={`${inter.variable} ${jakarta.variable} ${mono.variable} ${bengali.variable} ${hindi.variable} h-full`}
       suppressHydrationWarning
     >
       <head>

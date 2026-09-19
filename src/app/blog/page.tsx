@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { BLOG_POSTS } from "@/lib/blog-posts";
-import { BLOG_POSTS_BN } from "@/lib/blog-posts-bn";
+import { availableLocales } from "@/lib/blog-posts-localized";
 import { Calendar, Clock } from "lucide-react";
 import { BlogEmptyState, BlogHeader } from "@/components/blog-chrome";
-import { BengaliPostLink } from "@/components/bengali-post-link";
+import { BlogLanguageMenu } from "@/components/blog-language-menu";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 
 export default function BlogIndexPage() {
+  // English is the source language, so every translation that exists can be
+  // offered here — the pills are resolved on the server from real posts.
+  const translations = availableLocales().filter((locale) => locale !== DEFAULT_LOCALE);
+
   return (
     <div className="flex flex-1 flex-col lg:overflow-y-auto">
       {/* Page Heading — sticky, same fixed behaviour as other pages */}
@@ -14,7 +19,7 @@ export default function BlogIndexPage() {
       {/* Posts */}
       <div className="flex-1 p-5">
         <div className="mx-auto max-w-3xl space-y-4">
-          {BLOG_POSTS_BN.length > 0 && <BengaliPostLink />}
+          {translations.length > 0 && <BlogLanguageMenu targets={translations} />}
 
           {BLOG_POSTS.map((post) => (
             <Link

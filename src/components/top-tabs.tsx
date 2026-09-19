@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LanguageMenu } from "@/components/language-menu";
 import {
   Search,
   BarChart3,
@@ -103,8 +102,10 @@ export function TopTabs() {
 
   const HeadingIcon = heading?.icon;
 
-  // Always rendered: this bar also holds the language dropdown, so it stays
-  // consistent on pages that have no page heading or tabs.
+  // Nothing to show means no bar at all — an empty bordered strip is worse than
+  // no strip. (The language switcher lives in the sidebar, not here.)
+  if (!heading && tabs.length === 0) return null;
+
   return (
     <nav className="flex items-center gap-2 border-b border-border bg-bg px-3 py-2 sm:px-5">
       {/* Page Heading - Left */}
@@ -141,11 +142,6 @@ export function TopTabs() {
           })}
         </div>
       )}
-
-      {/* Language — top-right; on phones the mobile top bar carries it */}
-      <div className="ml-auto hidden shrink-0 lg:block">
-        <LanguageMenu />
-      </div>
     </nav>
   );
 }
