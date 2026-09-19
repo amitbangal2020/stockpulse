@@ -280,11 +280,11 @@ export default function EventsPage() {
               })}
             </div>
 
-            {/* Month Bar */}
-            <div className="mt-6 flex items-center gap-1 rounded-xl border border-border bg-surface p-1 max-w-[560px] w-full overflow-x-auto no-scrollbar">
+            {/* Month Bar — a grid so all twelve fit without clipping Dec */}
+            <div className="mt-6 grid w-full max-w-[560px] grid-cols-6 gap-1 rounded-xl border border-border bg-surface p-1 sm:grid-cols-12">
               {MONTH_NAMES.map((m, i) => (
                 <button key={m} onClick={() => goToMonth(i, currentYear)}
-                  className={`rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all shrink-0 ${
+                  className={`rounded-lg px-1 py-1.5 text-center text-[11px] font-semibold transition-all ${
                     i === currentMonth
                       ? "bg-accent text-white shadow-md"
                       : "text-text-muted hover:text-text-primary hover:bg-accent/5"

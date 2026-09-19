@@ -2,8 +2,18 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { useTheme } from "@/components/theme-provider";
 import { mulberry32, type Rng } from "@/lib/prng";
-import { Download, RefreshCw, Grid3X3, Shuffle, ChevronUp, ChevronDown, LayoutGrid, SlidersHorizontal, Move, Settings } from "lucide-react";
+import { Download, RefreshCw, Grid3X3, Shuffle, ChevronUp, ChevronDown, LayoutGrid, SlidersHorizontal, Move, Settings, Palette } from "lucide-react";
+
+// Artboard colours. The export fills with whatever is selected here, so the
+// PNG always matches the canvas on screen.
+const BG_PRESETS = [
+  { label: "Light", color: "#f8fafc" },
+  { label: "Dark", color: "#0f172a" },
+  { label: "Cream", color: "#f5efe6" },
+  { label: "Teal", color: "#0f2e2a" },
+];
 
 // ─── UI Components ───
 function Section({ title, icon, defaultOpen = true, children }: { title: string; icon?: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }) {
@@ -132,6 +142,8 @@ function generateGrid(style: GridStyle, cols: number, rows: number, rng: Rng = M
 
 // ─── Main Component ───
 export default function BentoBuilderPage() {
+  const { theme } = useTheme();
+  const [canvasBg, setCanvasBg] = useState("#f8fafc");
   const [gridStyle, setGridStyle] = useState<GridStyle>("bento");
   const [width, setWidth] = useState(400);
   const [height, setHeight] = useState(300);
@@ -184,12 +196,24 @@ export default function BentoBuilderPage() {
     randomize();
   }, [randomized, randomize]);
 
+  // Follow the app theme so the artboard is never a white slab in dark mode,
+  // until the visitor picks a swatch themselves — their choice then wins.
+  const pickedBg = useRef(false);
+  useEffect(() => {
+    if (pickedBg.current) return;
+    setCanvasBg(theme === "dark" ? "#0f172a" : "#f8fafc");
+  }, [theme]);
+  const chooseBg = (color: string) => {
+    pickedBg.current = true;
+    setCanvasBg(color);
+  };
+
   const exportPNG = useCallback(() => {
     const canvas = document.createElement("canvas");
     canvas.width = width * 2; canvas.height = height * 2;
     const ctx = canvas.getContext("2d")!;
     ctx.scale(2, 2);
-    ctx.fillStyle = "#f8fafc";
+    ctx.fillStyle = canvasBg;
     ctx.fillRect(0, 0, width, height);
 
     const cellW = (width - margins * 2 - gap * (columns - 1)) / columns;
@@ -210,7 +234,7 @@ export default function BentoBuilderPage() {
     link.download = `bento-${gridStyle}-${width}x${height}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
-  }, [cells, width, height, columns, rows, gap, margins, radius, gridStyle]);
+  }, [cells, width, height, columns, rows, gap, margins, radius, gridStyle, canvasBg]);
 
   return (
     <ToolLayout>
@@ -231,8 +255,8 @@ export default function BentoBuilderPage() {
         <div ref={stageRef} className="flex flex-1 items-center justify-center overflow-auto bg-bg-secondary p-4 sm:p-8">
           {/* Sized box holds the scaled footprint so the stage never overflows. */}
           <div className="relative shrink-0" style={{ width: width * fit, height: height * fit }}>
-          {/* Matches the #f8fafc the PNG export fills, in either theme. */}
-          <div ref={canvasRef} className="absolute left-0 top-0 shadow-xl rounded-xl transition-transform duration-200" style={{ width, height, padding: margins, transform: `scale(${fit})`, transformOrigin: "top left", backgroundColor: "#f8fafc" }}>
+          {/* Same colour the PNG export fills, so the export matches the screen. */}
+          <div ref={canvasRef} className="absolute left-0 top-0 shadow-xl rounded-xl transition-transform duration-200" style={{ width, height, padding: margins, transform: `scale(${fit})`, transformOrigin: "top left", backgroundColor: canvasBg }}>
             {cells.map((cell, i) => {
               const innerW = width - margins * 2;
               const innerH = height - margins * 2;
@@ -305,6 +329,18 @@ export default function BentoBuilderPage() {
           </Section>
 
           {/* Export */}
+          <Section title="Artboard" icon={<Palette className="h-3 w-3" />}>
+            <p className="text-[10px] leading-relaxed text-text-muted">The PNG export fills with the colour you pick here.</p>
+            <div className="grid grid-cols-4 gap-1.5">
+              {BG_PRESETS.map((preset) => (
+                <button key={preset.color} onClick={() => chooseBg(preset.color)} title={preset.label}
+                  className={`h-7 rounded-lg border transition-all ${canvasBg === preset.color ? "border-accent ring-1 ring-accent/30" : "border-border"}`}
+                  style={{ background: preset.color }} />
+              ))}
+            </div>
+            <span className="text-[10px] text-text-muted">{BG_PRESETS.find((p) => p.color === canvasBg)?.label ?? "Custom"}</span>
+          </Section>
+
           <Section title="Export" icon={<Download className="h-3 w-3" />}>
             <div>
               <label className="mb-1.5 block text-xs font-medium tracking-tight text-text-secondary">PNG Scale</label>
