@@ -15,7 +15,7 @@ export function BlogHeader({ variant = "index" }: { variant?: "index" | "post" }
   const { t } = useLanguage();
 
   return (
-    <div className="sticky top-[45px] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
+    <div className="sticky top-[var(--shell-top)] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
       {variant === "post" ? (
         <Link
           href="/blog"

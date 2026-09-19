@@ -95,53 +95,58 @@ function getHeadingForPath(pathname: string): { title: string; subtitle: string;
   return null;
 }
 
+/**
+ * Page heading strip under the top nav. Visually distinct from the nav itself:
+ * the heading sits in a plain text row (no icon tile), while sub-section tabs
+ * render as pill chips with a soft filled state — the underline language is
+ * reserved for the shell nav above.
+ */
 export function TopTabs() {
   const pathname = usePathname();
   const tabs = getTabsForPath(pathname);
   const heading = getHeadingForPath(pathname);
 
-  const HeadingIcon = heading?.icon;
-
-  // Nothing to show means no bar at all — an empty bordered strip is worse than
-  // no strip. (The language switcher lives in the sidebar, not here.)
+  // Nothing to show means no bar at all — an empty strip is worse than
+  // no strip. (The language switcher lives in the top nav, not here.)
   if (!heading && tabs.length === 0) return null;
 
   return (
-    <nav className="flex items-center gap-2 border-b border-border bg-bg px-3 py-2 sm:px-5">
-      {/* Page Heading - Left */}
-      {heading && HeadingIcon && (
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0 mr-1 sm:mr-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
-            <HeadingIcon className="h-4 w-4 text-accent" />
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-text-primary">{heading.title}</h2>
-            <p className="hidden sm:block text-[11px] text-text-muted">{heading.subtitle}</p>
-          </div>
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border bg-bg px-4 py-2.5 sm:px-6">
+      {/* Page heading — quiet text, no tile */}
+      {heading && (
+        <div className="min-w-0">
+          <h2 className="truncate text-sm font-semibold tracking-tight text-text-primary">
+            {heading.title}
+          </h2>
+          <p className="hidden text-[11px] leading-tight text-text-muted sm:block">
+            {heading.subtitle}
+          </p>
         </div>
       )}
-      
-      {/* Tabs - Right/Center (scrollable on mobile) */}
+
+      {/* Sub-section chips */}
       {tabs.length > 0 && (
-        <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto no-scrollbar">
+        <nav className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto no-scrollbar" aria-label="Sections">
           {tabs.map((tab) => {
             const active = pathname === tab.href;
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all shrink-0 ${
+                aria-current={active ? "page" : undefined}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                   active
-                    ? "bg-accent/10 text-accent shadow-sm"
-                    : "text-text-secondary hover:bg-accent/5 hover:text-text-primary"
-                }`}>
-                <tab.icon className="h-4 w-4" />
+                    ? "border-accent bg-accent text-white"
+                    : "border-border bg-surface text-text-secondary hover:border-accent/40 hover:text-accent"
+                }`}
+              >
+                <tab.icon className="h-3.5 w-3.5" />
                 {tab.label}
               </Link>
             );
           })}
-        </div>
+        </nav>
       )}
-    </nav>
+    </div>
   );
 }

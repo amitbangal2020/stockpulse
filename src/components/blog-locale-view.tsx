@@ -35,7 +35,7 @@ function BlogLocaleHeader({ locale }: { locale: TranslatedLocale }) {
   const chrome = BLOG_CHROME[locale];
 
   return (
-    <div className="sticky top-[45px] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
+    <div className="sticky top-[var(--shell-top)] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
       <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
         <BookOpen className="h-4 w-4 text-accent" />
       </div>
@@ -127,7 +127,7 @@ export function BlogPostView({ locale, slug }: { locale: TranslatedLocale; slug:
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogArticleJsonLd(locale, post)) }}
       />
 
-      <div className="sticky top-[45px] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
+      <div className="sticky top-[var(--shell-top)] z-20 flex items-center gap-3 border-b border-border bg-bg px-5 py-2.5 lg:top-0">
         <Link
           href={blogPath(locale)}
           className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-[10px] font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"

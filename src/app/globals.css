@@ -12,6 +12,8 @@
 }
 
 :root {
+  /* Height of the mobile top nav — measured at runtime by AppNav. */
+  --shell-top: 88px;
   --bg: #f8fafc;
   --bg-secondary: #f1f5f9;
   --surface: #ffffff;
@@ -236,7 +238,7 @@ h1, h2, h3, h4, h5, h6 {
   html.settings-drawer-open .tool-settings-panel {
     display: block;
     position: fixed;
-    top: 45px;
+    top: var(--shell-top);
     right: 0;
     bottom: 0;
     left: 0;
@@ -318,6 +320,46 @@ h1, h2, h3, h4, h5, h6 {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
+}
+
+/*
+ * Design tokens for the top-nav shell.
+ *
+ * Shape language is deliberately different from the old left-sidebar shell:
+ * pill controls, underline section indicators, soft-ringed surfaces instead of
+ * hard 1px boxes. Colors come from the same palette variables as before.
+ */
+.pill {
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.pill-active {
+  border-radius: 9999px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.section-underline {
+  position: relative;
+}
+
+.section-underline::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.surface-soft {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Stat card */

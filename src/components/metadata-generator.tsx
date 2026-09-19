@@ -865,41 +865,36 @@ export function MetadataGenerator() {
     <div className="flex flex-1 flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
       {/* Main Content */}
       <main className="flex flex-1 flex-col overflow-y-auto min-h-0">
-        {/* Header */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-bg px-4 sm:px-5 py-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
-            <Sparkles className="h-4 w-4 text-accent" />
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-text-primary">Generator</h2>
-            <p className="text-[11px] text-text-muted">AI-powered metadata for microstock platforms</p>
+        {/* Header — quiet text row with an underline tab switch, distinct from the old boxed tile + pill toggle */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-bg px-4 sm:px-6 py-3">
+          <div className="flex items-baseline gap-2.5">
+            <h2 className="font-heading text-base font-bold tracking-tight text-text-primary">Generator</h2>
+            <p className="hidden text-[11px] text-text-muted sm:block">AI-powered metadata for microstock platforms</p>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2 sm:gap-3">
-            {/* Tab Toggle */}
-            <div className="flex overflow-hidden rounded-lg border border-border bg-surface">
+            {/* Mode switch — underline tabs */}
+            <div className="flex items-center gap-4">
               <button onClick={() => setActiveTab("metadata")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold transition-all ${
-                  activeTab === "metadata"
-                    ? "bg-accent text-white shadow-sm"
-                    : "text-text-muted hover:text-text-primary"
+                className={`relative flex items-center gap-1.5 py-1 text-xs font-semibold transition-colors ${
+                  activeTab === "metadata" ? "text-accent" : "text-text-muted hover:text-text-primary"
                 }`}>
                 <Sparkles className="h-3 w-3" /> Metadata
+                {activeTab === "metadata" && <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 rounded-full bg-accent" />}
               </button>
               <button onClick={() => setActiveTab("prompt")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold transition-all ${
-                  activeTab === "prompt"
-                    ? "bg-accent text-white shadow-sm"
-                    : "text-text-muted hover:text-text-primary"
+                className={`relative flex items-center gap-1.5 py-1 text-xs font-semibold transition-colors ${
+                  activeTab === "prompt" ? "text-accent" : "text-text-muted hover:text-text-primary"
                 }`}>
                 <FileCode className="h-3 w-3" /> Prompt
+                {activeTab === "prompt" && <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 rounded-full bg-accent" />}
               </button>
             </div>
             <button onClick={() => setShowApiKeyModal(true)}
-              className="flex items-center gap-1.5 rounded-lg border border-dashed border-yellow-500/30 bg-yellow-500/5 px-3 py-1.5 text-[10px] font-medium text-yellow-600 transition-colors hover:bg-yellow-500/10">
+              className="flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-accent-hover shadow-sm">
               <Key className="h-3 w-3" /> Add API Key
             </button>
-            <div className="flex items-center gap-1.5 rounded-lg bg-surface px-3 py-1.5 text-[10px] font-medium text-text-secondary border border-border">
-              <div className={`h-2 w-2 rounded-full ${hasAnyActiveKey ? "bg-green-500" : "bg-red-500"}`} />
+            <div className="flex items-center gap-1.5 text-[11px] font-medium text-text-secondary">
+              <div className={`h-1.5 w-1.5 rounded-full ${hasAnyActiveKey ? "bg-green-500" : "bg-red-500"}`} />
               {hasAnyActiveKey ? `${PROVIDERS.find(p => p.id === activeProvider)?.name} (${allKeys[activeProvider]?.filter(k => k.isActive).length || 0})` : "No Key"}
             </div>
           </div>
@@ -912,18 +907,18 @@ export function MetadataGenerator() {
             onDragLeave={(e) => { e.currentTarget.classList.remove("border-accent", "bg-accent-subtle"); }}
             onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove("border-accent", "bg-accent-subtle"); addFiles(e.dataTransfer.files); }}
             onClick={() => document.getElementById("fileInput")?.click()}
-            className="cursor-pointer rounded-xl border-2 border-dashed border-border bg-bg-secondary p-8 text-center transition-all hover:border-accent hover:bg-accent-subtle/50"
+            className="cursor-pointer rounded-2xl border border-dashed border-border bg-surface p-10 text-center transition-all hover:border-accent hover:bg-accent-subtle/40"
           >
             <input id="fileInput" type="file" multiple accept="image/*,video/*,.eps,.svg" className="hidden"
               onChange={(e) => addFiles(e.target.files)} />
-            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
+            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-accent/10">
               <Upload className="h-5 w-5 text-accent" />
             </div>
             <h3 className="text-sm font-semibold text-text-primary">Drop images, videos, or EPS vectors here</h3>
             <p className="mt-1.5 text-xs text-text-muted">JPG, PNG, WEBP, EPS, MP4, MOV, AVI, MKV and more · Mixed files supported</p>
-            <div className="mt-3 flex items-center justify-center gap-2">
+            <div className="mt-3 flex items-center justify-center gap-1.5">
               {["Images", "Videos", "EPS", "SVG"].map(t => (
-                <span key={t} className="rounded-full border border-border bg-surface px-3 py-1 text-[10px] font-medium text-text-secondary">{t}</span>
+                <span key={t} className="rounded-full bg-accent-subtle px-3 py-1 text-[10px] font-medium text-accent">{t}</span>
               ))}
             </div>
           </div>
@@ -1001,7 +996,7 @@ export function MetadataGenerator() {
             ))}
             {files.length === 0 && (
               <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
-                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/10">
+                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
                   <ImageIcon className="h-6 w-6 text-accent" />
                 </div>
                 <h3 className="font-heading text-lg font-semibold text-text-primary">Start Generating</h3>
@@ -1023,7 +1018,7 @@ export function MetadataGenerator() {
       </main>
 
       {/* Right Sidebar */}
-      <aside className="w-full shrink-0 flex-col overflow-y-auto min-h-0 border-t border-border bg-bg-secondary lg:w-[280px] lg:border-t-0 lg:border-l tool-settings-panel">
+      <aside className="w-full shrink-0 flex-col overflow-y-auto min-h-0 border-t border-border bg-bg-secondary lg:w-[320px] lg:border-t-0 lg:border-l tool-settings-panel">
         <div className="p-4">
           <Section title="AI Provider" icon={<Key className="h-3 w-3" />}>
             <div className="relative">
@@ -1673,15 +1668,17 @@ function FileCard({ file, onRemove, onCopy, copiedField, platform, activeTab, qu
 
 /* ─── Helpers ─── */
 
-function Section({ title, icon, children, defaultOpen = true }: { title: string; icon: React.ReactNode; children: React.ReactNode; defaultOpen?: boolean }) {
+function Section({ title, children, defaultOpen = true }: { title: string; icon?: React.ReactNode; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
+  // Restyled: quiet grey label + soft card body, instead of the old uppercase
+  // accent-label-over-divider treatment.
   return (
-    <div className="mb-4">
-      <button onClick={() => setOpen(!open)} className="mb-3 flex w-full items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-accent">
-        {icon}{title}<span className="flex-1 border-t border-border-subtle" />
-        {open ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
+    <div className="surface-soft mb-3 overflow-hidden rounded-2xl">
+      <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 px-3 py-2.5 text-left">
+        <span className="flex-1 text-xs font-semibold text-text-secondary">{title}</span>
+        {open ? <ChevronUp className="h-3.5 w-3.5 text-text-muted" /> : <ChevronDown className="h-3.5 w-3.5 text-text-muted" />}
       </button>
-      {open && <div className="space-y-3">{children}</div>}
+      {open && <div className="space-y-3 px-3 pb-3">{children}</div>}
     </div>
   );
 }
@@ -1774,7 +1771,7 @@ function ActionButton({ icon, label, variant, disabled, onClick }: {
   };
   return (
     <button disabled={disabled} onClick={onClick}
-      className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${styles[variant]}`}>
+      className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed ${styles[variant]}`}>
       <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center [&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
       {label}
     </button>
