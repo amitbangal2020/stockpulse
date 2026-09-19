@@ -60,10 +60,14 @@ export function ensureCompleteSentences(text: string, maxLength: number): string
 }
 
 // ─── Clean Keywords ───
+// Unicode-safe: keep letters/digits/spaces/hyphens from ANY script. The old
+// `/[^a-z0-9\s\-]/g` wiped every non-ASCII character, which left CJK,
+// Cyrillic or accented keywords as empty strings and collapsed a Japanese or
+// Chinese batch to just "3d". Locale-aware toLowerCase handles Turkish İ etc.
 export function cleanKeywords(keywords: string[], maxCount: number): string[] {
   if (!keywords || !Array.isArray(keywords)) return [];
   const cleaned = keywords
-    .map(kw => kw.toLowerCase().trim().replace(/[^a-z0-9\s\-]/g, '').replace(/\s+/g, ' '))
+    .map(kw => kw.toLocaleLowerCase().trim().replace(/[^\p{L}\p{N}\s\-]/gu, '').replace(/\s+/g, ' '))
     .filter(kw => kw.length > 1 && kw.length < 60)
     .filter((kw, i, arr) => arr.indexOf(kw) === i);
   return cleaned.slice(0, maxCount);
@@ -342,7 +346,7 @@ export function buildMetadataPrompt(
   // of the prompt (English), so a non-English selection needs a strong,
   // explicit override — a passing mention only reaches the keywords.
   const languageInstruction = opts.language && opts.language !== 'English'
-    ? `\nLANGUAGE REQUIREMENT — STRICT, HIGHEST PRIORITY:\n- The TITLE, DESCRIPTION and KEYWORDS you generate MUST be written in ${opts.language}. Do NOT write them in English.\n- The text must read as natural, native ${opts.language} — not a literal word-by-word translation.\n- Keep the "prompt" field (the image-generation prompt) in English: AI image models understand English best.\n- Keep the "category" exactly as one of the listed English category names.`
+    ? `\nLANGUAGE REQUIREMENT — STRICT, HIGHEST PRIORITY:\n- The TITLE, DESCRIPTION and KEYWORDS you generate MUST be written in ${opts.language}. Do NOT write them in English.\n- The text must read as natural, native ${opts.language} — not a literal word-by-word translation.\n- KEYWORDS must also be in ${opts.language}: write them in ${opts.language} script (e.g. Japanese keywords in kanji/kana, Chinese in hanzi), NOT romanized and NOT translated to English. Generate the FULL number of keywords requested — every keyword must be non-empty and in ${opts.language}.\n- The "lowercase" and "no special characters" keyword rules apply to Latin-script languages only; ${opts.language} keywords keep their native script and normal capitalization.\n- Keep the "prompt" field (the image-generation prompt) in English: AI image models understand English best.\n- Keep the "category" exactly as one of the listed English category names.`
     : '';
 
   // Prompt style instructions
@@ -462,7 +466,7 @@ ${languageInstruction}
 Generate:
 1. A highly searchable, SEO-optimized title (${minTitleInstruction}) Focus on high-volume commercial search terms, placing the main subject and key action at the beginning. Do NOT use generic terms or filler words (beautiful, amazing, stunning, 4k, hd, high quality). Keep it highly descriptive, natural, and clickable.
 2. A detailed, search-friendly description (${descLenText}). Incorporate relevant context, mood, style, color schemes, and key elements that buyers search for.
-3. ${kwCountText}. Keywords must be highly searchable microstock tags, sorted by relevance from highest search volume to lowest. Include visually grounded synonyms, textures, settings, colors, and specific object names — never conceptual filler or speculative use-case terms. All tags must be lowercase, free of special characters. Mix broad terms (e.g. "vector", "illustration") with specific terms (e.g. "teal geometric pattern") and niche terms (e.g. "corporate hierarchy chart").
+3. ${kwCountText}. Keywords must be highly searchable microstock tags, sorted by relevance from highest search volume to lowest. Include visually grounded synonyms, textures, settings, colors, and specific object names — never conceptual filler or speculative use-case terms. All tags must be in ${opts.language}${opts.language !== 'English' ? ' (native script — see the LANGUAGE REQUIREMENT above)' : ', lowercase, free of special characters'}. Mix broad terms with specific terms and niche terms.
 4. An extremely detailed, descriptive, and rich text-to-image prompt (maximum of ${promptLength} characters) describing the scene, subjects, composition, atmospheric effects, colors, textures, lighting, and artistic style so it can be recreated beautifully in Midjourney/Stable Diffusion.
    - Style instruction: Describe the art/photography style observed or implied in rich detail.
    - Background instruction: ${bgInstruction}
