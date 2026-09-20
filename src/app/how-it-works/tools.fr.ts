@@ -73,7 +73,7 @@ export const TOOL_BODY_FR: Record<string, ToolBodyFr> = {
     ],
     steps: [
       { title: "Choisir un mode de recherche", detail: "Choisissez Mot-clé (découvrir ce qui se vend dans une niché), ID contributeur (analyser un portfolio entier) ou ID d'actif (téléchargements exacts d'un fichier)." },
-      { title: "Rechercher", detail: "Saisissez un mot-clé (ex. « summer travel icons »), un ID contributeur pris dans l'URL Adobe Stock, ou un ID d'actif (ex. 1935082937) puis lancez la recherche." },
+      { title: "Rechercher", detail: "Saisissez un mot-clé (ex. « summer travel icons »), un ID contributeur pris dans l'URL Adobe Stock, ou un ID d'actif (ex. 2050460487) puis lancez la recherche." },
       { title: "Filtrer et trier", detail: "Affinez avec le filtre IA et le filtre de type de média, puis triez par performance, téléchargements ou date pour faire émerger vite les gagnants." },
       { title: "Analyser les résultats", detail: "Lisez la barre de stats pour les téléchargements totaux, la moyenne et la meilleure performance. Chaque carte affiche téléchargements, date d'envoi, catégorie et badge IA le cas échéant." },
       { title: "Approfondir ou exporter", detail: "Cliquez sur un titre pour rechercher cet actif, sur un nom de contributeur pour ouvrir son portfolio, ou exportez tout en CSV pour l'analyser dans un tableur." },

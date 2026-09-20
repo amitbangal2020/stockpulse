@@ -267,7 +267,7 @@ export function SearchTool({ children }: { children?: React.ReactNode }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && doSearch()}
-              placeholder={searchMode === "keyword" ? "Search keywords (e.g. summer travel icons)..." : searchMode === "contributor" ? "Enter contributor ID (e.g. 209878515)..." : "Enter asset ID (e.g. 1935082937)..."}
+              placeholder={searchMode === "keyword" ? "Search keywords (e.g. summer travel icons)..." : searchMode === "contributor" ? "Enter contributor ID (e.g. 209878515)..." : "Enter asset ID (e.g. 2050460487)..."}
               className="w-full rounded-xl border border-border bg-surface py-3 pl-11 pr-4 text-sm text-text-primary outline-none placeholder:text-text-muted transition-colors focus:border-accent focus:ring-2 focus:ring-accent/10"
             />
           </div>

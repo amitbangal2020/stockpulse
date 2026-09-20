@@ -144,7 +144,7 @@ const TOOLS: ToolInfo[] = [
     ],
     steps: [
       { title: "Pick a Search Mode", detail: "Choose Keyword (discover what sells in a niche), Contributor ID (analyze a whole portfolio) or Asset ID (exact downloads for one file)." },
-      { title: "Search", detail: "Type a keyword (e.g. 'summer travel icons'), a contributor ID from the Adobe Stock URL, or an asset ID (e.g. 1935082937) and hit Search." },
+      { title: "Search", detail: "Type a keyword (e.g. 'summer travel icons'), a contributor ID from the Adobe Stock URL, or an asset ID (e.g. 2050460487) and hit Search." },
       { title: "Filter & Sort", detail: "Narrow with the AI filter and media-type filter, then sort by performance, downloads or date to surface winners fast." },
       { title: "Analyze Results", detail: "Read the stats bar for total downloads, average and top performer. Each card shows downloads, upload date, category and an AI badge where applicable." },
       { title: "Deep-Dive or Export", detail: "Click a title to search that asset, click a contributor name to open their portfolio, or export everything to CSV for spreadsheet analysis." },

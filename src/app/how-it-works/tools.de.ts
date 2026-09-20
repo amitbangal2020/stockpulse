@@ -73,7 +73,7 @@ export const TOOL_BODY_DE: Record<string, ToolBodyDe> = {
     ],
     steps: [
       { title: "Suchmodus wählen", detail: "Wählen Sie Keyword (entdecken, was sich in einer Nische verkauft), Contributor-ID (ein ganzes Portfolio analysieren) oder Asset-ID (exakte Downloads einer Datei)." },
-      { title: "Suchen", detail: "Geben Sie ein Keyword ein (z. B. „summer travel icons“), eine Contributor-ID aus der Adobe-Stock-URL oder eine Asset-ID (z. B. 1935082937) und starten Sie die Suche." },
+      { title: "Suchen", detail: "Geben Sie ein Keyword ein (z. B. „summer travel icons“), eine Contributor-ID aus der Adobe-Stock-URL oder eine Asset-ID (z. B. 2050460487) und starten Sie die Suche." },
       { title: "Filtern und sortieren", detail: "Verfeinern Sie mit dem KI-Filter und dem Medientyp-Filter, dann sortieren Sie nach Performance, Downloads oder Datum, um Gewinner schnell zu finden." },
       { title: "Ergebnisse analysieren", detail: "Lesen Sie die Statistikleiste für Downloads gesamt, Durchschnitt und Top-Performer. Jede Karte zeigt Downloads, Upload-Datum, Kategorie und falls zutreffend ein KI-Badge." },
       { title: "Vertiefen oder exportieren", detail: "Klicken Sie auf einen Titel, um das Asset zu suchen, auf einen Contributor-Namen, um sein Portfolio zu öffnen — oder exportieren Sie alles als CSV für die Tabellenanalyse." },
