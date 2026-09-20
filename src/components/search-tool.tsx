@@ -371,7 +371,9 @@ export function SearchTool({ children }: { children?: React.ReactNode }) {
         </div>
       )}
 
-      {/* Scrollable Content — slim margin like the event calendar */}
+      {/* Scrollable Content — slim margin like the event calendar.
+          Server-rendered SEO children render here too, inside the scroll
+          flow, so they never squeeze the tool viewport. */}
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
         {/* Loading */}
         {isLoading && (
@@ -517,12 +519,14 @@ export function SearchTool({ children }: { children?: React.ReactNode }) {
             })}
           </div>
         )}
+
+        {/* Server-rendered SEO content — lives INSIDE the scroll flow so it
+            never competes with the tool viewport for width. */}
+        {children}
       </div>
 
       {/* Scroll to Top */}
       <ScrollTopButton containerRef={scrollContainerRef} />
-      {/* Server-rendered SEO content, scrolled with the tool on desktop */}
-      {children}
     </div>
   );
 }
