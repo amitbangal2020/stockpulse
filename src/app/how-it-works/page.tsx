@@ -10,6 +10,26 @@ import { TOOL_BODY_BN } from "./tools.bn";
 import { TOOL_BODY_HI } from "./tools.hi";
 import { TOOL_BODY_FR } from "./tools.fr";
 import { TOOL_BODY_DE } from "./tools.de";
+
+/**
+ * Bold the quoted UI names inside a step detail so they read as real
+ * buttons, matching the actual product ("Validate All APIs", „Save
+ * Settings“, « Load Settings » …). Quotes are kept verbatim. Only straight
+ * quotes followed by a capital letter are treated as UI names, so French
+ * elisions (l'upload) never pair across a sentence.
+ */
+function renderDetail(detail: string) {
+  const parts = detail.split(/('[A-Z][^']*'|„[^"]+“|«[^»]+»)/g);
+  return parts.map((part, i) =>
+    /^[„«']/.test(part) ? (
+      <strong key={i} className="font-semibold text-text-primary">
+        {part}
+      </strong>
+    ) : (
+      part
+    ),
+  );
+}
 import {
   Sparkles, BarChart3, Video, Layers, CircleDot, LayoutGrid, Palette,
   Grid3X3, Type, FileCode, TrendingUp, GitCompare, Calendar, Monitor,
@@ -1173,7 +1193,7 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-text-primary">{step.title}</p>
-                  <p className="mt-0.5 text-[13px] text-text-secondary leading-relaxed">{step.detail}</p>
+                  <p className="mt-0.5 text-[13px] text-text-secondary leading-relaxed">{renderDetail(step.detail)}</p>
                 </div>
               </div>
             ))}
