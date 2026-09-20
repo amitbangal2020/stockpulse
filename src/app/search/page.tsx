@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ToolLayout } from "@/components/tool-layout";
 import { SearchTool } from "@/components/search-tool";
 import { seoMetadata } from "@/lib/seo";
@@ -202,9 +203,9 @@ function SearchSeoSection() {
             how StockPulse works
           </a>{" "}
           or read the{" "}
-          <a href="/blog" className="text-accent hover:underline">
+          <Link href="/blog" className="text-accent hover:underline">
             contributor blog
-          </a>
+          </Link>
           .
         </p>
       </div>
