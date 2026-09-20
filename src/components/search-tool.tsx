@@ -14,8 +14,8 @@ import {
   ChevronDown,
   ExternalLink,
   Loader2,
-  ArrowUp,
 } from "lucide-react";
+import { ScrollTopButton } from "@/components/scroll-top-button";
 
 // Types from stock-api
 interface StockAsset {
@@ -226,26 +226,12 @@ export function SearchTool() {
   const avgDownloads = sortedResults.length > 0 ? (totalDownloads / sortedResults.length).toFixed(1) : "0";
   const topPerformer = sortedResults.length > 0 ? sortedResults[0] : null;
 
-  // Scroll-to-top (same pattern as MetaGen's)
+  // Scroll-to-top — shared component also used on the 5 tracker pages.
+  // Listens to BOTH the inner scroll container (desktop) and window (mobile).
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-    const handleScroll = () => {
-      setShowScrollTop(container.scrollTop > 300);
-    };
-    container.addEventListener("scroll", handleScroll, { passive: true });
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    scrollContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   return (
-    <div ref={scrollContainerRef} className="flex flex-1 flex-col overflow-y-auto min-h-0">
+    <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
       {/* Hero Section */}
       <div className="flex w-full flex-col items-center px-6 pt-6 pb-5 text-center border-b border-border">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-subtle px-4 py-1.5 text-xs font-semibold text-accent">
@@ -386,7 +372,7 @@ export function SearchTool() {
       )}
 
       {/* Scrollable Content — slim margin like the event calendar */}
-      <div className="flex-1 overflow-y-auto p-5">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
         {/* Loading */}
         {isLoading && (
           <div className="flex flex-col items-center py-20">
@@ -534,13 +520,7 @@ export function SearchTool() {
       </div>
 
       {/* Scroll to Top */}
-      {showScrollTop && (
-        <button onClick={scrollToTop}
-          className="fixed bottom-24 right-8 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-white shadow-lg shadow-accent/30 transition-all hover:scale-110 hover:shadow-xl"
-          aria-label="Scroll to top">
-          <ArrowUp className="h-5 w-5" />
-        </button>
-      )}
+      <ScrollTopButton containerRef={scrollContainerRef} />
     </div>
   );
 }

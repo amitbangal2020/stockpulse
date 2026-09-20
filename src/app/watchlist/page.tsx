@@ -93,6 +93,7 @@ function WatchlistPage() {
           )}
         </div>
       </div>
+      <ScrollTopButton containerRef={scrollContainerRef} />
     </ToolLayout>
   );
 }
