@@ -89,13 +89,16 @@ const DEFAULT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 80
 
 function Section({ title, icon, defaultOpen = true, children }: { title: string; icon?: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
+  // Restyled to match MetaGen's sidebar: quiet grey label + soft card body,
+  // instead of the old uppercase accent-label-over-divider treatment.
   return (
-    <div className="mb-4">
-      <button onClick={() => setOpen(!open)} className="mb-3 flex w-full items-center gap-2 text-[10px] font-bold uppercase tracking-[0.12em] text-accent">
-        {icon}{title}<span className="flex-1 border-t border-border-subtle" />
-        {open ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
+    <div className="surface-soft mb-3 overflow-hidden rounded-2xl">
+      <button onClick={() => setOpen(!open)} className="flex w-full items-center gap-2 px-3 py-2.5 text-left">
+        {icon && <span className="text-text-muted">{icon}</span>}
+        <span className="flex-1 text-xs font-semibold text-text-secondary">{title}</span>
+        {open ? <ChevronUp className="h-3.5 w-3.5 text-text-muted" /> : <ChevronDown className="h-3.5 w-3.5 text-text-muted" />}
       </button>
-      {open && <div className="space-y-3">{children}</div>}
+      {open && <div className="space-y-3 px-3 pb-3">{children}</div>}
     </div>
   );
 }
@@ -1425,11 +1428,11 @@ export default function SvgToVideoPage() {
               { key: "invert", label: "Invert", min: 0, max: 100, unit: "%" },
             ].map((f) => (
               <div key={f.key} className="flex items-center gap-2">
-                <span className="w-16 text-[10px] text-text-secondary">{f.label}</span>
+                <span className="w-20 shrink-0 text-xs font-medium text-text-secondary">{f.label}</span>
                 <input type="range" min={f.min} max={f.max} value={(filters as any)[f.key]}
                   onChange={(e) => setFilters({ ...filters, [f.key]: Number(e.target.value) })}
                   className="flex-1" style={{ background: `linear-gradient(to right, var(--accent) ${(((filters as any)[f.key] - f.min) / (f.max - f.min)) * 100}%, var(--border) ${(((filters as any)[f.key] - f.min) / (f.max - f.min)) * 100}%)` }} />
-                <span className="w-10 text-right font-mono text-[10px] text-accent">{(filters as any)[f.key]}{f.unit}</span>
+                <span className="w-12 shrink-0 text-right font-mono text-xs font-bold text-accent">{(filters as any)[f.key]}{f.unit}</span>
               </div>
             ))}
           </Section>
@@ -1443,12 +1446,12 @@ export default function SvgToVideoPage() {
               <>
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <span className="text-[10px] text-text-secondary">Size (px)</span>
+                    <span className="text-xs font-medium text-text-secondary">Size (px)</span>
                     <input type="number" className="w-full rounded-lg border border-border bg-surface px-2 py-1 text-[10px] text-text-primary" value={watermark.size}
                       onChange={(e) => setWatermark({ ...watermark, size: Number(e.target.value) })} />
                   </div>
                   <div className="flex-1">
-                    <span className="text-[10px] text-text-secondary">Opacity (%)</span>
+                    <span className="text-xs font-medium text-text-secondary">Opacity (%)</span>
                     <input type="range" min={10} max={100} value={watermark.opacity}
                       onChange={(e) => setWatermark({ ...watermark, opacity: Number(e.target.value) })}
                       className="w-full mt-1" style={{ background: `linear-gradient(to right, var(--accent) ${((watermark.opacity - 10) / 90) * 100}%, var(--border) ${((watermark.opacity - 10) / 90) * 100}%)` }} />
@@ -1456,12 +1459,12 @@ export default function SvgToVideoPage() {
                 </div>
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <span className="text-[10px] text-text-secondary">X Position (%)</span>
+                    <span className="text-xs font-medium text-text-secondary">X Position (%)</span>
                     <input type="number" className="w-full rounded-lg border border-border bg-surface px-2 py-1 text-[10px] text-text-primary" value={watermark.x}
                       onChange={(e) => setWatermark({ ...watermark, x: Number(e.target.value) })} />
                   </div>
                   <div className="flex-1">
-                    <span className="text-[10px] text-text-secondary">Y Position (%)</span>
+                    <span className="text-xs font-medium text-text-secondary">Y Position (%)</span>
                     <input type="number" className="w-full rounded-lg border border-border bg-surface px-2 py-1 text-[10px] text-text-primary" value={watermark.y}
                       onChange={(e) => setWatermark({ ...watermark, y: Number(e.target.value) })} />
                   </div>

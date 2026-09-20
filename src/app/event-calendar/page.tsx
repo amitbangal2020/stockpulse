@@ -241,12 +241,6 @@ export default function EventCalendarPage() {
             </div>
           )}
         </div>
-
-        {/* Footer — same style as the homepage footer */}
-        <footer className="mt-auto border-t border-border px-6 py-6 text-center">
-          <p className="text-sm font-semibold text-text-primary">© 2026 {ev.title} · abanti.in</p>
-          <p className="mt-1 text-xs text-text-muted">{ev.footer}</p>
-        </footer>
       </div>
     </ToolLayout>
   );
