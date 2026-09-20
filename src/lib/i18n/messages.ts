@@ -123,6 +123,49 @@ const en = {
       technology: "Technology",
     },
   },
+  searchSeo: {
+    title: "Adobe Stock download analytics — free contributor tracker",
+    intro:
+      "StockPulse Tracker is a free analytics tool built for Adobe Stock contributors. Look up any contributor's public portfolio to see total downloads, their best-selling assets and per-file statistics; research keywords with real download data; or inspect a single asset ID. Everything is read from Adobe Stock's public data in real time — no sign-up, no API key — and any search exports to a spreadsheet-ready CSV.",
+    cards: [
+      {
+        title: "Track contributor portfolios",
+        body: "Paste any contributor ID (the number in stock.adobe.com/contributor/ID) to scan up to 300 assets with live download counts. Benchmark your portfolio against the top sellers in your niche and spot what content actually sells.",
+      },
+      {
+        title: "Research keywords that sell",
+        body: "Keyword search returns the top 200 live results for any term with real download counts per asset. See which subjects, styles and media types outperform before you shoot — a free alternative to paid stock keyword tools.",
+      },
+      {
+        title: "Inspect single assets",
+        body: "Enter an asset ID (stock.adobe.com/images/ID) for the exact public download count and performance breakdown of one file — handy for monitoring your own uploads or checking competitors' hits.",
+      },
+    ],
+    faqTitle: "Frequently asked questions",
+    faqs: [
+      {
+        q: "How do I find my Adobe Stock contributor ID?",
+        a: "Open your public portfolio on Adobe Stock — the URL ends with /contributor/ followed by a number. That number is your contributor ID; paste it into the Contributor ID tab above.",
+      },
+      {
+        q: "Can I see how many downloads a specific Adobe Stock image has?",
+        a: "Yes. Switch to the Asset ID tab and paste the number from the image's stock.adobe.com URL. StockPulse shows the exact public download count and performance stats instantly.",
+      },
+      {
+        q: "How is this different from the Adobe Stock dashboard?",
+        a: "Your contributor dashboard shows only your own sales. StockPulse shows the public download counts of every contributor — so you can benchmark against others, research niches and verify demand before creating new content.",
+      },
+      {
+        q: "Does tracking work for Shutterstock or Freepik too?",
+        a: "This tracker covers Adobe Stock's public data. For metadata and keyword optimization across Adobe Stock, Shutterstock, Freepik, Vecteezy, iStock and Pond5, use the free StockPulse metadata generator.",
+      },
+    ],
+    footnote:
+      "Data source: Adobe Stock public portfolio data via the StockPulse API. Download counts reflect publicly visible totals and may differ from private dashboard earnings. For metadata automation, keyword research and creative tools, explore",
+    linkHow: "how StockPulse works",
+    linkBlogJoin: "or read the",
+    linkBlog: "contributor blog",
+  },
 };
 
 export type Messages = typeof en;
@@ -232,6 +275,48 @@ const bn: Messages = {
       technology: "প্রযুক্তি",
     },
   },
+
+  searchSeo: {
+    title: "Adobe Stock ডাউনলোড অ্যানালিটিক্স — ফ্রি কন্ট্রিবিউটর ট্র্যাকার",
+    intro: "StockPulse Tracker হলো Adobe Stock কন্ট্রিবিউটরদের জন্য তৈরি একটি ফ্রি অ্যানালিটিক্স টুল। যেকোনো কন্ট্রিবিউটরের পাবলিক পোর্টফোলিও দেখে মোট ডাউনলোড, সেরা-বিক্রিত অ্যাসেট এবং প্রতি-ফাইল পরিসংখ্যান দেখুন; বাস্তব ডাউনলোড ডেটা দিয়ে কীওয়ার্ড রিসার্চ করুন; বা একটি অ্যাসেট আইডি পরীক্ষা করুন। সবকিছু Adobe Stock-এর পাবলিক ডেটা থেকে রিয়েল টাইমে পড়া হয় — কোনো সাইন-আপ বা API কী লাগে না — আর যেকোনো সার্চ CSV-তে এক্সপোর্ট করা যায়।",
+    cards: [
+      {
+        title: "কন্ট্রিবিউটর পোর্টফোলিও ট্র্যাক করুন",
+        body: "যেকোনো কন্ট্রিবিউটর আইডি (stock.adobe.com/contributor/ID-এর নম্বরটি) পেস্ট করে ৩০০টি পর্যন্ত অ্যাসেটের লাইভ ডাউনলোড সংখ্যা দেখুন। আপনার পোর্টফোলিও আপনার নিশের সেরা বিক্রেতাদের সাথে তুলনা করুন এবং কোন কনটেন্ট সত্যিই বিক্রি হয় খুঁজে বের করুন।",
+      },
+      {
+        title: "যে কীওয়ার্ড বিক্রি হয় সেগুলো রিসার্চ করুন",
+        body: "কীওয়ার্ড সার্চ যেকোনো শব্দের সেরা ২০০টি লাইভ ফলাফল দেখায়, প্রতিটি অ্যাসেটের বাস্তব ডাউনলোড সংখ্যা সহ। শুট করার আগেই দেখে নিন কোন বিষয়, স্টাইল ও মিডিয়া টাইপ ভালো চলে — পেইড স্টক কীওয়ার্ড টুলের ফ্রি বিকল্প।",
+      },
+      {
+        title: "একক অ্যাসেট পরীক্ষা করুন",
+        body: "একটি অ্যাসেট আইডি (stock.adobe.com/images/ID) দিন — একটি ফাইলের সঠিক পাবলিক ডাউনলোড সংখ্যা ও পারফরম্যান্স ব্রেকডাউন পান। নিজের আপলোড মনিটর করতে বা প্রতিযোগীদের হিট দেখতে দারুণ কাজের।",
+      },
+    ],
+    faqTitle: "সাধারণ জিজ্ঞাসা",
+    faqs: [
+      {
+        q: "আমার Adobe Stock কন্ট্রিবিউটর আইডি কীভাবে খুঁজে পাব?",
+        a: "Adobe Stock-এ আপনার পাবলিক পোর্টফোলিও খুলুন — URL-টি /contributor/ দিয়ে শেষ হয়, তারপর একটি সংখ্যা। সেটিই আপনার কন্ট্রিবিউটর আইডি; ওপরের Contributor ID ট্যাবে পেস্ট করুন।",
+      },
+      {
+        q: "নির্দিষ্ট কোনো Adobe Stock ছবির কত ডাউনলোড হয়েছে দেখা যাবে?",
+        a: "হ্যাঁ। Asset ID ট্যাবে গিয়ে ছবির stock.adobe.com URL-এর নম্বরটি পেস্ট করুন। StockPulse সাথে সাথেই সঠিক পাবলিক ডাউনলোড সংখ্যা ও পারফরম্যান্স দেখায়।",
+      },
+      {
+        q: "এটি Adobe Stock ড্যাশবোর্ড থেকে কীভাবে আলাদা?",
+        a: "আপনার ড্যাশবোর্ড শুধু নিজের বিক্রি দেখায়। StockPulse প্রতিটি কন্ট্রিবিউটরের পাবলিক ডাউনলোড সংখ্যা দেখায় — তাই অন্যদের সাথে তুলনা, নিশ রিসার্চ আর নতুন কনটেন্ট বানানোর আগে চাহিদা যাচাই করা যায়।",
+      },
+      {
+        q: "Shutterstock বা Freepik-এর জন্যও কি কাজ করে?",
+        a: "এই ট্র্যাকার Adobe Stock-এর পাবলিক ডেটা কভার করে। Adobe Stock, Shutterstock, Freepik, Vecteezy, iStock ও Pond5 জুড়ে মেটাডেটা ও কীওয়ার্ড অপটিমাইজেশনের জন্য ফ্রি StockPulse মেটাডেটা জেনারেটর ব্যবহার করুন।",
+      },
+    ],
+    footnote: "ডেটা সূত্র: StockPulse API-র মাধ্যমে Adobe Stock-এর পাবলিক পোর্টফোলিও ডেটা। ডাউনলোড সংখ্যা পাবলিকলি দৃশ্যমান মোট পরিমাণ প্রতিফলিত করে এবং প্রাইভেট ড্যাশবোর্ডের আয় থেকে ভিন্ন হতে পারে। মেটাডেটা অটোমেশন, কীওয়ার্ড রিসার্চ ও ক্রিয়েটিভ টুলের জন্য দেখুন",
+    linkHow: "StockPulse কীভাবে কাজ করে",
+    linkBlogJoin: "অথবা পড়ুন",
+    linkBlog: "কন্ট্রিবিউটর ব্লগ",
+  },
 };
 
 const hi: Messages = {
@@ -338,6 +423,48 @@ const hi: Messages = {
       family: "परिवार",
       technology: "प्रौद्योगिकी",
     },
+  },
+
+  searchSeo: {
+    title: "Adobe Stock डाउनलोड एनालिटिक्स — फ्री कंट्रीब्यूटर ट्रैकर",
+    intro: "StockPulse Tracker Adobe Stock कंट्रीब्यूटर्स के लिए बना एक फ्री एनालिटिक्स टूल है। किसी भी कंट्रीब्यूटर का पब्लिक पोर्टफोलियो देखकर कुल डाउनलोड, बेस्ट-सेलिंग एसेट और प्रति-फ़ाइल आंकड़े देखें; असली डाउनलोड डेटा से कीवर्ड रिसर्च करें; या एक एसेट ID जांचें। सब कुछ Adobe Stock के पब्लिक डेटा से रियल टाइम में पढ़ा जाता है — कोई साइन-अप या API की नहीं — और कोई भी सर्च CSV में एक्सपोर्ट होता है।",
+    cards: [
+      {
+        title: "कंट्रीब्यूटर पोर्टफोलियो ट्रैक करें",
+        body: "कोई भी कंट्रीब्यूटर ID (stock.adobe.com/contributor/ID का नंबर) पेस्ट करके 300 एसेट तक के लाइव डाउनलोड काउंट देखें। अपने पोर्टफोलियो को अपने निश के टॉप सेलर्स से तुलना करें और पता लगाएं कि असल में क्या कंटेंट बिकता है।",
+      },
+      {
+        title: "जो कीवर्ड बिकते हैं उन्हें रिसर्च करें",
+        body: "कीवर्ड सर्च किसी भी शब्द के टॉप 200 लाइव नतीजे दिखाता है, हर एसेट के असली डाउनलोड काउंट के साथ। शूट करने से पहले ही देख लें कौन से विषय, स्टाइल और मीडिया टाइप चलते हैं — पेड स्टॉक कीवर्ड टूल्स का फ्री विकल्प।",
+      },
+      {
+        title: "सिंगल एसेट जांचें",
+        body: "एक एसेट ID (stock.adobe.com/images/ID) दें — एक फ़ाइल की सटीक पब्लिक डाउनलोड संख्या और परफॉरमेंस ब्रेकडाउन पाएं। अपने अपलोड मॉनिटर करने या प्रतिस्पर्धियों के हिट्स देखने के लिए बेहतरीन।",
+      },
+    ],
+    faqTitle: "अक्सर पूछे जाने वाले सवाल",
+    faqs: [
+      {
+        q: "मेरी Adobe Stock कंट्रीब्यूटर ID कैसे ढूंढें?",
+        a: "Adobe Stock पर अपना पब्लिक पोर्टफोलियो खोलें — URL /contributor/ पर खत्म होकर एक नंबर होता है। वही आपकी कंट्रीब्यूटर ID है; ऊपर Contributor ID टैब में पेस्ट करें।",
+      },
+      {
+        q: "क्या किसी Adobe Stock इमेज के डाउनलोड देख सकते हैं?",
+        a: "हाँ। Asset ID टैब में इमेज के stock.adobe.com URL का नंबर पेस्ट करें। StockPulse तुरंत सटीक पब्लिक डाउनलोड काउंट और परफॉरमेंस दिखाता है।",
+      },
+      {
+        q: "यह Adobe Stock डैशबोर्ड से कैसे अलग है?",
+        a: "आपका डैशबोर्ड सिर्फ आपकी बिक्री दिखाता है। StockPulse हर कंट्रीब्यूटर के पब्लिक डाउनलोड काउंट दिखाता है — इसलिए दूसरों से तुलना, निश रिसर्च और नया कंटेंट बनाने से पहले डिमांड जांच सकते हैं।",
+      },
+      {
+        q: "क्या Shutterstock या Freepik के लिए भी काम करता है?",
+        a: "यह ट्रैकर Adobe Stock के पब्लिक डेटा को कवर करता है। Adobe Stock, Shutterstock, Freepik, Vecteezy, iStock और Pond5 पर मेटाडेटा व कीवर्ड ऑप्टिमाइज़ेशन के लिए फ्री StockPulse मेटाडेटा जेनरेटर इस्तेमाल करें।",
+      },
+    ],
+    footnote: "डेटा स्रोत: StockPulse API के जरिए Adobe Stock का पब्लिक पोर्टफोलियो डेटा। डाउनलोड काउंट सार्वजनिक रूप से दिखने वाले कुल आंकड़े दर्शाते हैं और प्राइवेट डैशबोर्ड कमाई से अलग हो सकते हैं। मेटाडेटा ऑटोमेशन, कीवर्ड रिसर्च और क्रिएटिव टूल्स के लिए देखें",
+    linkHow: "StockPulse कैसे काम करता है",
+    linkBlogJoin: "या पढ़ें",
+    linkBlog: "कंट्रीब्यूटर ब्लॉग",
   },
 };
 
@@ -448,6 +575,48 @@ const fr: Messages = {
       technology: "Technologie",
     },
   },
+
+  searchSeo: {
+    title: "Analyse des téléchargements Adobe Stock — tracker de contributeur gratuit",
+    intro: "StockPulse Tracker est un outil d'analyse gratuit conçu pour les contributeurs Adobe Stock. Consultez le portfolio public de n'importe quel contributeur pour voir ses téléchargements totaux, ses meilleures ventes et ses statistiques par fichier ; recherchez des mots-clés avec de vraies données de téléchargement ; ou inspectez un ID d'asset. Tout est lu en temps réel depuis les données publiques d'Adobe Stock — sans inscription ni clé API — et chaque recherche s'exporte en CSV.",
+    cards: [
+      {
+        title: "Suivez les portfolios de contributeurs",
+        body: "Collez n'importe quel ID de contributeur (le numéro dans stock.adobe.com/contributor/ID) pour scanner jusqu'à 300 assets avec les compteurs de téléchargement en direct. Comparez votre portfolio aux meilleurs vendeurs de votre niche et repérez ce qui se vend vraiment.",
+      },
+      {
+        title: "Recherchez les mots-clés qui vendent",
+        body: "La recherche par mot-clé renvoie les 200 premiers résultats en direct pour n'importe quel terme, avec les téléchargements réels par asset. Voyez quels sujets, styles et types de médias performent avant de shooter — une alternative gratuite aux outils payants.",
+      },
+      {
+        title: "Inspectez des assets uniques",
+        body: "Entrez un ID d'asset (stock.adobe.com/images/ID) pour le nombre exact de téléchargements publics et la répartition des performances d'un fichier — pratique pour suivre vos propres mises en ligne ou celles de concurrents.",
+      },
+    ],
+    faqTitle: "Questions fréquentes",
+    faqs: [
+      {
+        q: "Comment trouver mon ID de contributeur Adobe Stock ?",
+        a: "Ouvrez votre portfolio public sur Adobe Stock — l'URL se termine par /contributor/ suivi d'un numéro. Ce numéro est votre ID de contributeur ; collez-le dans l'onglet Contributor ID ci-dessus.",
+      },
+      {
+        q: "Puis-je voir combien de téléchargements a une image Adobe Stock ?",
+        a: "Oui. Passez à l'onglet Asset ID et collez le numéro de l'URL stock.adobe.com de l'image. StockPulse affiche instantanément le nombre exact de téléchargements publics et les statistiques.",
+      },
+      {
+        q: "En quoi est-ce différent du tableau de bord Adobe Stock ?",
+        a: "Votre tableau de bord ne montre que vos propres ventes. StockPulse affiche les téléchargements publics de tous les contributeurs — comparez-vous, étudiez les niches et vérifiez la demande avant de créer du contenu.",
+      },
+      {
+        q: "Ça marche aussi pour Shutterstock ou Freepik ?",
+        a: "Ce tracker couvre les données publiques d'Adobe Stock. Pour l'optimisation des métadonnées et mots-clés sur Adobe Stock, Shutterstock, Freepik, Vecteezy, iStock et Pond5, utilisez le générateur de métadonnées gratuit StockPulse.",
+      },
+    ],
+    footnote: "Source des données : données publiques de portfolio Adobe Stock via l'API StockPulse. Les compteurs de téléchargement reflètent les totaux visibles publiquement et peuvent différer des revenus du tableau de bord privé. Pour l'automatisation des métadonnées, la recherche de mots-clés et les outils créatifs, découvrez",
+    linkHow: "le fonctionnement de StockPulse",
+    linkBlogJoin: "ou lisez le",
+    linkBlog: "blog contributeurs",
+  },
 };
 
 // German — same as French: Latin script, covered by the default fonts.
@@ -555,6 +724,48 @@ const de: Messages = {
       family: "Familie",
       technology: "Technologie",
     },
+  },
+
+  searchSeo: {
+    title: "Adobe Stock Download-Analytik — kostenloser Contributor-Tracker",
+    intro: "StockPulse Tracker ist ein kostenloses Analyse-Tool für Adobe-Stock-Contributor. Sehen Sie sich das öffentliche Portfolio eines beliebigen Contributors an: Gesamtdownloads, meistverkaufte Assets und Statistiken pro Datei; recherchieren Sie Keywords mit echten Download-Daten; oder prüfen Sie eine einzelne Asset-ID. Alles wird in Echtzeit aus den öffentlichen Adobe-Stock-Daten gelesen — ohne Anmeldung oder API-Key — und jede Suche lässt sich als CSV exportieren.",
+    cards: [
+      {
+        title: "Contributor-Portfolios verfolgen",
+        body: "Fügen Sie eine beliebige Contributor-ID ein (die Nummer in stock.adobe.com/contributor/ID), um bis zu 300 Assets mit Live-Download-Zählern zu scannen. Vergleichen Sie Ihr Portfolio mit den Top-Verkäufern Ihrer Nische und finden Sie heraus, welcher Content sich wirklich verkauft.",
+      },
+      {
+        title: "Keywords recherchieren, die verkaufen",
+        body: "Die Keyword-Suche liefert die Top-200-Live-Ergebnisse für jeden Begriff mit echten Download-Zahlen pro Asset. Sehen Sie vor dem Shooting, welche Motive, Stile und Medientypen funktionieren — die kostenlose Alternative zu bezahlten Stock-Keyword-Tools.",
+      },
+      {
+        title: "Einzelne Assets prüfen",
+        body: "Geben Sie eine Asset-ID ein (stock.adobe.com/images/ID) für die exakte öffentliche Download-Anzahl und Performance-Aufschlüsselung einer Datei — ideal, um eigene Uploads zu überwachen oder die Treffer von Mitbewerbern zu prüfen.",
+      },
+    ],
+    faqTitle: "Häufige Fragen",
+    faqs: [
+      {
+        q: "Wie finde ich meine Adobe Stock Contributor-ID?",
+        a: "Öffnen Sie Ihr öffentliches Portfolio auf Adobe Stock — die URL endet auf /contributor/ gefolgt von einer Nummer. Diese Nummer ist Ihre Contributor-ID; fügen Sie sie oben im Tab Contributor ID ein.",
+      },
+      {
+        q: "Kann ich sehen, wie oft ein Adobe-Stock-Bild heruntergeladen wurde?",
+        a: "Ja. Wechseln Sie zum Asset-ID-Tab und fügen Sie die Nummer aus der stock.adobe.com-URL des Bildes ein. StockPulse zeigt sofort die exakte öffentliche Download-Anzahl und Performance-Statistiken.",
+      },
+      {
+        q: "Wie unterscheidet sich das vom Adobe-Stock-Dashboard?",
+        a: "Ihr Dashboard zeigt nur die eigenen Verkäufe. StockPulse zeigt die öffentlichen Download-Zahlen aller Contributor — so können Sie sich vergleichen, Nischen erforschen und die Nachfrage prüfen, bevor Sie neuen Content erstellen.",
+      },
+      {
+        q: "Funktioniert das auch für Shutterstock oder Freepik?",
+        a: "Dieser Tracker deckt die öffentlichen Daten von Adobe Stock ab. Für Metadaten- und Keyword-Optimierung über Adobe Stock, Shutterstock, Freepik, Vecteezy, iStock und Pond5 nutzen Sie den kostenlosen StockPulse-Metadaten-Generator.",
+      },
+    ],
+    footnote: "Datenquelle: öffentliche Portfolio-Daten von Adobe Stock über die StockPulse-API. Download-Zahlen entsprechen den öffentlich sichtbaren Summen und können von privaten Dashboard-Einnahmen abweichen. Für Metadaten-Automatisierung, Keyword-Recherche und Kreativ-Tools finden Sie",
+    linkHow: "wie StockPulse funktioniert",
+    linkBlogJoin: "oder lesen Sie den",
+    linkBlog: "Contributor-Blog",
   },
 };
 
