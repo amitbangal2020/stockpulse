@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
-import { TrackerTabs } from "@/components/tracker-tabs";
 import { getDashboardStats, getAllTrends, AssetTrend, recordSnapshot, getTrackedAssets } from "@/lib/tracking";
 import { trackEvent } from "@/lib/track-event";
 import { RefreshCw, TrendingUp, BarChart3, Activity, ArrowUpRight, ArrowDownRight } from "lucide-react";
@@ -84,7 +83,6 @@ function DashboardPage() {
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
         <div className="flex items-center justify-between border-b border-border px-5 py-2.5">
           <div>
-            <TrackerTabs />
             <h2 className="mt-3 text-base font-semibold text-text-primary">Dashboard</h2>
             <p className="text-xs text-text-muted">Track how your assets perform over time</p>
           </div>

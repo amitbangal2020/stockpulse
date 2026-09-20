@@ -94,6 +94,67 @@
   --font-mono: var(--font-mono);
 }
 
+/* Smooth transitions site-wide: Tailwind v4's transition utilities read these
+ * two custom properties at runtime — overriding them retunes EVERY hover fade,
+ * dropdown and state change without touching a single component class. */
+:root {
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --default-transition-timing-function: var(--ease-smooth);
+  --default-transition-duration: 220ms;
+}
+
+/* Site-wide smooth feel: !important so this beats every Tailwind transition
+ * utility regardless of layer/cascade quirks. One consistent duration + a
+ * silky ease-out-expo curve everywhere = no more “cut” animations.
+ * The duration override also intentionally normalizes Tailwind `duration-*`
+ * classes used across pages — everything settles into the same rhythm.
+ * Long data animations (progress bars filling, count-up bars) keep their own
+ * feel via `--keep-duration` below. */
+*,
+*::before,
+*::after {
+  transition-timing-function: var(--ease-smooth) !important;
+  transition-duration: 220ms !important;
+}
+
+/* Deliberate exceptions: longer, data-driven animations that read better slow. */
+.duration-300,
+.duration-500,
+.duration-700 {
+  transition-duration: 300ms !important;
+}
+.duration-500 {
+  transition-duration: 500ms !important;
+}
+.duration-700 {
+  transition-duration: 700ms !important;
+}
+
+/* Instant is correct for these — smooth easing on sliders/text fields feels laggy. */
+input,
+textarea,
+select,
+input[type="range"],
+input[type="range"]::-webkit-slider-thumb {
+  transition-duration: 0s !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+  }
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
@@ -174,12 +235,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(16px); }
+  from { opacity: 0; transform: translateX(18px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
@@ -193,8 +254,14 @@ h1, h2, h3, h4, h5, h6 {
   100% { background-position: 200% 0; }
 }
 
+/* Shared “ease-out-expo” curve — fast start, silky settle. Everything that
+ * animates uses this so the UI feels fluid instead of snapping between states. */
+:root {
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.55s var(--ease-smooth) forwards;
 }
 
 /*
@@ -208,25 +275,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .animate-page-fade {
-  animation: pageFade 0.25s ease-out;
+  animation: pageFade 0.4s var(--ease-smooth);
 }
 
 .animate-slide-in-right {
-  animation: slideInRight 0.3s ease-out forwards;
+  animation: slideInRight 0.45s var(--ease-smooth) forwards;
 }
 
 @keyframes popIn {
-  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .animate-pop-in {
-  animation: popIn 0.18s ease-out forwards;
+  animation: popIn 0.28s var(--ease-smooth) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in, .animate-slide-in-right, .animate-pop-in {
     animation: none;
+  }
+  .animate-page-fade {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }
 
@@ -248,7 +321,7 @@ h1, h2, h3, h4, h5, h6 {
     overflow-y: auto;
     background: var(--bg-secondary);
     border-top: 1px solid var(--border);
-    animation: popIn 0.2s ease-out;
+    animation: popIn 0.3s var(--ease-smooth);
   }
   html.settings-drawer-open {
     overflow: hidden;
@@ -429,6 +502,8 @@ input[type='range'] {
   outline: none;
   cursor: pointer;
   accent-color: var(--accent);
+  min-width: 0;
+  width: 100%;
 }
 
 input[type='range']::-webkit-slider-thumb {

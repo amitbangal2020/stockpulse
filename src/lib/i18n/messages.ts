@@ -25,6 +25,8 @@ const en = {
     quickTracker: "Tracker",
     quickTools: "Tools",
     quickGuides: "Guides",
+    trackerMenu: "Tracker sections",
+    moreTools: "More",
   },
   language: {
     label: "Language",
@@ -139,6 +141,8 @@ const bn: Messages = {
     quickTracker: "ট্র্যাকার",
     quickTools: "টুল",
     quickGuides: "গাইড",
+    trackerMenu: "ট্র্যাকার সেকশন",
+    moreTools: "আরও",
   },
   language: {
     label: "ভাষা",
@@ -244,6 +248,8 @@ const hi: Messages = {
     quickTracker: "ट्रैकर",
     quickTools: "टूल",
     quickGuides: "गाइड",
+    trackerMenu: "ट्रैकर सेक्शन",
+    moreTools: "और",
   },
   language: {
     label: "भाषा",
@@ -351,6 +357,8 @@ const fr: Messages = {
     quickTracker: "Tracker",
     quickTools: "Outils",
     quickGuides: "Guides",
+    trackerMenu: "Sections du Tracker",
+    moreTools: "Plus",
   },
   language: {
     label: "Langue",
@@ -457,6 +465,8 @@ const de: Messages = {
     quickTracker: "Tracker",
     quickTools: "Tools",
     quickGuides: "Anleitungen",
+    trackerMenu: "Tracker-Bereiche",
+    moreTools: "Mehr",
   },
   language: {
     label: "Sprache",

@@ -1300,7 +1300,7 @@ export default function SvgToVideoPage() {
       <canvas ref={canvasRef} className="hidden" />
 
       {/* Right Panel (EXACT from original controls) */}
-      <aside className="w-full shrink-0 flex-col overflow-y-auto min-h-0 border-t border-border bg-bg-secondary lg:w-[280px] lg:border-t-0 lg:border-l tool-settings-panel">
+      <aside className="w-full shrink-0 flex-col overflow-y-auto min-h-0 border-t border-border bg-bg-secondary lg:w-[320px] lg:border-t-0 lg:border-l tool-settings-panel">
         <div className="p-4">
           <div className="mb-4">
             <h2 className="text-sm font-semibold text-text-primary">Engine Controls</h2>
@@ -1428,10 +1428,10 @@ export default function SvgToVideoPage() {
               { key: "invert", label: "Invert", min: 0, max: 100, unit: "%" },
             ].map((f) => (
               <div key={f.key} className="flex items-center gap-2">
-                <span className="w-20 shrink-0 text-xs font-medium text-text-secondary">{f.label}</span>
+                <span className="w-[4.5rem] shrink-0 text-xs font-medium text-text-secondary">{f.label}</span>
                 <input type="range" min={f.min} max={f.max} value={(filters as any)[f.key]}
                   onChange={(e) => setFilters({ ...filters, [f.key]: Number(e.target.value) })}
-                  className="flex-1" style={{ background: `linear-gradient(to right, var(--accent) ${(((filters as any)[f.key] - f.min) / (f.max - f.min)) * 100}%, var(--border) ${(((filters as any)[f.key] - f.min) / (f.max - f.min)) * 100}%)` }} />
+                  className="min-w-0 flex-1" style={{ background: `linear-gradient(to right, var(--accent) ${(((filters as any)[f.key] - f.min) / (f.max - f.min)) * 100}%, var(--border) ${(((filters as any)[f.key] - f.min) / (f.max - f.min)) * 100}%)` }} />
                 <span className="w-12 shrink-0 text-right font-mono text-xs font-bold text-accent">{(filters as any)[f.key]}{f.unit}</span>
               </div>
             ))}

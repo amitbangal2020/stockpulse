@@ -4,6 +4,7 @@ import { useTheme } from "@/components/theme-provider";
 import { useLanguage } from "@/components/language-provider";
 import { LanguageMenu } from "@/components/language-menu";
 import { blogPath } from "@/lib/i18n/localized-path";
+import { TRACKER_TABS } from "@/components/tracker-tabs";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,6 +29,7 @@ import {
   FileCode,
   Grid3X3,
   Globe,
+  ChevronDown,
   X,
 } from "lucide-react";
 
@@ -81,6 +83,8 @@ export function AppNav() {
   const { theme, setTheme } = useTheme();
   const { t, locale } = useLanguage();
   const [showTools, setShowTools] = useState(false);
+  const [showTracker, setShowTracker] = useState(false);
+  const [mobileTracker, setMobileTracker] = useState(false);
   const [mobileTools, setMobileTools] = useState(false);
   const pathname = usePathname();
   const mobileNavRef = useRef<HTMLDivElement | null>(null);
@@ -116,6 +120,7 @@ export function AppNav() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setShowTools(false);
+        setShowTracker(false);
         setMobileTools(false);
       }
     };
@@ -123,17 +128,18 @@ export function AppNav() {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  // Click-outside for the desktop tools panel.
+  // Click-outside for the desktop tools + tracker panels.
   useEffect(() => {
-    if (!showTools) return;
+    if (!showTools && !showTracker) return;
     const onDown = (e: Event) => {
       if (e.target instanceof Element && !e.target.closest("[data-tools-panel]")) {
         setShowTools(false);
+        setShowTracker(false);
       }
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
-  }, [showTools]);
+  }, [showTools, showTracker]);
 
   // Keep the active pill centred in the scrollable mobile nav row
   useEffect(() => {
@@ -166,7 +172,7 @@ export function AppNav() {
   const toolsActive = isAnyToolActive || showTools;
   // Overlays remount per route + open state: navigating unmounts them (same
   // behaviour as the old close-on-navigate effect, without setState-in-effect).
-  const navKey = `${pathname}|${showTools ? "t" : ""}`;
+  const navKey = `${pathname}|${showTools ? "t" : ""}|${showTracker ? "r" : ""}`;
   const mobileKey = `${pathname}|${mobileTools ? "t" : ""}`;
 
   const segmentClass = (active: boolean) =>
@@ -195,12 +201,64 @@ export function AppNav() {
             aria-label={t.nav.menu}
           >
             <div className="pointer-events-auto flex items-center gap-1">
-              {capsule.map((s) => (
-                <Link key={s.label} href={s.href} className={segmentClass(s.active)}>
-                  <s.icon className="h-3.5 w-3.5" />
-                  {s.label}
-                </Link>
-              ))}
+              {capsule.map((s) => {
+                // The Tracker segment opens a dropdown with its sub-pages
+                // instead of navigating straight to /search — one nav row,
+                // no second in-page pill strip.
+                if (s.href === "/search") {
+                  return (
+                    <div key={s.label} className="relative">
+                      <Link
+                        href="/search"
+                        onClick={(e) => {
+                          // The pill toggles the menu instead of navigating —
+                          // "Search" is the first item inside it.
+                          e.preventDefault();
+                          setShowTools(false);
+                          setShowTracker((v) => !v);
+                        }}
+                        aria-expanded={showTracker}
+                        aria-haspopup="menu"
+                        className={segmentClass(s.active)}
+                      >
+                        <s.icon className="h-3.5 w-3.5" />
+                        {s.label}
+                        <ChevronDown className={`h-3 w-3 transition-transform ${showTracker ? "rotate-180" : ""}`} />
+                      </Link>
+                      {showTracker && (
+                        <div
+                          key={navKey}
+                          data-tools-panel
+                          className="absolute left-1/2 top-full z-50 mt-2 w-56 -translate-x-1/2 animate-pop-in rounded-2xl border border-border bg-surface-elevated p-2 shadow-2xl"
+                        >
+                          <p className="px-3 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-wider text-text-muted">{t.nav.trackerMenu}</p>
+                          {TRACKER_TABS.map((tab) => (
+                            <Link
+                              key={tab.href}
+                              href={tab.href}
+                              onClick={() => setShowTracker(false)}
+                              className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                                isActive(tab.href)
+                                  ? "bg-accent/10 text-accent"
+                                  : "text-text-secondary hover:bg-accent/5 hover:text-accent"
+                              }`}
+                            >
+                              <tab.icon className="h-3.5 w-3.5 shrink-0" />
+                              {tab.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                return (
+                  <Link key={s.label} href={s.href} className={segmentClass(s.active)}>
+                    <s.icon className="h-3.5 w-3.5" />
+                    {s.label}
+                  </Link>
+                );
+              })}
               <div ref={toolsWrapRef} className="relative">
                 <button onClick={() => setShowTools((v) => !v)} aria-expanded={showTools} className={segmentClass(toolsActive)}>
                   <LayoutGrid className="h-3.5 w-3.5" />
@@ -288,6 +346,7 @@ export function AppNav() {
             <Link
               key={s.label}
               href={s.href}
+              onClick={s.href === "/search" ? (e) => { e.preventDefault(); setMobileTracker((v) => !v); } : undefined}
               data-active={s.active || undefined}
               className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium ${
                 s.active ? "border-accent bg-accent text-white" : "border-border bg-surface text-text-secondary"
@@ -295,9 +354,31 @@ export function AppNav() {
             >
               <s.icon className="h-3 w-3" />
               {s.label}
+              {s.href === "/search" && <ChevronDown className={`h-3 w-3 transition-transform ${mobileTracker ? "rotate-180" : ""}`} />}
             </Link>
           ))}
         </div>
+
+        {/* Tracker sub-pages expand inline, replacing the old in-page tab strip */}
+        {mobileTracker && (
+          <div className="flex items-center gap-1.5 overflow-x-auto px-3 pb-2 no-scrollbar">
+            {TRACKER_TABS.map((tab) => (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                onClick={() => setMobileTracker(false)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium ${
+                  isActive(tab.href)
+                    ? "border-accent/30 bg-accent/10 text-accent"
+                    : "border-border-subtle bg-bg text-text-secondary"
+                }`}
+              >
+                <tab.icon className="h-3 w-3" />
+                {tab.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── Mobile full-screen tools launcher ───────────────────────────── */}

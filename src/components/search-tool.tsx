@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { TrackerTabs } from "@/components/tracker-tabs";
+
 import { trackEvent } from "@/lib/track-event";
 import {
   Search,
@@ -229,15 +229,14 @@ export function SearchTool() {
     <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
       {/* Hero Section */}
       <div className="flex w-full flex-col items-center px-6 pt-6 pb-5 text-center border-b border-border">
-        <TrackerTabs />
-        <div className="mt-5 mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-subtle px-4 py-1.5 text-xs font-semibold text-accent">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-subtle px-4 py-1.5 text-xs font-semibold text-accent">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
           Live Adobe Stock Data
         </div>
         <h1 className="font-heading text-xl font-bold tracking-tight text-text-primary sm:text-2xl lg:text-3xl">
           Analyze Stock <span className="text-accent">Performance</span>
         </h1>
-        <p className="mt-2 max-w-lg text-xs leading-relaxed text-text-secondary sm:text-sm">
+        <p className="mt-2 max-w-3xl text-xs leading-relaxed text-text-secondary sm:text-sm">
           Real-time download analytics for contributors. Track, compare, and optimize your portfolio.
         </p>
 
@@ -289,10 +288,12 @@ export function SearchTool() {
             </button>
           ))}
         </div>
-      </div>        {/* Control Bar (sticky - doesn't scroll) */}
-        {searched && (
-          <div className="sticky top-0 z-10 border-b border-border bg-bg/80 backdrop-blur-sm p-3">
-            <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar">
+      </div>
+
+      {/* Control Bar (sticky - doesn't scroll) — full-width like the event calendar */}
+      {searched && (
+        <div className="sticky top-0 z-10 border-b border-border bg-bg/80 backdrop-blur-sm p-3">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar px-2">
               {/* Portfolio Info */}
               {isCreatorResults && results.length > 0 && (
                 <div className="flex shrink-0 items-center gap-2.5 pr-3 border-r border-border">
@@ -365,7 +366,7 @@ export function SearchTool() {
         </div>
       )}
 
-      {/* Scrollable Content */}
+      {/* Scrollable Content — slim margin like the event calendar */}
       <div className="flex-1 overflow-y-auto p-5">
         {/* Loading */}
         {isLoading && (
@@ -405,7 +406,7 @@ export function SearchTool() {
 
         {/* List/Table View */}
         {!isLoading && sortedResults.length > 0 && viewMode === "table" && (
-          <div className="space-y-2">
+          <div className="mx-auto max-w-screen-2xl space-y-2">
             {sortedResults.map((asset, idx) => {
               const d = asset.uploadDate ? new Date(asset.uploadDate) : null;
               const dateStr = d && !isNaN(d.getTime()) ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" }) : "";
@@ -453,7 +454,7 @@ export function SearchTool() {
 
         {/* Grid View */}
         {!isLoading && sortedResults.length > 0 && viewMode === "grid" && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mx-auto grid max-w-screen-2xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
             {sortedResults.map((asset, idx) => {
               const d = asset.uploadDate ? new Date(asset.uploadDate) : null;
               const dateStr = d && !isNaN(d.getTime()) ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" }) : "";

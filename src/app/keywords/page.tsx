@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ToolLayout } from "@/components/tool-layout";
-import { TrackerTabs } from "@/components/tracker-tabs";
 import { analyzeKeyword, KeywordAnalysis } from "@/lib/stock-api";
 import { Search, BarChart3, Target, Lightbulb, TrendingUp, History } from "lucide-react";
 
@@ -27,7 +26,6 @@ function KeywordsPage() {
     <ToolLayout>
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
         <div className="border-b border-border px-5 py-4">
-          <TrackerTabs />
           <h2 className="mt-3 text-base font-semibold text-text-primary">Keyword Analyzer</h2>
           <p className="text-xs text-text-muted">Analyze any keyword to find competition levels, trending niches, and optimization tips</p>
           <div className="mt-3 flex max-w-xl gap-2">

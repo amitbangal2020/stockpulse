@@ -231,7 +231,7 @@ export default function TitleOptimizerPage() {
       </main>
 
       {/* ─── Right: Controls Sidebar (280px) ─── */}
-      <aside className="w-full shrink-0 flex-col overflow-y-auto min-h-0 border-t border-border bg-bg-secondary lg:w-[280px] lg:border-t-0 lg:border-l tool-settings-panel">
+      <aside className="w-full shrink-0 flex-col overflow-y-auto min-h-0 border-t border-border bg-bg-secondary lg:w-[320px] lg:border-t-0 lg:border-l tool-settings-panel">
         <div className="p-4">
           <div className="mb-4">
             <h2 className="text-sm font-semibold text-text-primary">Controls</h2>

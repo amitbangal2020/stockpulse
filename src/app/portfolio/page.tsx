@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ToolLayout } from "@/components/tool-layout";
-import { TrackerTabs } from "@/components/tracker-tabs";
 import { Download, Eye } from "lucide-react";
 
 const SAMPLE_PORTFOLIO = [
@@ -30,17 +29,18 @@ function PortfolioPage() {
     <ToolLayout>
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
         <div className="border-b border-border px-5 py-4">
-          <TrackerTabs />
-          <h2 className="mt-3 text-base font-semibold text-text-primary">My Portfolio</h2>
-          <p className="text-xs text-text-muted">Track all your Adobe Stock assets</p>
-          <div className="mt-3 flex gap-3">
-            <div className="rounded-lg border border-border bg-surface px-3 py-1.5 text-center"><p className="text-lg font-bold text-text-primary">{SAMPLE_PORTFOLIO.length}</p><p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">Assets</p></div>
-            <div className="rounded-lg border border-border bg-surface px-3 py-1.5 text-center"><p className="text-lg font-bold text-accent">{totalDownloads}</p><p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">Downloads</p></div>
-            <div className="rounded-lg border border-border bg-surface px-3 py-1.5 text-center"><p className="text-lg font-bold text-accent">{avgPerf}%</p><p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">Avg Perf</p></div>
+          <div className="mx-auto w-full max-w-screen-2xl">
+            <h2 className="text-base font-semibold text-text-primary">My Portfolio</h2>
+            <p className="text-xs text-text-muted">Track all your Adobe Stock assets</p>
+            <div className="mt-3 flex gap-3">
+              <div className="rounded-lg border border-border bg-surface px-3 py-1.5 text-center"><p className="text-lg font-bold text-text-primary">{SAMPLE_PORTFOLIO.length}</p><p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">Assets</p></div>
+              <div className="rounded-lg border border-border bg-surface px-3 py-1.5 text-center"><p className="text-lg font-bold text-accent">{totalDownloads}</p><p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">Downloads</p></div>
+              <div className="rounded-lg border border-border bg-surface px-3 py-1.5 text-center"><p className="text-lg font-bold text-accent">{avgPerf}%</p><p className="text-[10px] font-medium uppercase tracking-wider text-text-muted">Avg Perf</p></div>
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="mx-auto w-full max-w-screen-2xl flex-1 overflow-y-auto p-5">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap gap-1.5">
               {["all", "image", "vector", "video"].map((t) => (
@@ -54,7 +54,7 @@ function PortfolioPage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {filtered.map((a) => (
               <div key={a.id} className="overflow-hidden rounded-xl border border-border bg-surface transition-all hover:border-accent/40 hover:shadow-md group">
                 <div className="relative">
