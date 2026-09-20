@@ -35,21 +35,34 @@ export function SettingsDrawer() {
     setOpen(false);
   }, [pathname]);
 
+  // Play a closing animation before unmounting so the drawer doesn't "cut" out.
+  const [closing, setClosing] = useState(false);
+  const closeWithAnimation = () => {
+    if (!open) return;
+    setClosing(true);
+    document.documentElement.classList.add("settings-drawer-closing");
+    setTimeout(() => {
+      document.documentElement.classList.remove("settings-drawer-closing");
+      setClosing(false);
+      setOpen(false);
+    }, 200);
+  };
+
   if (!available) return null;
 
   return (
     <>
       {open && (
         <div
-          className="fixed inset-0 z-[54] bg-black/40 lg:hidden"
-          onClick={() => setOpen(false)}
+          className={`fixed inset-0 z-[54] bg-black/40 lg:hidden ${closing ? "pointer-events-none" : ""}`}
+          onClick={closeWithAnimation}
           aria-hidden
         />
       )}
 
       <button
         data-settings-toggle
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => (open ? closeWithAnimation() : setOpen(true))}
         aria-expanded={open}
         aria-label={open ? t.drawer.closeAria : t.drawer.openAria}
         className={`fixed bottom-5 right-4 z-[60] flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold shadow-lg transition-all lg:hidden ${

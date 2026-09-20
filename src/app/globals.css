@@ -291,6 +291,16 @@ h1, h2, h3, h4, h5, h6 {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes drawerOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(24px); }
+}
+
 .animate-pop-in {
   animation: popIn 0.28s var(--ease-smooth) forwards;
 }
@@ -307,7 +317,10 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Mobile settings drawer — the desktop right panel becomes a slide-up sheet on phones */
+/* Mobile settings drawer — the desktop right panel becomes a slide-up sheet on phones.
+ * Entrance uses the popIn keyframe (mount animation). Closing plays a short
+ * slide-down animation via the .settings-drawer-closing class set by JS
+ * before React unmounts the panel. */
 @media (max-width: 1023.98px) {
   .tool-settings-panel {
     display: none;
@@ -327,6 +340,13 @@ h1, h2, h3, h4, h5, h6 {
     border-top: 1px solid var(--border);
     animation: popIn 0.3s var(--ease-smooth);
   }
+  html.settings-drawer-open.settings-drawer-closing .tool-settings-panel {
+    display: block;
+    animation: drawerOut 0.22s ease-in forwards;
+  }
+  html.settings-drawer-open.settings-drawer-closing .fixed.inset-0.z-\[54\] {
+    animation: fadeOut 0.22s ease-in forwards;
+  }
   html.settings-drawer-open {
     overflow: hidden;
   }
@@ -343,11 +363,12 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-backdrop-filter: blur(16px) saturate(180%);
 }
 
-/* Smooth transitions for all interactive elements */
+/* Smooth transitions for all interactive elements.
+ * NOTE: the site-wide `*` block at the top (220ms ease-out-expo, !important)
+ * already sets duration+easing for every element — this rule only declares
+ * WHICH properties transition, so it never fights the timing above. */
 * {
   transition-property: background-color, border-color, color, box-shadow, opacity, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
 }
 
 /* Disable transitions on animated elements to prevent conflicts */
@@ -355,9 +376,9 @@ h1, h2, h3, h4, h5, h6 {
   transition: none;
 }
 
-/* Card hover lift effect */
+/* Card hover lift effect — uses the site-wide smooth easing/duration */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition-property: transform, box-shadow;
 }
 .card-hover:hover {
   transform: translateY(-1px);
@@ -443,7 +464,7 @@ h1, h2, h3, h4, h5, h6 {
 .stat-card {
   border-radius: 12px;
   padding: 1.25rem;
-  transition: all 0.15s ease;
+  transition-property: border-color, box-shadow, background-color;
   background: var(--surface);
   border: 1px solid var(--border);
 }
@@ -520,7 +541,7 @@ input[type='range']::-webkit-slider-thumb {
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s ease;
+  transition-property: transform;
   margin-top: -5px;
 }
 
