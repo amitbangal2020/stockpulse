@@ -37,6 +37,22 @@ export const BLOG_CHROME: Record<TranslatedLocale, BlogChromeCopy> = {
     comingSoon: "जल्द आ रहा है",
     comingSoonBody: "हिंदी गाइड लिखी जा रही हैं — तब तक अंग्रेज़ी पोस्ट पढ़ सकते हैं।",
   },
+  fr: {
+    title: "Blog",
+    subtitle: "Conseils microstock, workflows IA & stratégie de mots-clés",
+    backToAll: "Tous les articles",
+    keepReading: "Continuer la lecture",
+    comingSoon: "Bientôt disponible",
+    comingSoonBody: "Les guides en français sont en cours de rédaction — en attendant, lisez les articles en anglais.",
+  },
+  de: {
+    title: "Blog",
+    subtitle: "Microstock-Tipps, KI-Workflows & Keyword-Strategie",
+    backToAll: "Alle Beiträge",
+    keepReading: "Weiterlesen",
+    comingSoon: "Demnächst verfügbar",
+    comingSoonBody: "Die deutschen Anleitungen entstehen gerade — bis dahin gibt es die englischen Beiträge.",
+  },
 };
 
 /** Index <title> / meta description per language, including English. */
@@ -58,5 +74,17 @@ export const BLOG_INDEX_SEO: Record<Locale, { title: string; description: string
     description:
       "माइक्रोस्टॉक विक्रेताओं के लिए हिंदी गाइड: Adobe Stock कीवर्ड रणनीति, AI मेटाडेटा वर्कफ़्लो, सीज़नल अपलोड टाइमिंग और AI कंटेंट के नियम।",
     ogAlt: "StockPulse हिंदी ब्लॉग",
+  },
+  fr: {
+    title: "Blog — Conseils Microstock, Workflows IA & Recherche de Mots-clés",
+    description:
+      "Guides pratiques pour les vendeurs microstock : stratégie de mots-clés Adobe Stock, workflows de métadonnées IA, timing saisonnier des uploads et règles du contenu IA.",
+    ogAlt: "Blog StockPulse en français",
+  },
+  de: {
+    title: "Blog — Microstock-Tipps, KI-Workflows & Keyword-Recherche",
+    description:
+      "Praktische Anleitungen für Microstock-Verkäufer: Adobe-Stock-Keyword-Strategie, KI-Metadaten-Workflows, saisonales Upload-Timing und Regeln für KI-Content.",
+    ogAlt: "StockPulse deutscher Blog",
   },
 };

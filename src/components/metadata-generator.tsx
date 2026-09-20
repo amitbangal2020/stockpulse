@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import { useLanguage } from "@/components/language-provider";
 import {
   Upload,
   Image as ImageIcon,
@@ -105,6 +106,8 @@ function toast(msg: string) {
 }
 
 export function MetadataGenerator() {
+  const { t: tDict } = useLanguage();
+  const dz = tDict.dropzone;
   // Multiple API keys per provider
   const [allKeys, setAllKeys] = useState<Record<ProviderId, ApiKeyEntry[]>>({
     openai: [], gemini: [], anthropic: [], grok: [], mistral: [], openrouter: [],
@@ -922,10 +925,10 @@ export function MetadataGenerator() {
             <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-accent/10">
               <Upload className="h-5 w-5 text-accent" />
             </div>
-            <h3 className="text-sm font-semibold text-text-primary">Drop images, videos, or EPS vectors here</h3>
-            <p className="mt-1.5 text-xs text-text-muted">JPG, PNG, WEBP, EPS, MP4, MOV, AVI, MKV and more · Mixed files supported</p>
+            <h3 className="text-sm font-semibold text-text-primary">{dz.metagenTitle}</h3>
+            <p className="mt-1.5 text-xs text-text-muted">{dz.metagenFormats}</p>
             <div className="mt-3 flex items-center justify-center gap-1.5">
-              {["Images", "Videos", "EPS", "SVG"].map(t => (
+              {[dz.metagenTypes.images, dz.metagenTypes.videos, dz.metagenTypes.eps, dz.metagenTypes.svg].map(t => (
                 <span key={t} className="rounded-full bg-accent-subtle px-3 py-1 text-[10px] font-medium text-accent">{t}</span>
               ))}
             </div>
@@ -1007,9 +1010,9 @@ export function MetadataGenerator() {
                 <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
                   <ImageIcon className="h-6 w-6 text-accent" />
                 </div>
-                <h3 className="font-heading text-lg font-semibold text-text-primary">Start Generating</h3>
+                <h3 className="font-heading text-lg font-semibold text-text-primary">{dz.startGenerating}</h3>
                 <p className="mt-1.5 max-w-sm text-sm text-text-muted">
-                  Drop some files above to generate optimized metadata for your microstock uploads.
+                  {dz.startGeneratingBody}
                 </p>
               </div>
             )}

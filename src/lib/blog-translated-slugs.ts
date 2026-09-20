@@ -26,6 +26,20 @@ export const TRANSLATED_SLUGS: Record<TranslatedLocale, readonly string[]> = {
     "ai-generated-content-rules-stock-platforms",
     "best-ai-tools-microstock-sellers-2026",
   ],
+  fr: [
+    "how-to-write-adobe-stock-titles-that-rank",
+    "how-many-keywords-stock-photo-adobe-stock",
+    "seasonal-stock-content-upload-timing",
+    "ai-generated-content-rules-stock-platforms",
+    "best-ai-tools-microstock-sellers-2026",
+  ],
+  de: [
+    "how-to-write-adobe-stock-titles-that-rank",
+    "how-many-keywords-stock-photo-adobe-stock",
+    "seasonal-stock-content-upload-timing",
+    "ai-generated-content-rules-stock-platforms",
+    "best-ai-tools-microstock-sellers-2026",
+  ],
 };
 
 /** Development tripwire — see above. Silent in production builds. */

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { useLanguage } from "@/components/language-provider";
 import {
   Upload, Download, RotateCcw, ZoomIn, ZoomOut, ChevronUp, ChevronDown,
   Image as ImageIcon, Sliders, Cpu, Layers, Palette, Shuffle,
@@ -294,6 +295,8 @@ function applySnap(s: Snap, setters: Record<string, any>) {
 
 // ─── Main Component ───
 export default function DitherStudioPage() {
+  const { t: tDict } = useLanguage();
+  const dz = tDict.dropzone;
   const [batchImages, setBatchImages] = useState<BatchItem[]>([]);
   const [activeBatchId, setActiveBatchId] = useState<number | null>(null);
   const [fileName, setFileName] = useState("");
@@ -624,8 +627,8 @@ export default function DitherStudioPage() {
             ) : (
               <div className={`flex w-full max-w-2xl flex-col items-center justify-center rounded-2xl border-2 border-dashed p-20 text-center cursor-pointer transition-all ${isDragging ? "border-accent bg-accent-subtle" : "border-border hover:border-accent/40 bg-surface"}`} onClick={() => fileInputRef.current?.click()}>
                 <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-accent-subtle"><Upload className="h-8 w-8 text-accent" /></div>
-                <p className="text-base font-medium text-text-primary">Drop or click to browse</p>
-                <p className="mt-1.5 text-xs text-text-muted">JPG, PNG, WEBP, GIF • Multiple files supported • Scroll to zoom</p>
+                <p className="text-base font-medium text-text-primary">{dz.dropOrBrowse}</p>
+                <p className="mt-1.5 text-xs text-text-muted">{dz.dropFormats}</p>
               </div>
             )}
           </div>

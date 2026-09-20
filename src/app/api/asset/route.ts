@@ -27,7 +27,7 @@ function buildApiUrl(base: string, params: Record<string, string | string[]>) {
 const SEARCH_COLUMNS = [
   'id', 'title', 'nb_downloads', 'nb_views', 'creator_name', 'creator_id',
   'keywords', 'thumbnail_500_url', 'creation_date', 'category', 'media_type_id',
-  'width', 'height', 'content_type', 'is_editorial',
+  'width', 'height', 'content_type', 'is_editorial', 'nb_results',
 ];
 
 // Fetch from Adobe Stock with optional gentech filter
@@ -64,7 +64,7 @@ async function searchByCreator(creatorId: string, apiKey: string, limit = 20, of
     'search_parameters[creator_id]': creatorId.replace(/[^0-9]/g, ''),
     'search_parameters[limit]': String(Math.min(limit, 100)),
     'search_parameters[offset]': String(offset),
-    'result_columns[]': [...SEARCH_COLUMNS, 'nb_results'],
+    'result_columns[]': SEARCH_COLUMNS,
   };
 
   if (gentech === 'true' || gentech === 'false') {
@@ -184,23 +184,42 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Keyword search
+    // Keyword search — Adobe Stock caps a single request at 100 results, so
+    // larger limits are satisfied by fetching pages in parallel and merging.
     const searchQuery = query!;
-    const searchLimit = Math.min(limit, 50);
-    const data = await searchAdobeStock(searchQuery, apiKey, searchLimit, offset, gentech);
+    const searchLimit = Math.min(limit, 200);
+    const pageSize = 100;
+    const pageOffsets: number[] = [];
+    for (let o = offset; o < offset + searchLimit; o += pageSize) pageOffsets.push(o);
 
-    if (!data || !data.files || data.files.length === 0) {
+    const pages = await Promise.all(
+      pageOffsets.map((o) =>
+        searchAdobeStock(searchQuery, apiKey, Math.min(pageSize, offset + searchLimit - o), o, gentech),
+      ),
+    );
+
+    const rawFiles = pages.flatMap((page) => page?.files || []);
+    if (rawFiles.length === 0) {
       return NextResponse.json({
         found: false,
         error: 'No results found',
       });
     }
 
-    const files = data.files.map((f: any) => mapFile(f, gentech));
+    const mapped = rawFiles.map((f: any) => mapFile(f, gentech));
+    // Overlapping pages can return the same asset twice — keep the first copy.
+    const seen = new Set<string>();
+    const files = mapped.filter((f: { id: string }) => {
+      if (seen.has(f.id)) return false;
+      seen.add(f.id);
+      return true;
+    });
+
+    const nbResults = pages.reduce((acc, page) => Math.max(acc, page?.nb_results || 0), 0);
 
     return NextResponse.json({
       found: files.length > 0,
-      total: data.nb_results || files.length,
+      total: nbResults || files.length,
       files,
       source: 'adobe-stock-api',
     });

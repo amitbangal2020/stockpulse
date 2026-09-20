@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { useLanguage } from "@/components/language-provider";
 import { Upload, Download, FileCode, Trash2, Check, FolderOpen, Package } from "lucide-react";
 
 interface ConvertedFile {
@@ -118,6 +119,8 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 }
 
 export default function SvgToEpsPage() {
+  const { t: tDict } = useLanguage();
+  const dz = tDict.dropzone;
   const [files, setFiles] = useState<ConvertedFile[]>([]);
   const [epsVersion, setEpsVersion] = useState<"eps10" | "eps20">("eps10");
   const [isConverting, setIsConverting] = useState(false);
@@ -315,9 +318,9 @@ export default function SvgToEpsPage() {
             <div className={`flex w-full max-w-2xl flex-col items-center justify-center rounded-2xl border-2 border-dashed p-20 text-center transition-all ${isDragging ? "border-accent bg-accent-subtle" : "border-border hover:border-accent/40 bg-surface"}`}
               onClick={() => fileInputRef.current?.click()}>
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-accent-subtle"><Upload className="h-8 w-8 text-accent" /></div>
-              <p className="text-2xl font-semibold text-text-primary">Drop SVG files here</p>
-              <p className="mt-2 text-sm text-text-muted">or click to browse files</p>
-              <p className="mt-4 text-xs text-text-muted">Supports .svg files • Single or multiple files</p>
+              <p className="text-2xl font-semibold text-text-primary">{dz.dropSvgHere}</p>
+              <p className="mt-2 text-sm text-text-muted">{dz.orClickBrowseFiles}</p>
+              <p className="mt-4 text-xs text-text-muted">{dz.svgSupports}</p>
             </div>
           ) : (
             <div className="w-full max-w-4xl space-y-3">

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { useLanguage } from "@/components/language-provider";
 import { Upload, Copy, Download, Shuffle, Trash2, Check, Palette } from "lucide-react";
 
 interface ExtractedColor {
@@ -93,6 +94,8 @@ function extractColors(imageData: ImageData, numColors: number): ExtractedColor[
 }
 
 export default function ColorPalettePage() {
+  const { t: tDict } = useLanguage();
+  const dz = tDict.dropzone;
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [fileName, setFileName] = useState("");
   const [colors, setColors] = useState<ExtractedColor[]>([]);
@@ -160,9 +163,9 @@ export default function ColorPalettePage() {
             <div className={`flex w-full max-w-2xl flex-col items-center justify-center rounded-2xl border-2 border-dashed p-20 text-center transition-all ${isDragging ? "border-accent bg-accent-subtle" : "border-border hover:border-accent/40 bg-surface"}`}
               onClick={() => fileInputRef.current?.click()}>
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-accent-subtle"><Upload className="h-8 w-8 text-accent" /></div>
-              <p className="text-2xl font-semibold text-text-primary">Image color picker</p>
-              <p className="mt-2 text-sm text-text-muted">Extract beautiful color palettes from your photos instantly.</p>
-              <p className="mt-4 text-xs text-text-muted">Drop your image here or click to browse</p>
+              <p className="text-2xl font-semibold text-text-primary">{dz.imageColorPicker}</p>
+              <p className="mt-2 text-sm text-text-muted">{dz.colorPickerBody}</p>
+              <p className="mt-4 text-xs text-text-muted">{dz.dropYourImage}</p>
             </div>
           ) : (
             <div className="w-full max-w-4xl">

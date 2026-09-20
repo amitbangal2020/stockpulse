@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { useLanguage } from "@/components/language-provider";
 import { Upload, Download, Copy, Check, RefreshCw, Type, ChevronUp, ChevronDown } from "lucide-react";
 
 const CHARSETS = {
@@ -29,6 +30,8 @@ function Section({ title, icon, defaultOpen = true, children }: { title: string;
 }
 
 export default function AsciiVisionPage() {
+  const { t: tDict } = useLanguage();
+  const dz = tDict.dropzone;
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [fileName, setFileName] = useState("");
   const [asciiArt, setAsciiArt] = useState("");
@@ -118,8 +121,8 @@ export default function AsciiVisionPage() {
             <div className={`flex w-full max-w-2xl flex-col items-center justify-center rounded-2xl border-2 border-dashed p-20 text-center cursor-pointer transition-all ${isDragging ? "border-accent bg-accent-subtle" : "border-border hover:border-accent/40 bg-surface"}`}
               onClick={() => fileInputRef.current?.click()}>
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-accent-subtle"><Upload className="h-8 w-8 text-accent" /></div>
-              <p className="text-2xl font-semibold text-text-primary">Drop an image here</p>
-              <p className="mt-2 text-sm text-text-muted">or click to browse • JPG, PNG, WEBP, GIF</p>
+              <p className="text-2xl font-semibold text-text-primary">{dz.dropImageHere}</p>
+              <p className="mt-2 text-sm text-text-muted">{dz.orClickBrowse} • JPG, PNG, WEBP, GIF</p>
             </div>
           ) : (
             <div className="w-full max-w-5xl">

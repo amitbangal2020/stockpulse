@@ -41,12 +41,21 @@ import {
  * capsule becomes a scrollable pill row under a slim brand bar.
  */
 
-const SEGMENTS = [
+interface NavSegment {
+  label: string;
+  /** Translation key in `t.nav` — overrides `label` when present. */
+  labelKey?: "blog" | "howItWorks";
+  href: string;
+  icon: typeof Sparkles;
+  match: string[];
+}
+
+const SEGMENTS: NavSegment[] = [
   { label: "Generator", href: "/metagen", icon: Sparkles, match: ["/metagen"] },
   { label: "Tracker", href: "/search", icon: BarChart3, match: ["/search", "/dashboard", "/portfolio", "/trending", "/keywords", "/watchlist"] },
   { label: "SVG to Video", href: "/svg-to-video", icon: Video, match: ["/svg-to-video"] },
-  { label: "Blog", href: "/blog", icon: BookOpen, match: ["/blog"] },
-  { label: "How it Works", href: "/how-it-works", icon: HelpCircle, match: ["/how-it-works"] },
+  { label: "Blog", labelKey: "blog", href: "/blog", icon: BookOpen, match: ["/blog"] },
+  { label: "How it Works", labelKey: "howItWorks", href: "/how-it-works", icon: HelpCircle, match: ["/how-it-works"] },
 ];
 
 const ALL_TOOLS = [
@@ -62,7 +71,7 @@ const ALL_TOOLS = [
   { label: "Market Heatmap", href: "/market-heatmap", icon: Grid3X3 },
   { label: "Portfolio Analytics", href: "/portfolio-analytics", icon: Target },
   { label: "Asset Comparison", href: "/asset-comparison", icon: GitCompare },
-  { label: "Events", href: "/events", icon: Calendar },
+  { label: "Event Calendar", href: "/event-calendar", icon: Calendar },
   { label: "Title Optimizer", href: "/title-optimizer", icon: Type },
   { label: "Mockup Generator", href: "/mockup-generator", icon: Monitor },
   { label: "Country Map", href: "/country-map", icon: Globe },
@@ -150,8 +159,9 @@ export function AppNav() {
   // The centered capsule: main destinations plus a Tools segment. "Blog" maps
   // to the visitor's language, matching the old shell's behaviour.
   const capsule = SEGMENTS.map((s) => {
-    if (s.match.includes("/blog")) return { ...s, href: blogHref, active: onBlog };
-    return { ...s, active: activeSegment?.href === s.href };
+    const label = s.labelKey ? t.nav[s.labelKey] : s.label;
+    if (s.match.includes("/blog")) return { ...s, label, href: blogHref, active: onBlog };
+    return { ...s, label, active: activeSegment?.href === s.href };
   });
   const toolsActive = isAnyToolActive || showTools;
   // Overlays remount per route + open state: navigating unmounts them (same

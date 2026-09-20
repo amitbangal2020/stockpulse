@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { useLanguage } from "@/components/language-provider";
 import {
   Upload, Download, Monitor, Smartphone, Tablet, CreditCard,
   FileImage, RotateCcw, Palette, Sun, Moon, Zap, Copy, Check,
@@ -244,6 +245,8 @@ function DeviceSVG({ config, imageUrl, bg, shadow, rotation }: {
 
 // ─── Main Page ───
 export default function MockupGeneratorPage() {
+  const { t: tDict } = useLanguage();
+  const dz = tDict.dropzone;
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("iphone");
   const [imageUrl, setImageUrl] = useState<string>("");
   const [bg, setBg] = useState("#f4f4f5");
@@ -314,8 +317,8 @@ export default function MockupGeneratorPage() {
           ) : (
             <div className="text-center">
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-accent/10 mx-auto"><Monitor className="h-10 w-10 text-accent" /></div>
-              <h3 className="mb-1 text-sm font-semibold text-text-primary">Upload Your Design</h3>
-              <p className="text-[11px] text-text-muted">Upload an image to see it on the mockup</p>
+              <h3 className="mb-1 text-sm font-semibold text-text-primary">{dz.uploadYourDesign}</h3>
+              <p className="text-[11px] text-text-muted">{dz.uploadDesignBody}</p>
             </div>
           )}
         </div>

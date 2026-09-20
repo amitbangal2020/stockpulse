@@ -153,7 +153,7 @@ export function SearchTool() {
       }
 
       // ── Keyword mode ──
-      const resp = await fetch(`/api/asset?q=${encodeURIComponent(searchQ)}&limit=20&offset=0${gentechParam}`);
+      const resp = await fetch(`/api/asset?q=${encodeURIComponent(searchQ)}&limit=200&offset=0${gentechParam}`);
       const data = await resp.json();
       if (data.found && data.files) {
         const assets: StockAsset[] = data.files.map((f: any) => ({
@@ -414,7 +414,7 @@ export function SearchTool() {
               return (
                 <div key={asset.id} className="group flex items-center gap-4 rounded-xl border border-border bg-surface p-3 transition-all duration-200 hover:border-accent/30 hover:shadow-md hover:shadow-accent/5">
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-background">
-                    <img src={asset.thumbnailUrl} alt={asset.title} className="h-full w-full object-cover" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%231a1a2e' width='64' height='64'/%3E%3C/svg%3E"; }} />
+                    <img src={asset.thumbnailUrl} alt={asset.title} className="h-full w-full object-contain" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%231a1a2e' width='64' height='64'/%3E%3C/svg%3E"; }} />
                     <span className="absolute left-0.5 top-0.5 rounded bg-black/60 px-1 py-px text-[7px] font-bold uppercase text-white/90">{asset.mediaType}</span>
                     {asset.isAI && <span className="absolute bottom-0.5 left-0.5 rounded bg-purple-500/80 px-1 py-px text-[7px] font-bold text-white">AI</span>}
                   </div>
@@ -463,7 +463,7 @@ export function SearchTool() {
                 <div key={asset.id} className="group overflow-hidden rounded-xl border border-border bg-surface transition-all duration-200 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5">
                   {/* Thumbnail */}
                   <div className="relative h-48 overflow-hidden bg-background">
-                    <img src={asset.thumbnailUrl} alt={asset.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Crect fill='%231a1a2e' width='200' height='150'/%3E%3Ctext fill='%23444' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E"; }} />
+                    <img src={asset.thumbnailUrl} alt={asset.title} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Crect fill='%231a1a2e' width='200' height='150'/%3E%3Ctext fill='%23444' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E"; }} />
                     {/* Badges */}
                     <div className="absolute left-2 top-2 flex gap-1.5">
                       <span className="rounded-md bg-black/60 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/90 backdrop-blur-md">{asset.mediaType}</span>

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { BLOG_POSTS, type BlogPost } from "@/lib/blog-posts";
 import { BLOG_POSTS_BN } from "@/lib/blog-posts-bn";
 import { BLOG_POSTS_HI } from "@/lib/blog-posts-hi";
+import { availableLocales } from "@/lib/blog-posts-localized";
 import { blogPath } from "@/lib/i18n/localized-path";
 import { LOCALES, type Locale } from "@/lib/i18n/locales";
 
@@ -30,18 +31,26 @@ const tools = [
   { path: "/trend-predictor", changeFrequency: "monthly" as const, priority: 0.5 },
   { path: "/title-optimizer", changeFrequency: "monthly" as const, priority: 0.6 },
   { path: "/asset-comparison", changeFrequency: "monthly" as const, priority: 0.5 },
-  { path: "/events", changeFrequency: "monthly" as const, priority: 0.5 },
+  { path: "/event-calendar", changeFrequency: "weekly" as const, priority: 0.7 },
   { path: "/watchlist", changeFrequency: "weekly" as const, priority: 0.6 },
 ];
 
 /**
- * Every post exists in each language under its own URL, sharing the slug.
- * Listing all of them with each other as alternates is the sitemap half of the
- * hreflang pair.
+ * The blog index exists in every language (empty ones show coming soon), so
+ * the index alternates list all of them — the sitemap half of the hreflang
+ * pair.
  */
-const blogLanguages = (slug: string) =>
+const blogIndexLanguages = () =>
+  Object.fromEntries(LOCALES.map((locale) => [locale, `${BASE_URL}${blogPath(locale)}`]));
+
+/**
+ * A post only exists in the languages it was translated to, so its alternates
+ * list just those — announcing a translation that does not exist would send
+ * Google to a 404 (same rule as blogAlternates in blog-seo.ts).
+ */
+const blogPostLanguages = (slug: string) =>
   Object.fromEntries(
-    LOCALES.map((locale) => [locale, `${BASE_URL}${blogPath(locale, slug)}`]),
+    availableLocales(slug).map((locale) => [locale, `${BASE_URL}${blogPath(locale, slug)}`]),
   );
 
 const postsByLocale: { locale: Locale; posts: BlogPost[] }[] = [
@@ -67,6 +76,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     // Policy and info pages.
+    { url: `${BASE_URL}/event-calendar`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE_URL}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE_URL}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
@@ -76,7 +86,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: locale === "en" ? 0.7 : 0.6,
-      alternates: { languages: blogLanguages("") },
+      alternates: { languages: blogIndexLanguages() },
     })),
     ...tools.map((tool) => ({
       url: `${BASE_URL}${tool.path}`,
@@ -90,7 +100,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: new Date(post.date),
         changeFrequency: "monthly" as const,
         priority: 0.6,
-        alternates: { languages: blogLanguages(`/${post.slug}`) },
+        alternates: { languages: blogPostLanguages(post.slug) },
       })),
     ),
   ];

@@ -184,8 +184,9 @@ export default function MarketHeatmapPage() {
         <div className="flex items-center justify-between border-b border-border bg-bg px-5 py-2.5">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10"><Grid3X3 className="h-4 w-4 text-accent" /></div>
-            <div>
+            <div className="flex flex-wrap items-baseline gap-x-2">
               <h1 className="text-sm font-semibold text-text-primary">Market Heatmap</h1>
+              <span aria-hidden className="hidden sm:inline text-[11px] text-border">·</span>
               <p className="text-[11px] text-text-muted">Visualize category performance at a glance</p>
             </div>
           </div>

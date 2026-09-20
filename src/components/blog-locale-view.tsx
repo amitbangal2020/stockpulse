@@ -7,6 +7,8 @@ import { BLOG_CHROME } from "@/lib/blog-locale-copy";
 import { availableLocales, localizedPost, localizedPosts } from "@/lib/blog-posts-localized";
 import { formatBengaliDate } from "@/lib/blog-posts-bn";
 import { formatHindiDate } from "@/lib/blog-posts-hi";
+import { formatFrenchDate } from "@/lib/blog-posts-fr";
+import { formatGermanDate } from "@/lib/blog-posts-de";
 import { blogArticleJsonLd } from "@/lib/blog-seo";
 import { blogPath } from "@/lib/i18n/localized-path";
 import type { TranslatedLocale } from "@/lib/i18n/locales";
@@ -24,6 +26,8 @@ import type { TranslatedLocale } from "@/lib/i18n/locales";
 const DATE_FORMATTERS: Record<TranslatedLocale, (iso: string) => string> = {
   bn: formatBengaliDate,
   hi: formatHindiDate,
+  fr: formatFrenchDate,
+  de: formatGermanDate,
 };
 
 /** Every other language this page exists in — what the pills link to. */

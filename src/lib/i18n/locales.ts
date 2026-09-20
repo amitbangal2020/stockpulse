@@ -3,7 +3,7 @@
 //
 // A language listed here also gets a blog URL space (/bn/blog, /hi/blog) and
 // joins the hreflang set, so adding one is a content job, not just a label.
-export const LOCALES = ["en", "bn", "hi"] as const;
+export const LOCALES = ["en", "bn", "hi", "fr", "de"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 
@@ -24,6 +24,8 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   bn: "বাংলা",
   hi: "हिंदी",
+  fr: "Français",
+  de: "Deutsch",
 };
 
 /** Short form for tight spots (the phone top bar). */
@@ -31,6 +33,8 @@ export const LOCALE_SHORT: Record<Locale, string> = {
   en: "EN",
   bn: "বাং",
   hi: "हिं",
+  fr: "FR",
+  de: "DE",
 };
 
 /** `<html lang>` values — "bn" and "hi" are what screen readers and Google expect. */
@@ -38,6 +42,8 @@ export const LOCALE_HTML_LANG: Record<Locale, string> = {
   en: "en",
   bn: "bn",
   hi: "hi",
+  fr: "fr",
+  de: "de",
 };
 
 /** Open Graph locales, which want a region suffix. */
@@ -45,6 +51,8 @@ export const LOCALE_OG: Record<Locale, string> = {
   en: "en_US",
   bn: "bn_IN",
   hi: "hi_IN",
+  fr: "fr_FR",
+  de: "de_DE",
 };
 
 export function isLocale(value: unknown): value is Locale {

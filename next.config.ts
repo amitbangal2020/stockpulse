@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // The old basic events page is superseded by the rich event-calendar
+      // planner. A permanent 308 keeps any earned SEO signals flowing to it.
+      { source: "/events", destination: "/event-calendar", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

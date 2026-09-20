@@ -27,7 +27,8 @@ type AnalyticsEvent =
   | "language_switched"
   | "api_key_added"
   | "asset_tracked"
-  | "portfolio_refreshed";
+  | "portfolio_refreshed"
+  | "event_prompt_copied";
 
 const OPT_OUT_KEY = "sp-analytics-opt-out";
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
