@@ -92,10 +92,10 @@ const TOOLS: ToolInfo[] = [
       "Auto-download CSV when batch finishes",
     ],
     steps: [
-      { title: "Add API Key", detail: "Click 'Add API Key', pick a provider (OpenAI, Gemini, Claude, Grok, Mistral, OpenRouter) and paste your key. Add several keys — they rotate automatically. Validate them with one click or bulk-import a list." },
+      { title: "Add API Key", detail: "Click 'Add API Key', pick a provider (OpenAI, Gemini, Claude, Grok, Mistral, OpenRouter) and paste your key. Add several keys — they rotate automatically. Use 'Validate All APIs' to check them all in one click, or bulk-import a list." },
       { title: "Select Platforms", detail: "Check the target platforms (Adobe Stock, Shutterstock, Freepik, Vecteezy, iStock, Pond5). Multiple platforms produce separate platform-format CSVs bundled in a ZIP." },
       { title: "Upload Files", detail: "Drag & drop images (JPG, PNG, WEBP), videos (MP4, MOV, AVI…), EPS/AI/PDF or SVG files. Video frames and EPS previews are extracted automatically, and transparency is detected for you." },
-      { title: "Configure Settings", detail: "Set title/keyword/description length ranges, output language, tone, prompt style, title prefix & suffix, custom keywords, banned words and parallel-generation concurrency." },
+      { title: "Configure Settings", detail: "Set title/keyword/description length ranges, output language, tone, prompt style, title prefix & suffix, custom keywords, banned words and parallel-generation concurrency. Use 'Save Settings' to store your setup and 'Load Settings' to restore it later." },
       { title: "Generate Metadata", detail: "Click 'Generate All'. The AI first runs a vision analysis on each file, then writes a title, description and keywords. A live timer and per-file status track progress." },
       { title: "Generate Image Prompts Too", detail: "Switch to the 'Prompt' tab to create AI image-generation prompts (Midjourney/DALL-E style) from the same files — with optional camera parameters, prompt prefix/suffix and negative prompts." },
       { title: "Review & Copy", detail: "Check each file's quality score, copy individual fields, compare and switch between A/B versions, then retry any failures." },

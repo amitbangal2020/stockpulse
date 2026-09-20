@@ -38,10 +38,10 @@ export const TOOL_BODY_DE: Record<string, ToolBodyDe> = {
       "Automatischer CSV-Download, sobald der Batch fertig ist",
     ],
     steps: [
-      { title: "API-Key hinzufügen", detail: "Klicken Sie auf „Add API Key“, wählen Sie einen Anbieter (OpenAI, Gemini, Claude, Grok, Mistral, OpenRouter) und fügen Sie Ihren Key ein. Mehrere Keys rotieren automatisch. Ein-Klick-Validierung oder Massenimport einer Liste." },
+      { title: "API-Key hinzufügen", detail: "Klicken Sie auf „Add API Key“, wählen Sie einen Anbieter (OpenAI, Gemini, Claude, Grok, Mistral, OpenRouter) und fügen Sie Ihren Key ein. Mehrere Keys rotieren automatisch. Mit „Validate All APIs“ alle Keys auf einmal prüfen oder eine Liste massenweise importieren." },
       { title: "Plattformen wählen", detail: "Haken Sie die Zielplattformen an (Adobe Stock, Shutterstock, Freepik, Vecteezy, iStock, Pond5). Mehrere Plattformen erzeugen je ein eigenes CSV-Format, gebündelt in einem ZIP." },
       { title: "Dateien hochladen", detail: "Ziehen Sie Bilder (JPG, PNG, WEBP), Videos (MP4, MOV, AVI …), EPS/AI/PDF- oder SVG-Dateien per Drag & Drop hinein. Videobilder und EPS-Vorschauen werden automatisch extrahiert, Transparenz wird für Sie erkannt." },
-      { title: "Einstellungen konfigurieren", detail: "Legen Sie Längenbereiche für Titel/Keywords/Beschreibung, Ausgabesprache, Tonalität, Prompt-Stil, Titel-Präfix und -Suffix, eigene Keywords, Sperrwörter und die Parallelität fest." },
+      { title: "Einstellungen konfigurieren", detail: "Legen Sie Längenbereiche für Titel/Keywords/Beschreibung, Ausgabesprache, Tonalität, Prompt-Stil, Titel-Präfix und -Suffix, eigene Keywords, Sperrwörter und die Parallelität fest. Mit „Save Settings“ speichern Sie Ihr Setup, mit „Load Settings“ laden Sie es später wieder." },
       { title: "Metadaten generieren", detail: "Klicken Sie auf „Generate All“. Die KI führt zuerst eine Vision-Analyse je Datei aus, dann schreibt sie Titel, Beschreibung und Keywords. Ein Live-Timer und der Status je Datei zeigen den Fortschritt." },
       { title: "Auch Bild-Prompts erzeugen", detail: "Wechseln Sie in den „Prompt“-Tab, um aus denselben Dateien KI-Bildgenerierungs-Prompts (im Stil von Midjourney/DALL-E) zu erstellen — optional mit Kameraparametern, Prompt-Präfix/Suffix und Negativ-Prompts." },
       { title: "Prüfen und kopieren", detail: "Sehen Sie sich den Qualitätswert jeder Datei an, kopieren Sie einzelne Felder, vergleichen und wechseln Sie zwischen A/B-Versionen, dann wiederholen Sie die Fehlschläge." },
