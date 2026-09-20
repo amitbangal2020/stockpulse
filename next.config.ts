@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
       // The old basic events page is superseded by the rich event-calendar
       // planner. A permanent 308 keeps any earned SEO signals flowing to it.
       { source: "/events", destination: "/event-calendar", permanent: true },
+      // Legacy bot-guessed homepage paths (index.php / index) show up as 404s
+      // in Search Console. They carry no links, but pointing them at the
+      // homepage cleans the report and drops any stray signal on "/".
+      { source: "/index.php", destination: "/", permanent: true },
+      { source: "/index", destination: "/", permanent: true },
     ];
   },
 };
