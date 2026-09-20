@@ -1136,12 +1136,12 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-text-primary">{name}</h3>
-            <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-[9px] font-medium text-text-muted">
+            <h3 className="text-base font-semibold text-text-primary">{name}</h3>
+            <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-[10px] font-medium text-text-muted">
               {t.howItWorks.categories[tool.category.toLowerCase() as CategoryKey] ?? tool.category}
             </span>
           </div>
-          <p className="mt-0.5 text-[11px] text-text-muted line-clamp-1">{description}</p>
+          <p className="mt-0.5 text-[13px] text-text-muted line-clamp-1">{description}</p>
         </div>
         <ChevronDown className={`h-4 w-4 shrink-0 text-text-muted transition-transform ${isExpanded ? "rotate-180" : ""}`} />
       </button>
@@ -1150,14 +1150,14 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
         <div className="border-t border-border px-5 pb-5">
           {/* Features */}
           <div className="mt-4">
-            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+            <p className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-text-muted">
               <Zap className="h-3 w-3" style={{ color: tool.color }} /> {format(t.howItWorks.features, { count: features.length })}
             </p>
             <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
               {features.map((feature, i) => (
                 <div key={i} className="flex items-start gap-1.5">
                   <Check className="mt-0.5 h-3 w-3 shrink-0" style={{ color: tool.color }} />
-                  <span className="text-[11px] text-text-secondary leading-snug">{feature}</span>
+                  <span className="text-[13px] text-text-secondary leading-snug">{feature}</span>
                 </div>
               ))}
             </div>
@@ -1165,15 +1165,15 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
 
           {/* Steps */}
           <div className="mt-4 space-y-3">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">{t.howItWorks.howToUse}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted">{t.howItWorks.howToUse}</p>
             {steps.map((step, i) => (
               <div key={i} className="flex gap-3">
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: tool.color }}>
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white" style={{ backgroundColor: tool.color }}>
                   {i + 1}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-text-primary">{step.title}</p>
-                  <p className="mt-0.5 text-[11px] text-text-secondary leading-relaxed">{step.detail}</p>
+                  <p className="text-sm font-semibold text-text-primary">{step.title}</p>
+                  <p className="mt-0.5 text-[13px] text-text-secondary leading-relaxed">{step.detail}</p>
                 </div>
               </div>
             ))}
@@ -1181,18 +1181,18 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
 
           {/* Output */}
           <div className="mt-4 rounded-xl border border-border bg-bg-secondary/50 p-3">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-1">{t.howItWorks.output}</p>
-            <p className="text-[11px] text-text-secondary">{output}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-text-muted mb-1">{t.howItWorks.output}</p>
+            <p className="text-[13px] text-text-secondary">{output}</p>
           </div>
 
           {/* Tips */}
           <div className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-            <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-600">
+            <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-600">
               <Lightbulb className="h-3 w-3" /> {t.howItWorks.tips}
             </p>
             <ul className="space-y-1">
               {tips.map((tip, i) => (
-                <li key={i} className="flex items-start gap-1.5 text-[11px] text-text-secondary">
+                <li key={i} className="flex items-start gap-1.5 text-[13px] text-text-secondary">
                   <Star className="mt-0.5 h-2.5 w-2.5 shrink-0 text-amber-500" />
                   {tip}
                 </li>
@@ -1202,7 +1202,7 @@ function ToolCard({ tool, isExpanded, onToggle }: { tool: ToolInfo; isExpanded: 
 
           {/* Open Tool */}
           <Link href={tool.href}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white transition-all hover:brightness-110"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
             style={{ backgroundColor: tool.color }}>
             {format(t.howItWorks.openTool, { name })} <ExternalLink className="h-3.5 w-3.5" />
           </Link>
@@ -1231,25 +1231,25 @@ export default function HowItWorksPage() {
             <Lightbulb className="h-4 w-4 text-accent" />
           </div>
           <div className="flex flex-wrap items-baseline gap-x-2">
-            <h2 className="text-sm font-semibold text-text-primary">{t.howItWorks.title}</h2>
-            <span aria-hidden className="hidden sm:inline text-[11px] text-border">·</span>
-            <p className="text-[11px] text-text-muted">{format(t.howItWorks.subtitle, { count: TOOLS.length })}</p>
+            <h2 className="text-base font-semibold text-text-primary">{t.howItWorks.title}</h2>
+            <span aria-hidden className="hidden sm:inline text-[13px] text-border">·</span>
+            <p className="text-[13px] text-text-muted">{format(t.howItWorks.subtitle, { count: TOOLS.length })}</p>
           </div>
         </div>
 
         {/* Category Tabs — centered over the content column, scrollable on mobile */}
         <div className="border-b border-border bg-bg px-5 py-3">
-          <div className="mx-auto flex w-full max-w-3xl justify-start gap-2 overflow-x-auto no-scrollbar sm:justify-center">
+          <div className="mx-auto flex w-full max-w-screen-2xl justify-start gap-2 overflow-x-auto no-scrollbar sm:justify-center">
             {CATEGORY_KEYS.map(cat => (
               <button key={cat} onClick={() => { setActiveCategory(cat); setExpandedTool(null); }}
-                className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${
+                className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-all ${
                   activeCategory === cat
                     ? "bg-accent text-white"
                     : "border border-border bg-surface text-text-secondary hover:border-accent/30"
                 }`}>
                 {t.howItWorks.categories[cat]}
                 {cat !== "all" && (
-                  <span className="ml-1 text-[9px] opacity-70">({TOOLS.filter((tool) => inCategory(tool, cat)).length})</span>
+                  <span className="ml-1 text-[10px] opacity-70">({TOOLS.filter((tool) => inCategory(tool, cat)).length})</span>
                 )}
               </button>
             ))}
@@ -1259,7 +1259,7 @@ export default function HowItWorksPage() {
 
       {/* Tool Cards */}
       <div className="flex-1 p-5">
-        <div className="mx-auto max-w-3xl space-y-3">
+        <div className="mx-auto max-w-screen-2xl space-y-3">
           {filteredTools.map(tool => (
             <ToolCard
               key={tool.id}
