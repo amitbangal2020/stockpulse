@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ExternalLink,
   Loader2,
+  ArrowUp,
 } from "lucide-react";
 
 // Types from stock-api
@@ -225,8 +226,26 @@ export function SearchTool() {
   const avgDownloads = sortedResults.length > 0 ? (totalDownloads / sortedResults.length).toFixed(1) : "0";
   const topPerformer = sortedResults.length > 0 ? sortedResults[0] : null;
 
+  // Scroll-to-top (same pattern as MetaGen's)
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      setShowScrollTop(container.scrollTop > 300);
+    };
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    scrollContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
+    <div ref={scrollContainerRef} className="flex flex-1 flex-col overflow-y-auto min-h-0">
       {/* Hero Section */}
       <div className="flex w-full flex-col items-center px-6 pt-6 pb-5 text-center border-b border-border">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent-subtle px-4 py-1.5 text-xs font-semibold text-accent">
@@ -413,9 +432,9 @@ export function SearchTool() {
               const maxDl = sortedResults[0]?.downloads || 1;
               const perfPct = Math.min(100, Math.round((asset.downloads / Math.max(maxDl, 1)) * 100));
               return (
-                <div key={asset.id} className="group flex items-center gap-4 rounded-xl border border-border bg-surface p-3 transition-all duration-200 hover:border-accent/30 hover:shadow-md hover:shadow-accent/5">
+                <div key={asset.id} className="group flex items-center gap-4 rounded-xl border border-border bg-surface p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-md hover:shadow-accent/5">
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-background">
-                    <img src={asset.thumbnailUrl} alt={asset.title} className="h-full w-full object-contain" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%231a1a2e' width='64' height='64'/%3E%3C/svg%3E"; }} />
+                    <img src={asset.thumbnailUrl} alt={asset.title} className="h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%231a1a2e' width='64' height='64'/%3E%3C/svg%3E"; }} />
                     <span className="absolute left-0.5 top-0.5 rounded bg-black/60 px-1 py-px text-[7px] font-bold uppercase text-white/90">{asset.mediaType}</span>
                     {asset.isAI && <span className="absolute bottom-0.5 left-0.5 rounded bg-purple-500/80 px-1 py-px text-[7px] font-bold text-white">AI</span>}
                   </div>
@@ -461,10 +480,10 @@ export function SearchTool() {
               const maxDl = sortedResults[0]?.downloads || 1;
               const perfPct = Math.min(100, Math.round((asset.downloads / Math.max(maxDl, 1)) * 100));
               return (
-                <div key={asset.id} className="group overflow-hidden rounded-xl border border-border bg-surface transition-all duration-200 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5">
-                  {/* Thumbnail */}
+                <div key={asset.id} className="group overflow-hidden rounded-xl border border-border bg-surface shadow-[0_5px_5px_0_rgba(0,0,0,0.08)] transition-all duration-200 hover:-translate-y-1 hover:border-accent/30 hover:shadow-[0_12px_24px_-6px_rgba(13,148,136,0.18)]">
+                  {/* Thumbnail — CodePen-style slow zoom on hover */}
                   <div className="relative h-48 overflow-hidden bg-background">
-                    <img src={asset.thumbnailUrl} alt={asset.title} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Crect fill='%231a1a2e' width='200' height='150'/%3E%3Ctext fill='%23444' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E"; }} />
+                    <img src={asset.thumbnailUrl} alt={asset.title} className="h-full w-full object-contain transition-transform duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'%3E%3Crect fill='%231a1a2e' width='200' height='150'/%3E%3Ctext fill='%23444' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E"; }} />
                     {/* Badges */}
                     <div className="absolute left-2 top-2 flex gap-1.5">
                       <span className="rounded-md bg-black/60 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/90 backdrop-blur-md">{asset.mediaType}</span>
@@ -478,8 +497,8 @@ export function SearchTool() {
                         </span>
                       </div>
                     )}
-                    {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                    {/* Hover overlay — fades in with the zoom */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                   </div>
                   {/* Content */}
                   <div className="p-3.5">
@@ -513,6 +532,15 @@ export function SearchTool() {
           </div>
         )}
       </div>
+
+      {/* Scroll to Top */}
+      {showScrollTop && (
+        <button onClick={scrollToTop}
+          className="fixed bottom-24 right-8 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-accent text-white shadow-lg shadow-accent/30 transition-all hover:scale-110 hover:shadow-xl"
+          aria-label="Scroll to top">
+          <ArrowUp className="h-5 w-5" />
+        </button>
+      )}
     </div>
   );
 }

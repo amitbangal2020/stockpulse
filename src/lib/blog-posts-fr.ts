@@ -32,6 +32,87 @@ export function formatFrenchDate(iso: string): string {
 
 export const BLOG_POSTS_FR: BlogPost[] = [
   {
+    slug: "stock-rejection-checklist-fix-and-resubmit",
+    title: "La checklist des rejections stock : corriger, resoumettre et gagner l'appel (édition 2026)",
+    description:
+      "Les rejections tuent plus de revenus que les mauvais mots-clés. Guide pratique des motifs de rejet les plus fréquents sur Adobe Stock — ce qu'ils veulent vraiment dire, le correctif qui marche, et quand l'appel vaut le coup.",
+    date: "2026-09-20",
+    readingTime: "8 min de lecture",
+    tags: ["Rejets", "Qualité", "Adobe Stock", "Checklist"],
+    body: `Tous les contributeurs finissent par se heurter au même mur : un lot d'uploads revient rejeté, les motifs tiennent en une phrase cryptique, et la tentation est de resoumettre les fichiers identiques en croisant les doigts. Cette prière coûte cher — des rejets répétés sur les mêmes fichiers peuvent flagger tout votre compte.
+
+Les rejets ne sont pas aléatoires. Chaque plateforme a une courte liste de motifs récurrents, chacun avec un correctif précis. Apprenez la liste une fois et votre taux d'acceptation grimpe durablement. La voici.
+
+## Les quatre grands motifs de rejet (et ce qu'ils veulent dire)
+
+### 1. « Focus » / problèmes techniques de netteté
+
+Le rejet le plus fréquent et le plus mal compris. Les reviewers ne jugent pas le flou artistique — ils vérifient que le **sujet visé est net de façon critique à 100 % de zoom**.
+
+**Correctif :**
+- Vérifiez chaque image retenue à 100 % avant l'envoi — si les yeux du sujet (ou l'étiquette du produit, ou le pistil de la fleur) sont mous, c'est mort
+- Attention aux vitesses inférieures à 1/focale en handheld ; attention au flou de mouvement dans les captures vidéo
+- Méfiez-vous de la fausse netteté : une réduction de bruit agressive étale le détail, et les reviewers zooment
+
+### 2. « Bruit / artefacts » / problèmes techniques
+
+Grain dans les ombres, halos de compression JPEG, franges violettes, bouillie de dématriçage.
+
+**Correctif :**
+- Exposez à droite (plus lumineux, sans écrêtage) pour que les ombres gardent des données propres
+- Exportez en qualité maximale ; les artefacts de compression d'un export « optimisé » sont un rejet immédiat
+- Débruitez avec discernement : les débruiteurs IA sont bons, mais vérifiez la peau et les textures fines à 100 % — une peau trop lissée passe pour « artefacts »
+
+### 3. « Contenu similaire » / existe déjà
+
+Le tueur silencieux — votre image est bonne, mais trop proche de quelque chose dans le catalogue (ou de votre propre upload précédent).
+
+**Correctif :**
+- Cherchez dans votre propre portefeuille avant d'envoyer une série ; envoyez **la meilleure**, pas cinq quasi-doublons
+- Changez une variable forte par variante : autre angle, autre pose, autre décor — pas juste un recadrage
+- Créateurs IA : vos générations sont comparées à l'océan de contenu IA existant. Variez les prompts de façon signifiante.
+
+### 4. « Propriété intellectuelle » / marque déposée / property release
+
+Un logo sur un t-shirt, une skyline avec un bâtiment protégé, une œuvre reconnaissable au mur.
+
+**Correctif :**
+- Scout le cadre avant de shooter : retirez les accessoires de marque, masquez les logos visibles, évitez les bâtiments privés identifiables
+- Les générateurs IA inventent encore des formes pseudo-marques — inspectez chaque image générée pour les faux logos et textes
+- Si c'est vraiment non-librable, c'est non-librable. Aucun appel ne survit à une vraie marque déposée.
+
+## Les rejets silencieux dont personne ne parle
+
+- **Un keywording pauvre passe pour de la basse qualité :** les fichiers à 3 mots-clés paresseux se retrouvent plus souvent qu'on ne croit en file « métadonnées insuffisantes »
+- **Des ratios que les reviewers n'aiment pas :** les recadrages extrêmes ne laissent aucune place au texte de l'acheteur — les rejets « copy space » sont en réalité des rejets de composition
+- **Des fichiers IA mal déclarés :** déclarer de l'IA comme du capturé (ou oublier la déclaration) expose à un rejet et à une revue de compte
+- **De vieux standards techniques sur des fichiers neufs :** les petits capteurs à haute ISO qui passaient en 2019 échouent aujourd'hui — les écrans des reviewers se sont améliorés
+
+## Corriger, resoumettre, faire appel — dans cet ordre
+
+1. **Lisez le motif littéralement, pas émotionnellement.** « Focus » veut dire focus — pas « votre style n'est pas le bienvenu »
+2. **Corrigez l'échec précis.** Un motif de rejet par fichier ; ne mitraillez pas de re-traitements
+3. **Attendez entre deux soumissions.** Corriger puis renvoyer à l'identique aussitôt ressemble à du spam
+4. **Faites appel seulement quand vous avez objectivement raison** — vous avez le release en règle, la « marque déposée » est en fait une forme générique, la netteté est réellement bonne à 100 %. Un appel calme et factuel gagne ; une dispute perd
+5. **Suivez vos motifs de rejet.** Dix rejets « bruit » signifient un problème de pipeline d'export, pas dix mauvais fichiers
+
+## La checklist avant soumission
+
+Passez chaque fichier par ce contrôle de 60 secondes avant l'upload :
+
+- [ ] Net là où il faut, à 100 %
+- [ ] Ombres propres, pas d'artefacts, export qualité maximale
+- [ ] Pas de logos, pas de PI reconnaissable, releases personnes/propriétés si besoin
+- [ ] Pas un quasi-doublon de votre propre catalogue
+- [ ] 25+ mots-clés utiles, les 10 premiers les plus forts
+- [ ] Titre écrit pour la recherche (sujet d'abord, zéro remplissage)
+- [ ] Déclaration IA correctement renseignée
+
+## En résumé
+
+Les rejets sont du feedback à grande échelle. Les contributeurs à 90 %+ d'acceptation ne sont pas plus chanceux — ils ont intériorisé cette checklist jusqu'à l'automatisme. Corrigez le motif, resoumettez proprement, et ne faites appel que depuis une position de force. Votre taux d'acceptation est une compétence, et les compétences se cumulent.`,
+  },
+  {
     slug: "how-to-write-adobe-stock-titles-that-rank",
     title: "Comment rédiger des titres Adobe Stock qui se classent vraiment",
     description:

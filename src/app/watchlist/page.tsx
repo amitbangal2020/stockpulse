@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { ScrollTopButton } from "@/components/scroll-top-button";
 import { useAuth } from "@/lib/auth-context";
 import { Star, Trash2 } from "lucide-react";
 
@@ -16,6 +17,7 @@ interface WatchlistItem {
 }
 
 function WatchlistPage() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [sortBy, setSortBy] = useState("added");
@@ -49,9 +51,10 @@ function WatchlistPage() {
             <p className="mt-1 text-sm text-text-muted">Track your favorite assets by signing in</p>
           </div>
         </div>
-      </ToolLayout>
+    </ToolLayout>
     );
   }
+
 
   return (
     <ToolLayout>
@@ -60,7 +63,7 @@ function WatchlistPage() {
           <h2 className="mt-3 font-heading text-sm font-semibold tracking-tight text-text-primary">My Watchlist</h2>
           <p className="text-[11px] text-text-muted">Track your favorite Adobe Stock assets</p>
         </div>
-        <div className="flex-1 overflow-y-auto p-5">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
           {sorted.length === 0 ? (
             <div className="py-20 text-center">
               <Star className="mx-auto mb-4 h-12 w-12 text-text-muted" />

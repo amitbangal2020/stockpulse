@@ -120,7 +120,8 @@
 /* Deliberate exceptions: longer, data-driven animations that read better slow. */
 .duration-300,
 .duration-500,
-.duration-700 {
+.duration-700,
+.duration-800 {
   transition-duration: 300ms !important;
 }
 .duration-500 {
@@ -128,6 +129,9 @@
 }
 .duration-700 {
   transition-duration: 700ms !important;
+}
+.duration-800 {
+  transition-duration: 800ms !important;
 }
 
 /* Instant is correct for these — smooth easing on sliders/text fields feels laggy. */

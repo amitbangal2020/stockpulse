@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { ScrollTopButton } from "@/components/scroll-top-button";
 import { Download, Eye } from "lucide-react";
 
 const SAMPLE_PORTFOLIO = [
@@ -25,6 +26,8 @@ function PortfolioPage() {
   const totalDownloads = SAMPLE_PORTFOLIO.reduce((s, a) => s + a.downloads, 0);
   const avgPerf = Math.round(SAMPLE_PORTFOLIO.reduce((s, a) => s + a.performance, 0) / SAMPLE_PORTFOLIO.length);
 
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   return (
     <ToolLayout>
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
@@ -40,7 +43,7 @@ function PortfolioPage() {
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-screen-2xl flex-1 overflow-y-auto p-5">
+        <div ref={scrollContainerRef} className="mx-auto w-full max-w-screen-2xl flex-1 overflow-y-auto p-5">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap gap-1.5">
               {["all", "image", "vector", "video"].map((t) => (
@@ -76,6 +79,7 @@ function PortfolioPage() {
           </div>
         </div>
       </div>
+      <ScrollTopButton containerRef={scrollContainerRef} />
     </ToolLayout>
   );
 }

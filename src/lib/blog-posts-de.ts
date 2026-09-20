@@ -32,6 +32,87 @@ export function formatGermanDate(iso: string): string {
 
 export const BLOG_POSTS_DE: BlogPost[] = [
   {
+    slug: "stock-rejection-checklist-fix-and-resubmit",
+    title: "Die Stock-Ablehnungs-Checkliste: Beheben, neu einreichen und den Einspruch gewinnen (Ausgabe 2026)",
+    description:
+      "Ablehnungen kosten mehr Einnahmen als schlechte Keywords je werden. Ein Praxisguide zu den häufigsten Ablehnungsgründen auf Adobe Stock — was sie wirklich bedeuten, welcher Fix funktioniert und wann sich ein Einspruch lohnt.",
+    date: "2026-09-20",
+    readingTime: "8 Min. Lesezeit",
+    tags: ["Ablehnungen", "Qualität", "Adobe Stock", "Checkliste"],
+    body: `Jeder Contributor läuft irgendwann gegen dieselbe Wand: Ein Upload-Batch kommt abgelehnt zurück, die Begründungen sind kryptische Einzeiler, und die Versuchung ist groß, exakt dieselben Dateien erneut einzureichen und zu hoffen. Dieses Hoffen ist teuer — wiederholte Ablehnungen identischer Dateien können das ganze Konto markieren.
+
+Ablehnungen sind kein Zufall. Jede Plattform hat eine kurze Liste wiederkehrender Gründe, jeder mit einer konkreten Lösung. Lernen Sie diese Liste einmal — und Ihre Annahmequote steigt dauerhaft. Hier ist sie.
+
+## Die vier großen Ablehnungsgründe (und was sie wirklich bedeuten)
+
+### 1. "Schärfe" / technische Fokusprobleme
+
+Die häufigste und meist missverstandene Ablehnung. Reviewer bewerten keinen künstlerischen Blur — sie prüfen, ob das **gewollte Motiv bei 100 % Zoom kritisch scharf** ist.
+
+**Lösung:**
+- Prüfen Sie jeden Keeper vor dem Einreichen bei 100 % — sind die Augen des Motivs (oder das Produkt-Label, oder der Blütenstempel) weich, fällt es durch
+- Vermeiden Sie Verschlusszeiten unter 1/Brennweite aus der Hand; achten Sie auf Motivbewegung in Video-Framegrabs
+- Vorsicht vor „falscher Schärfe": aggressive Rauschunterdrückung verschmiert Details — und Reviewer zoomen hinein
+
+### 2. "Rauschen / Artefakte" / technische Probleme
+
+Körnung in Schatten, JPEG-Kompressionshalos, violette Farb Säume, Demosaicing-Brei.
+
+**Lösung:**
+- Nach rechts belichten (heller, ohne clipping), damit Schatten saubere Daten tragen
+- In maximaler Qualität exportieren; Kompressionsartefakte aus „optimierten“ Exporten sind eine sofortige Ablehnung
+- Entrauschen Sie mit Maß und Ziel: Moderne KI-Entrauscher sind gut, aber prüfen Sie Haut und feine Texturen bei 100 % — überglättete Haut liest sich als „Artefakte“
+
+### 3. "Ähnlicher Inhalt" / existiert bereits
+
+Der stille Killer — Ihr Bild ist gut, aber zu nah an etwas im Katalog (oder an Ihrem eigenen früheren Upload).
+
+**Lösung:**
+- Durchsuchen Sie Ihr eigenes Portfolio, bevor Sie eine Serie einreichen; reichen Sie **das beste** Bild ein, nicht fünf Beinahe-Duplikate
+- Ändern Sie pro Variante eine starke Variable: anderer Blickwinkel, andere Pose, anderes Setting — nicht nur ein Zuschnitt
+- KI-Creator: Ihre Generierungen werden mit dem existierenden KI-Ozean verglichen. Variieren Sie Prompts sinnvoll.
+
+### 4. "Geistiges Eigentum" / Marke / Property-Release
+
+Ein Logo auf dem T-Shirt, eine Skyline mit geschütztem Gebäude, ein erkennbares Kunstwerk an der Wand.
+
+**Lösung:**
+- Scouten Sie den Frame vor dem Shooting: Markige Requisiten entfernen, sichtbare Logs abdecken, identifizierbare Privatgebäude meiden
+- KI-Generatoren erfinden weiterhin markenähnliche Formen — prüfen Sie jedes generierte Bild auf Pseudo-Logos und Texte
+- Was wirklich kein Release bekommt, bekommt keins. Gegen eine echte Marke gewinnt kein Einspruch.
+
+## Die stillen Ablehnungen, vor denen niemand warnt
+
+- **Spärliches Keywording gilt als minderwertig:** Dateien mit 3 faulen Keywords landen öfter in „unzureichende Metadaten“-Warteschlangen, als Sie denken
+- **Seitenverhältnisse, die Reviewer ablehnen:** Extreme Zuschnitte lassen dem Käufer keinen Platz für Text — „Copy-Space“-Ablehnungen sind in Wahrheit Kompositionsablehnungen
+- **Falsch deklarierte KI-Dateien:** KI-Content als fotografisch deklariert (oder die Deklaration ganz vergessen) riskiert Ablehnung und Konto-Review
+- **Alte Technikstandards an neuen Dateien:** Kleinsensor-Dateien mit hoher ISO, die 2019 durchgingen, fallen heute durch — die Monitore der Reviewer wurden besser
+
+## Beheben, neu einreichen, Einspruch — in dieser Reihenfolge
+
+1. **Lesen Sie den Grund wörtlich, nicht emotional.** „Schärfe“ heißt Schärfe — nicht „Ihr Stil ist unerwünscht“
+2. **Beheben Sie die konkrete Schwäche.** Ein Ablehnungsgrund pro Datei; keine Schrotflinten-Re-Edits
+3. **Lassen Sie Zeit zwischen Neueinreichungen.** Fixen und sofort identisch erneut einreichen wirkt wie Spam
+4. **Einspruch nur, wenn Sie objektiv recht haben** — das Release liegt vor, die „Marke“ ist tatsächlich eine generische Form, die Schärfe ist bei 100 % wirklich gut. Ein ruhiger, faktenbasierter Einspruch gewinnt; eine Diskussion verliert
+5. **Verfolgen Sie Ihre Ablehnungsmuster.** Zehn „Rauschen“-Ablehnungen bedeuten ein Problem in Ihrer Export-Pipeline, nicht zehn schlechte Dateien
+
+## Die Checkliste vor dem Einreichen
+
+Schieben Sie jede Datei vor dem Upload durch diesen 60-Sekunden-Check:
+
+- [ ] Scharf an der entscheidenden Stelle bei 100 %
+- [ ] Schatten sauber, keine Artefakte, Export in maximaler Qualität
+- [ ] Keine Logos, kein erkennbares IP, Releases für Personen/Eigentum wo nötig
+- [ ] Kein Beinahe-Duplikat des eigenen Katalogs
+- [ ] 25+ aussagekräftige Keywords, die ersten 10 die stärksten
+- [ ] Für die Suche geschriebener Titel (Motiv zuerst, kein Füllmaterial)
+- [ ] KI-Deklaration korrekt gesetzt
+
+## Fazit
+
+Ablehnungen sind Feedback im großen Stil. Contributor mit 90 %+ Annahmequote haben nicht mehr Glück — sie haben diese Checkliste verinnerlicht, bis sie automatisch läuft. Beheben Sie den Grund, reichen Sie sauber neu ein und legen Sie Einspruch nur aus der Stärke ein. Ihre Annahmequote ist eine Fähigkeit — und Fähigkeiten verzinsen sich.`,
+  },
+  {
     slug: "how-to-write-adobe-stock-titles-that-rank",
     title: "So schreiben Sie Adobe-Stock-Titel, die wirklich ranken",
     description:

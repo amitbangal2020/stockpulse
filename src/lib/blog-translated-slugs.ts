@@ -13,6 +13,7 @@ import type { TranslatedLocale } from "@/lib/i18n/locales";
  */
 export const TRANSLATED_SLUGS: Record<TranslatedLocale, readonly string[]> = {
   bn: [
+    "stock-rejection-checklist-fix-and-resubmit",
     "how-to-write-adobe-stock-titles-that-rank",
     "how-many-keywords-stock-photo-adobe-stock",
     "seasonal-stock-content-upload-timing",
@@ -20,6 +21,7 @@ export const TRANSLATED_SLUGS: Record<TranslatedLocale, readonly string[]> = {
     "best-ai-tools-microstock-sellers-2026",
   ],
   hi: [
+    "stock-rejection-checklist-fix-and-resubmit",
     "how-to-write-adobe-stock-titles-that-rank",
     "how-many-keywords-stock-photo-adobe-stock",
     "seasonal-stock-content-upload-timing",
@@ -27,6 +29,7 @@ export const TRANSLATED_SLUGS: Record<TranslatedLocale, readonly string[]> = {
     "best-ai-tools-microstock-sellers-2026",
   ],
   fr: [
+    "stock-rejection-checklist-fix-and-resubmit",
     "how-to-write-adobe-stock-titles-that-rank",
     "how-many-keywords-stock-photo-adobe-stock",
     "seasonal-stock-content-upload-timing",
@@ -34,6 +37,7 @@ export const TRANSLATED_SLUGS: Record<TranslatedLocale, readonly string[]> = {
     "best-ai-tools-microstock-sellers-2026",
   ],
   de: [
+    "stock-rejection-checklist-fix-and-resubmit",
     "how-to-write-adobe-stock-titles-that-rank",
     "how-many-keywords-stock-photo-adobe-stock",
     "seasonal-stock-content-upload-timing",

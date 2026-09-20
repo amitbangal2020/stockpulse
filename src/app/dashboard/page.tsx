@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { ScrollTopButton } from "@/components/scroll-top-button";
 import { getDashboardStats, getAllTrends, AssetTrend, recordSnapshot, getTrackedAssets } from "@/lib/tracking";
 import { trackEvent } from "@/lib/track-event";
 import { RefreshCw, TrendingUp, BarChart3, Activity, ArrowUpRight, ArrowDownRight } from "lucide-react";
@@ -53,6 +54,7 @@ function DashboardPage() {
   const [stats, setStats] = useState<ReturnType<typeof getDashboardStats> | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefresh, setLastRefresh] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const loadStats = useCallback(() => { setStats(getDashboardStats()); }, []);
 
   useEffect(() => { loadStats(); const stored = localStorage.getItem("stocktracker_last_refresh"); if (stored) setLastRefresh(stored); }, [loadStats]);
@@ -78,6 +80,7 @@ function DashboardPage() {
 
   const topItems = stats.trends.slice(0, 5).map((t) => ({ label: t.title.substring(0, 15) + (t.title.length > 15 ? "..." : ""), value: t.currentDownloads }));
 
+
   return (
     <ToolLayout>
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
@@ -95,7 +98,7 @@ function DashboardPage() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
           {/* Stats Grid */}
           <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
             <div className="rounded-xl border border-border bg-surface px-4 py-3">
@@ -149,6 +152,7 @@ function DashboardPage() {
           )}
         </div>
       </div>
+      <ScrollTopButton containerRef={scrollContainerRef} />
     </ToolLayout>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { ScrollTopButton } from "@/components/scroll-top-button";
 import { analyzeKeyword, KeywordAnalysis } from "@/lib/stock-api";
 import { Search, BarChart3, Target, Lightbulb, TrendingUp, History } from "lucide-react";
 
@@ -22,6 +23,8 @@ function KeywordsPage() {
     setHistory((prev) => [result, ...prev.filter((h) => h.keyword !== k)].slice(0, 10));
   };
 
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   return (
     <ToolLayout>
       <div className="flex flex-1 flex-col overflow-y-auto min-h-0">
@@ -42,7 +45,7 @@ function KeywordsPage() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
           {analysis ? (
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
               <div className="space-y-5 lg:col-span-2">
@@ -131,6 +134,7 @@ function KeywordsPage() {
           )}
         </div>
       </div>
+      <ScrollTopButton containerRef={scrollContainerRef} />
     </ToolLayout>
   );
 }

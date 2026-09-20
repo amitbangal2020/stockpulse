@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ToolLayout } from "@/components/tool-layout";
+import { ScrollTopButton } from "@/components/scroll-top-button";
 import { Flame, Users, Tag, Loader2, RefreshCw } from "lucide-react";
 
 interface TrendingNiche {
@@ -42,6 +43,7 @@ interface TrendingData {
 
 function TrendingPage() {
   const [timeRange, setTimeRange] = useState("all");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<TrendingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +66,7 @@ function TrendingPage() {
   useEffect(() => {
     fetchTrending(timeRange);
   }, [timeRange]);
+
 
   return (
     <ToolLayout>
@@ -101,7 +104,7 @@ function TrendingPage() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5">
           {loading && !data ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-8 w-8 animate-spin text-accent mb-3" />
@@ -239,6 +242,7 @@ function TrendingPage() {
           ) : null}
         </div>
       </div>
+      <ScrollTopButton containerRef={scrollContainerRef} />
     </ToolLayout>
   );
 }
