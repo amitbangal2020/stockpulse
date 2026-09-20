@@ -93,8 +93,9 @@ export default function SearchPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(appJsonLd) }}
       />
-      <SearchTool />
-      <SearchSeoSection />
+      <SearchTool>
+        <SearchSeoSection />
+      </SearchTool>
     </ToolLayout>
   );
 }

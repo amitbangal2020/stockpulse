@@ -40,7 +40,7 @@ interface StockAsset {
 
 const QUICK_TAGS = ["robotics", "nature", "business", "coffee", "yoga", "space"];
 
-export function SearchTool() {
+export function SearchTool({ children }: { children?: React.ReactNode }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<StockAsset[]>([]);
   const [total, setTotal] = useState(0);
@@ -521,6 +521,8 @@ export function SearchTool() {
 
       {/* Scroll to Top */}
       <ScrollTopButton containerRef={scrollContainerRef} />
+      {/* Server-rendered SEO content, scrolled with the tool on desktop */}
+      {children}
     </div>
   );
 }
